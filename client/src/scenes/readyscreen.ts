@@ -115,7 +115,6 @@ export default class ReadyScreenScene extends Phaser.Scene {
             self.gameController.allPlayersReady((ready) => {
                 if (this.ready && ready) {
                     if (this.scene.isVisible('chat')) {
-                        // WindowManager.destroy(this, 'chat');
                         var window = WindowManager.get(this, "chat")
                         window.disconnectListeners() // TODO: check if this call is actually necessary
                         window.destroy();
@@ -131,12 +130,10 @@ export default class ReadyScreenScene extends Phaser.Scene {
         }, this);
 
         // chat window
-        // WindowManager.createWindow(this, 'chat', Chat, { controller: self.gameController });
         this.chatButton = this.add.image(775, 540, 'chaticon').setScale(0.3)
         this.chatButton.setInteractive({useHandCursor: true})
         this.chatButton.on('pointerdown', function (pointer) {
             if (this.scene.isVisible('chat')) {
-                // WindowManager.destroy(this, "chat")
                 var window = WindowManager.get(this, "chat")
                 window.destroy();
             }
@@ -151,9 +148,7 @@ export default class ReadyScreenScene extends Phaser.Scene {
                     }
                 )
             }
-
         }, this);
-        // WindowManager.destroy(this, "chat")
 
         this.gameController.updateHeroList((hero) => {
             console.log(self[hero])

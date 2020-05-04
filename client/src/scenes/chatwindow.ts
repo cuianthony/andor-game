@@ -23,8 +23,6 @@ export class Chat extends Window {
         })
     }
 
-
-
     public preload() {
         this.load.html('chatform', './assets/templates/chat.html');
     }

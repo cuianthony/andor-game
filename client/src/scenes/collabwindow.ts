@@ -7,7 +7,6 @@ import BoardOverlay from "./boardoverlay";
 import { HeroKind } from "../objects";
 
 export class CollabWindow extends Window {
-    private submitText;
     private acceptText;
     private hasAccepted = false;
 
@@ -60,23 +59,20 @@ export class CollabWindow extends Window {
         this.overlayRef = data.overlayRef;
         this.name = key
 
-        //if (this.isOwner) {
-            this.involvedHeroes = data.involvedHeroes;
-            this.resources = data.resources;
-            this.textOptions = data.textOptions;
-        //}
+        this.involvedHeroes = data.involvedHeroes;
+        this.resources = data.resources;
+        this.textOptions = data.textOptions;
+
         this.ownHeroKind = data.ownHeroKind
         this.resourceToggles = new Array<ResourceToggle>()
         this.numAccepts = 0
         this.type = data.type
         this.heroMaxes = data.heroMaxes
-        //console.log(this.heroMaxes)
         this.sumNeeded = data.sumNeeded
         this.initialSleep = data.initialSleep
         this.eventID = data.eventID
         this.desc = data.desc
         this.eventToBeBlockedID = data.eventToBeBlockedID
-        //console.log(this.involvedHeroes)
     }
 
     protected initialize() {
@@ -99,21 +95,6 @@ export class CollabWindow extends Window {
         var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0);
         this.populateWindow();
 
-        //This drag is pretty f'd up.
-        bg.on('drag', function (pointer, dragX, dragY) {
-            if (dragX < this.scene.parent.x - 10 && dragY < this.scene.parent.y - 10) {
-                this.scene.parent.x = this.scene.parent.x - 10;
-                this.scene.parent.y = this.scene.parent.y - 10;
-                this.scene.refresh()
-            }
-            else {
-                this.scene.parent.x = dragX;
-                this.scene.parent.y = dragY;
-                this.scene.refresh()
-            }
-            
-        });
-        console.log('this: xxxxxx' , this)
         // Callbacks
         // Submitting decision callback
         console.log('in init', self.infight)
@@ -126,16 +107,11 @@ export class CollabWindow extends Window {
                     involved = true
                 }
             }
-            // if(self.ownHeroKind == senderHeroKind){
-            //     involved = false
-            // }
             if(involved){
                 this.resetAccepts();
                 for(let rt of this.resourceToggles){
                     if(rt.getResourceIndex() == resourceIndex && resourceHeroKind == rt.getHeroKind()){
-                        //console.log(rt)
                         rt.incFunction()
-                        //this.gameinstance.sendIncResource(resourceHeroKind,resourceIndex)
                     }        
                 } 
             }
@@ -149,16 +125,11 @@ export class CollabWindow extends Window {
                     involved = true
                 }
             }
-            // if(self.ownHeroKind == senderHeroKind){
-            //     involved = false
-            // }
             if(involved){
                 this.resetAccepts();
                 for(let rt of this.resourceToggles){
                     if(rt.getResourceIndex() == resourceIndex && resourceHeroKind == rt.getHeroKind()){
-                        //console.log(rt)
                         rt.decFunction()
-                        //this.gameinstance.sendIncResource(resourceHeroKind,resourceIndex)
                     }        
                 } 
             }
@@ -178,14 +149,11 @@ export class CollabWindow extends Window {
             for(let hk of self.involvedHeroes){
                 if(hk == heroKind){
                     involved = true
-                    //console.log(involved)
                 }
             }
             if(self.ownHeroKind == heroKind){
                 involved = false
-                //console.log(involved)
             }
-            //console.log(involved)
             if(involved){
                 self.heroAccepts.get(heroKind).destroy();
                 self.heroAccepts.delete(heroKind)
@@ -201,13 +169,10 @@ export class CollabWindow extends Window {
                 self.heroAccepts.get(heroKind).setColor('#037d50');
                 self.numAccepts++
             }
-            //console.log(self.numAccepts)
         })
 
         this.gameinstance.endCollabListener((involvedHeroKinds: HeroKind[]) =>{
             console.log("entered end collab listener")
-            //console.log("we got it baby")
-            //console.log(involvedHeroKinds)
             var involved = false
             for(let heroKind of involvedHeroKinds){
                 if(heroKind == self.ownHeroKind){
@@ -220,7 +185,6 @@ export class CollabWindow extends Window {
                 // Reset overlay interactive
                 self.overlayRef.toggleInteractive(true);
                 
-                // self.scene.remove(self.name);
                 self.destroy()
                 self.gameinstance.unsubscribeListeners()
             }
@@ -312,18 +276,15 @@ export class CollabWindow extends Window {
                         self.resAllocated.forEach((val: number[], key: string) => {
                             convMap[key] = val;
                         });
-                        //emit end collab call
+                        // emit end collab call
                         // Pass map of allocated resources and list of resource names to map allocated 
                         // quantities to the name of the corresponding resource
-                        //console.log(self.involvedHeroes)
                         var involvedHeroKinds = new Array<HeroKind>()
                         for(let hk of self.involvedHeroes){
                             involvedHeroKinds.push(hk)
                         }
                         self.gameinstance.sendEndCollab(convMap, self.resourceNames, involvedHeroKinds, self.eventID, self.eventToBeBlockedID)
                     }
-                    //self.gameinstance.collabDecisionSubmit(convMap, self.resourceNames, self.involvedHeroes);
-                    //
                 } else {
                     console.log("Allocated quantities do not match those specified");
                     self.acceptText.setText("Invalid")
@@ -574,14 +535,6 @@ export class CollabWindow extends Window {
     }
 
     private resetAccepts() {
-        // let smallTextStyle = {
-        //     color: '#d11313',
-        //     fontSize: collabTextHeight - 2
-        // }
-        // let numInvolved = this.involvedHeroes.length;
-        // let spacing = 3 * (numInvolved - 1); // 6 pixels spacing between each icon
-        // let currX = this.width/2 - (numInvolved - 1) * 20 - spacing;
-        
         for (let i=0; i<this.involvedHeroes.length; i++) {
             let heroKind = this.involvedHeroes[i];
             if (heroKind != this.ownHeroKind) {
@@ -589,7 +542,6 @@ export class CollabWindow extends Window {
             } else {
                  this.heroAccepts.get(heroKind).setColor('#000000');
             }
-            //currX += 46
         }
         this.numAccepts = 0;
         this.hasAccepted = false;
@@ -598,6 +550,6 @@ export class CollabWindow extends Window {
     // TODO: COLLAB
     public disconnectListeners() {
         //MUST be called before deleting the window, or else it will bug when opened subsequently!
-        //turn off any socket.on(...) that u add here!
+        //turn off any socket.on(...) that you add here!
     }
 }

@@ -5,7 +5,6 @@ export class WindowManager {
         var window = new windowFunc(key, windowData, windowZone);
         parentScene.input.setDraggable(windowZone);
         windowZone.on('drag', function (pointer, dragX, dragY) {
-            // console.log('window drag event')
             this.x = dragX;
             this.y = dragY;
             window.refresh()

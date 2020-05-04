@@ -41,20 +41,8 @@ To interact with a merchant, left click the merchant icon on the appropriate til
     }
 
     public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
-        super(key, 
-            {
-                x: data.x, 
-                y: data.y,
-                width: data.w,
-                height: data.h
-                // x: data.id==-1 ? data.x - data.w/2 : data.x - storyCardWidths[data.id]/2, 
-                // y: data.id==-1 ? data.y - data.h/2 : data.y - storyCardHeights[data.id]/2,
-                // width: data.id==-1 ? data.w : storyCardWidths[data.id],
-                // height: data.id==-1 ? data.h : storyCardHeights[data.id]
-            }, 
-            windowZone
-        );
-        // this.key = key;
+        super(key, {x: data.x, y: data.y, width: data.w, height: data.h}, windowZone);
+
         this.id = data.id;
         this.x = data.x;
         this.y = data.y;

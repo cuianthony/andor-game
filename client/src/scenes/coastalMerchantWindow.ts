@@ -5,11 +5,10 @@ import {WindowManager} from "../utils/WindowManager";
 export class CoastalMerchantWindow extends Window {
     private gameController: game;
     private buyStrengthButton: Phaser.GameObjects.Text;
-    private gameScene
+
     public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
         super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
         this.gameController = data.controller;
-        this.gameScene = data.gameScene
     }
 
     protected initialize() { 
@@ -30,7 +29,6 @@ export class CoastalMerchantWindow extends Window {
             var window = WindowManager.get(this, "temp_merchant")
             window.disconnectListeners() // TODO: check if this call is actually necessary
             window.destroy();
-            // WindowManager.destroy(self, "temp_merchant"); // TODO: this seems wrong
         }, this)
     }
 

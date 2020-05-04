@@ -1,6 +1,5 @@
 import { Window } from "./window";
 import { game } from '../api/game';
-import { Farmer } from "../objects/farmer";
 import {WindowManager} from "../utils/WindowManager";
 import {TradeWindow} from './tradewindow';
 import { heroCardInfo } from '../constants';
@@ -121,31 +120,6 @@ export class HeroWindow extends Window {
         let diceText = this.add.text(20, yPos, this.dice, { color: 'red', fontSize: 12, wordWrap: { width: 350, useAdvancedWrap: true }})
         yPos += diceText.displayHeight + 20;
         bg.setDisplaySize(400, yPos);
-
-        // TODO DEBUG: game size debugging
-        var info = this.add.text(320, 20, `dragX: 0\ndragY: 0`);
-
-        // TODO: DRAGGING FUNCTION
-        // bg.setInteractive()
-        // this.input.setDraggable(bg)
-        // //This drag is pretty f'd up.
-        // bg.on('drag', function (pointer, dragX, dragY) {
-        //     console.log(this.scene.parent, this.scene.parent.x)
-        //     info.setText(`dragX: ${dragX}\ndragY: ${dragY}`)
-        //     // if (dragX < this.scene.parent.x - 10 && dragY < this.scene.parent.y - 10) {
-        //     //     this.scene.parent.x = this.scene.parent.x - 10;
-        //     //     this.scene.parent.y = this.scene.parent.y - 10;
-        //     //     this.scene.refresh()
-        //     // }
-        //     // else {
-        //     //     this.scene.parent.x = dragX;
-        //     //     this.scene.parent.y = dragY;
-        //     //     this.scene.refresh()
-        //     // }
-        //     this.scene.parent.x += dragX < 0 ? -5 : 5;
-        //     this.scene.parent.y += dragY < 0 ? -5 : 5;
-        //     this.scene.refresh()
-        // });
 
         var self = this
         if (this.clienthero == this.windowhero){

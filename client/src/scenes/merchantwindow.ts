@@ -87,7 +87,6 @@ export class MerchantWindow extends Window {
         var self = this
         this.strengthBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("strength", function(){
-                // WindowManager.destroy(self, self.key);
                 self.destroy();
             });
 
@@ -100,7 +99,6 @@ export class MerchantWindow extends Window {
         this.bowBuy.setInteractive({useHandCursor: true})
         this.bowBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("bow", function(){
-                // WindowManager.destroy(self, self.key);
                 self.destroy();
             });
 
@@ -114,7 +112,6 @@ export class MerchantWindow extends Window {
 
         this.helmBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("helm", function(){
-                // WindowManager.destroy(self, self.key);
                 self.destroy();
             });
 
@@ -128,7 +125,6 @@ export class MerchantWindow extends Window {
 
         this.wineBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("wine", function(){
-                // WindowManager.destroy(self, self.key);
                 self.destroy();
             });
 
@@ -142,7 +138,6 @@ export class MerchantWindow extends Window {
 
         this.falconBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("falcon", function(){
-                // WindowManager.destroy(self, self.key);
                 self.destroy();
             });
 
@@ -156,7 +151,6 @@ export class MerchantWindow extends Window {
 
         this.telescopeBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("telescope", function(){
-                // WindowManager.destroy(self, self.key);
                 self.destroy();
             });
 
@@ -170,27 +164,10 @@ export class MerchantWindow extends Window {
 
         this.shieldBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("shield", function(){
-                // WindowManager.destroy(self, self.key);
                 self.destroy();
             });
 
         }, this);
-
-        bg.setInteractive()
-        this.input.setDraggable(bg)
-        //This drag is pretty f'd up.
-        bg.on('drag', function (pointer, dragX, dragY) {
-            if (dragX < this.scene.parent.x - 10 && dragY < this.scene.parent.y - 10) {
-                this.scene.parent.x = this.scene.parent.x - 10;
-                this.scene.parent.y = this.scene.parent.y - 10;
-                this.scene.refresh()
-            }
-            else {
-                this.scene.parent.x = dragX;
-                this.scene.parent.y = dragY;
-                this.scene.refresh()
-            }
-        });
 
         var self = this
     }

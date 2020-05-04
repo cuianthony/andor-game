@@ -269,8 +269,8 @@ export default class GameScene extends Phaser.Scene {
     // Set keys for scrolling and zooming
     this.cameraKeys = this.input.keyboard.addKeys({
       up: 'w',
-      down: 'a',
-      left: 's',
+      down: 's',
+      left: 'a',
       right: 'd',
       zoomIn: 'q',
       zoomOut: 'e'
@@ -348,7 +348,6 @@ export default class GameScene extends Phaser.Scene {
             var window = WindowManager.get(this, tileWindowID)
             window.disconnectListeners()
             window.destroy()
-            // WindowManager.destroy(this, tileWindowID);
           } else {
             // width of tile window depends on number of items on it
             this.gameinstance.getTileItems(tile.id, function (tileItems) {
@@ -440,7 +439,6 @@ export default class GameScene extends Phaser.Scene {
     this.add.existing(monster);
     monster.on('pointerdown', function (pointer) {
       if (this.scene.isVisible(monster.name)) {
-        // WindowManager.destroy(this, monster.name);
         var window = WindowManager.get(this, monster.name)
         window.destroy();
       }
@@ -668,9 +666,6 @@ export default class GameScene extends Phaser.Scene {
     witch.setInteractive({useHandCursor: true}).setScale(0.75);
     witch.on('pointerdown', (pointer) => {
       if (self.scene.isVisible("witchwindow")) {
-        // var thescene = WindowManager.get(self, "witchwindow")
-        // thescene.disconnectListeners()
-        // WindowManager.destroy(this, "witchwindow");
         var window = WindowManager.get(this, "witchwindow")
         window.disconnectListeners() // TODO: check if this call is actually necessary
         window.destroy();
@@ -951,7 +946,6 @@ export default class GameScene extends Phaser.Scene {
      */
     this.gameinstance.receiveBattleInvite(function (monstertileid) {
       if (self.scene.isVisible('battleinv')) {
-        // WindowManager.destroy(self, 'battleinv');
         var window = WindowManager.get(this, "battleinv")
         window.disconnectListeners() // TODO: check if this call is actually necessary
         window.destroy();
@@ -968,9 +962,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.continueFightPrompt(function () {
-      // console.log('continuefightprompt xxxxxxxxxxxxxxxxxxxxxxxxxx')
       if (self.scene.isVisible('continuefightprompt')) {
-        // WindowManager.destroy(self, 'continuefightprompt');
         var window = WindowManager.get(this, "continuefightprompt")
         window.disconnectListeners() // TODO: check if this call is actually necessary
         window.destroy();
@@ -993,7 +985,6 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.forceFight(function (monstername) {
       var monster = self.monsterNameMap[monstername]
       if (self.scene.isVisible(monster.name)) {
-        // WindowManager.destroy(self, monster.name);
         var window = WindowManager.get(this, monster.name)
         window.disconnectListeners() // TODO: check if this call is actually necessary
         window.destroy();
@@ -1017,8 +1008,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.receiveDeathNotice(function () {
-      if (self.scene.isVisible('deathnotice')) {
-        // WindowManager.destroy(self, 'deathnotice');
+      if (self.scene.isVisible('deathnotice')) {``
         var window = WindowManager.get(this, "deathnotice")
         window.disconnectListeners() // TODO: check if this call is actually necessary
         window.destroy();
@@ -1206,15 +1196,14 @@ export default class GameScene extends Phaser.Scene {
 
   public addCoastalTraderToScene(){
     var self = this
-    //console.log("entered addCoastalTrader listener")
     let tempMerchant = self.add.image(self.tiles[9].x + 50, self.tiles[9].y - 5, "merchant-trade");
     tempMerchant.setInteractive({useHandCursor: true}).setScale(0.75);
     tempMerchant.on('pointerdown', function (pointer) {
       if (self.hero.tile.id == 9) {
         if (self.scene.isVisible('temp_merchant')) {
-          // WindowManager.destroy(self, 'temp_merchant');
-          var window = WindowManager.get(this, "temp_merchant") // TODO: move window destruction to separate method
+          // TODO: move window destruction to separate method
           // TODO: better yet, just combine the get and destroy and package everything into WindowManager method
+          var window = WindowManager.get(this, "temp_merchant") 
           window.disconnectListeners() // TODO: check if this call is actually necessary
           window.destroy();
         } else {
@@ -1223,7 +1212,6 @@ export default class GameScene extends Phaser.Scene {
             y: pointer.y,
             w: 150,
             h: 150, });
-          let window = WindowManager.get(self, 'temp_merchant')
         }
       }
     }, self);

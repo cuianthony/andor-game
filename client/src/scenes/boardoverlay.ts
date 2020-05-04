@@ -80,7 +80,7 @@ export default class BoardOverlay extends Phaser.Scene {
         this.parent = this.add.zone(this.x, this.y, this.width, this.height).setOrigin(0);
         this.cameras.main.setViewport(this.parent.x, this.parent.y, this.width, this.height);
         
-        // game size debugging
+        // TODO DEBUG: game size debugging
         var info = this.add.text(5, 75, `xpos: 0\nypos: 0`);
         this.input.on('pointerdown', (pointer) => {
             info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)
@@ -117,7 +117,6 @@ export default class BoardOverlay extends Phaser.Scene {
         this.chatButton.setInteractive({useHandCursor: true});
         this.chatButton.on('pointerdown', function (pointer) {
             if (this.scene.isVisible('chat')) {
-                // WindowManager.destroy(this, 'chat');
                 var window = WindowManager.get(this, "chat")
                 window.destroy();
             }
@@ -144,7 +143,6 @@ export default class BoardOverlay extends Phaser.Scene {
         // end turn button
         this.endTurnButton = this.add.image(900, 565, 'endturnicon').setScale(0.3)
         this.endTurnButton.on('pointerdown', function (pointer) {
-            // if (this.gameinstance.myTurn) {
             this.gameinstance.endTurn();
             // Todo: Tween will trigger whether or not it is your turn, not sure if we want to change that
             this.tweens.add({
@@ -154,8 +152,6 @@ export default class BoardOverlay extends Phaser.Scene {
                 ease: 'Power3',
                 yoyo: true
             });
-
-            // }
         }, this)
 
         // end day setup
@@ -215,8 +211,7 @@ export default class BoardOverlay extends Phaser.Scene {
             console.log("game log update:", update, "||")
             self.updateContent(panel, update);
         })
-        // x: 170,
-        //     y: 545,
+
         // Indicator of the hero you are playing
         let heroTexture = this.clientheroobject.getKind();
         this.add.image(10, 512, heroTexture).setScale(0.16).setOrigin(0);
@@ -304,7 +299,6 @@ export default class BoardOverlay extends Phaser.Scene {
                 if (this.scene.isVisible(cardID)) {
                     var heroWindow = WindowManager.get(this, cardID)
                     heroWindow.disconnectListeners() // TODO: check if this call is actually necessary
-                    // WindowManager.destroy(this, cardID);
                     heroWindow.destroy();
                 } else {
                     WindowManager.createWindow(this, cardID, HeroWindow,
