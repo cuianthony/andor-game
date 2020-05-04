@@ -116,7 +116,6 @@ export default class ReadyScreenScene extends Phaser.Scene {
                 if (this.ready && ready) {
                     if (this.scene.isVisible('chat')) {
                         var window = WindowManager.get(this, "chat")
-                        window.disconnectListeners() // TODO: check if this call is actually necessary
                         window.destroy();
                     }
                     this.gameController.enterGame()
@@ -141,8 +140,8 @@ export default class ReadyScreenScene extends Phaser.Scene {
                 WindowManager.createWindow(this, "chat", Chat, 
                     { 
                         controller: self.gameController, 
-                        x: 10, 
-                        y: 10, 
+                        x: 510, 
+                        y: 220, 
                         w: 350, 
                         h: 250
                     }

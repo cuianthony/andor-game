@@ -131,8 +131,8 @@ export default class BoardOverlay extends Phaser.Scene {
                 WindowManager.createWindow(this, "chat", Chat, 
                     { 
                         controller: self.gameinstance, 
-                        x: 10, 
-                        y: 10, 
+                        x: 510, 
+                        y: 245, 
                         w: 350, 
                         h: 250
                     }
