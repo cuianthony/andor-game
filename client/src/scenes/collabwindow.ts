@@ -220,7 +220,8 @@ export class CollabWindow extends Window {
                 // Reset overlay interactive
                 self.overlayRef.toggleInteractive(true);
                 
-                self.scene.remove(self.name);
+                // self.scene.remove(self.name);
+                self.destroy()
                 self.gameinstance.unsubscribeListeners()
             }
         })

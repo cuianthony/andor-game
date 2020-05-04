@@ -10,17 +10,12 @@ export class WindowManager {
             this.y = dragY;
             window.refresh()
         });
-        // windowZone.on('pointerdown', function (pointer) {
-        //     console.log('window zone pointer down')
-        // });
         console.log('window zone:', windowZone)
 
-        // console.log(self.scene, 'in window manageru')
-        console.log('WindowManager creating and adding window', key)
         parentScene.scene.add(key, window, true);
-        console.log('window', key, 'isVisible: ', parentScene.scene.isVisible(key));
+        // console.log('window', key, 'isVisible: ', parentScene.scene.isVisible(key));
         parentScene.scene.bringToTop(key);
-        console.log('active scenes: ', parentScene.game.scene.getScenes(true, false));
+        // console.log('active scenes: ', parentScene.game.scene.getScenes(true, false));
         return window;
     }
 

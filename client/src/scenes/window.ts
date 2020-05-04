@@ -1,10 +1,12 @@
 import * as Phaser from 'phaser';
 export abstract class Window extends Phaser.Scene {
-    private parent: Phaser.GameObjects.Zone
+    protected parent: Phaser.GameObjects.Zone
+    protected key: string;
     protected windowData;
 
     public constructor (key: string, windowData = {}, windowZone: Phaser.GameObjects.Zone){
         super(key);
+        this.key = key;
         this.parent = windowZone;
         this.windowData = windowData;
     } 
@@ -24,8 +26,6 @@ export abstract class Window extends Phaser.Scene {
     {
         try {
             this.scene.stop()
-            // this.scene.sendToBack()
-            //this.scene.remove()
         } catch(e) {
             console.log('something went wrong')
         }
@@ -38,4 +38,9 @@ export abstract class Window extends Phaser.Scene {
 
     protected abstract initialize(): void;
     
+    public destroy() : void {
+        this.parent.destroy()
+        this.scene.stop()
+        this.scene.remove()
+    }
 }

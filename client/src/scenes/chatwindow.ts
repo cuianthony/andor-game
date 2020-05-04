@@ -2,13 +2,11 @@ import { Window } from "./window";
 import { game } from "../api/game";
 
 export class Chat extends Window {
-    private text;
     private element;
     private gameinstance: game;
-    private chatwindow: any;
 
-    public constructor(key, data, windowData = { x: 10, y: 10, width: 350, height: 250 }, windowZone: Phaser.GameObjects.Zone) {
-        super(key, windowData, windowZone);
+    public constructor(key, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, {x: data.x, y: data.y, width: data.w, height: data.h}, windowZone);
         this.gameinstance = data.controller
 
         var self = this;
@@ -22,7 +20,6 @@ export class Chat extends Window {
             catch {
                 console.log('error in adding chat info to history')
             }
-
         })
     }
 
@@ -35,8 +32,6 @@ export class Chat extends Window {
     protected initialize() {
         console.log(this)
         var self = this;
-        this.text = "";
-        // this.cameras.main.setBackgroundColor(0xffffff) //remove duplicated window
 
         this.element = this.add.dom(200, 170).createFromCache('chatform');
 

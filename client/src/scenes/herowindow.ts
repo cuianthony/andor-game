@@ -6,7 +6,6 @@ import {TradeWindow} from './tradewindow';
 import { heroCardInfo } from '../constants';
 
 export class HeroWindow extends Window {
-
     public icon
     public gold: number
     public will: number
@@ -20,7 +19,6 @@ export class HeroWindow extends Window {
     private gameinstance: game;
     private clienthero;
     private windowhero;
-    private key
     private windowherotile
     private clientherotile
 

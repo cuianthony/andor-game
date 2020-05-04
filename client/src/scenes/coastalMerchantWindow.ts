@@ -26,7 +26,11 @@ export class CoastalMerchantWindow extends Window {
         self.buyStrengthButton.setInteractive();
         self.buyStrengthButton.on("pointerdown", function(pointer) {
             self.gameController.buyFromCoastalTrader();
-            WindowManager.destroy(self, "temp_merchant"); // TODO: this seems wrong
+            
+            var window = WindowManager.get(this, "temp_merchant")
+            window.disconnectListeners() // TODO: check if this call is actually necessary
+            window.destroy();
+            // WindowManager.destroy(self, "temp_merchant"); // TODO: this seems wrong
         }, this)
     }
 

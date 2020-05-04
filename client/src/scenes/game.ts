@@ -16,7 +16,7 @@ import {
   collabTextHeight, collabColWidth, collabRowHeight,
   collabFooterHeight, collabHeaderHeight,
   wellTile1, wellTile2, wellTile3, wellTile4,
-  mOffset, enumPositionOfNarrator
+  mOffset, enumPositionOfNarrator, storyCardWidths, storyCardHeights
 } from '../constants'
 
 export default class GameScene extends Phaser.Scene {
@@ -345,9 +345,10 @@ export default class GameScene extends Phaser.Scene {
         if (this.shiftKey.isDown) {
           const tileWindowID = `tileWindow${tile.getID()}`;
           if (this.scene.isVisible(tileWindowID)) {
-            var thescene = WindowManager.get(this, tileWindowID)
-            thescene.disconnectListeners()
-            WindowManager.destroy(this, tileWindowID);
+            var window = WindowManager.get(this, tileWindowID)
+            window.disconnectListeners()
+            window.destroy()
+            // WindowManager.destroy(this, tileWindowID);
           } else {
             // width of tile window depends on number of items on it
             this.gameinstance.getTileItems(tile.id, function (tileItems) {
@@ -429,58 +430,6 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  /*private addMerchant(tileID: number) {
-    const merchtile_18: Tile = this.tiles[18];
-    const merchtile_57: Tile = this.tiles[57];
-    const merchtile_71: Tile = this.tiles[71];
-
-    var self = this;
-
-    merchtile_18.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == merchtile_18.id) {
-
-        if (this.scene.isVisible('merchant1')) {
-          WindowManager.destroy(self, 'merchant1');
-        } else {
-          WindowManager.create(self, 'merchant1', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant1')
-
-        }
-
-      }
-
-    }, this);
-
-    merchtile_57.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == merchtile_18.id) {
-
-        if (this.scene.isVisible('merchant2')) {
-          WindowManager.destroy(self, 'merchant2');
-        } else {
-          WindowManager.create(self, 'merchant2', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant2')
-        }
-
-      }
-
-    }, this);
-
-    merchtile_71.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == merchtile_18.id) {
-
-        if (this.scene.isVisible('merchant3')) {
-          WindowManager.destroy(self, 'merchant3');
-        } else {
-          WindowManager.create(self, 'merchant3', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant3')
-        }
-
-      }
-
-    }, this);
-
-  }*/
-
   private addMonster(monsterTile: number, type: string, id: string) {
     const tile: Tile = this.tiles[monsterTile];
 
@@ -491,7 +440,9 @@ export default class GameScene extends Phaser.Scene {
     this.add.existing(monster);
     monster.on('pointerdown', function (pointer) {
       if (this.scene.isVisible(monster.name)) {
-        WindowManager.destroy(this, monster.name);
+        // WindowManager.destroy(this, monster.name);
+        var window = WindowManager.get(this, monster.name)
+        window.destroy();
       }
       else {
         var princetile = -69
@@ -561,22 +512,18 @@ export default class GameScene extends Phaser.Scene {
       y * scaleFactor + borderWidth, "merchant-trade", tile, this.gameinstance).setDisplaySize(35, 35);
 
     var self = this;
-
     newMerchant.on('pointerdown', function (pointer) {
       if (self.hero.tile.id == newMerchant.getTileID()) {
-
         if (this.scene.isVisible('merchant')) {
-          WindowManager.destroy(self, 'merchant');
+          var window = WindowManager.get(this, "merchant")
+          window.disconnectListeners() // TODO: check if this call is actually necessary
+          window.destroy();
         } else {
           WindowManager.createWindow(self, 'merchant', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant')
         }
-
       }
-
     }, this);
     this.add.existing(newMerchant);
-
   }
 
   // Add the narrator pawn to the game board
@@ -587,8 +534,8 @@ export default class GameScene extends Phaser.Scene {
       // Trigger start of game instructions/story
       if (pos == -1) {
         WindowManager.createWindow(self, `story`, StoryWindow, {
-          x: reducedWidth / 2,
-          y: reducedHeight / 2,
+          x: reducedWidth / 2 - 300,
+          y: reducedHeight / 2 - 250,
           w: 600,
           h: 500,
           id: -1,
@@ -666,15 +613,29 @@ export default class GameScene extends Phaser.Scene {
     this.narrator.setRunestonePos(runestonePos);
   }
 
+  private createStoryWindow(storyID: number) {
+    WindowManager.createWindow(this, `story${storyID}`, StoryWindow, {
+      x: reducedWidth / 2 - storyCardWidths[storyID] / 2,
+      y: reducedHeight / 2 - storyCardHeights[storyID] / 2,
+      w: storyCardWidths[storyID],
+      h: storyCardHeights[storyID],
+      id: storyID
+    });
+  }
+
   private narratorRunestones(stoneLocs: number[]) {
     console.log("client narratorRunestones", stoneLocs)
     // Display StoryWindows
-    WindowManager.createWindow(this, `story6`, StoryWindow, {
-      x: reducedWidth / 2,
-      y: reducedHeight / 2,
-      id: 6,
-      locs: stoneLocs
-    })
+    // let id = 6;
+    // WindowManager.createWindow(this, `story6`, StoryWindow, {
+    //   x: reducedWidth / 2 - storyCardWidths[id],
+    //   y: reducedHeight / 2 - storyCardHeights[id],
+    //   w: storyCardWidths[id],
+    //   h: storyCardHeights[id],
+    //   id: id,
+    //   locs: stoneLocs
+    // })
+    this.createStoryWindow(6)
   }
 
   // Note that adding monsters is handled in setupListeners
@@ -684,11 +645,15 @@ export default class GameScene extends Phaser.Scene {
     this.addFarmer(2, 28);
     this.addPrince();
     
-    WindowManager.createWindow(this, `story3`, StoryWindow, {
-      x: reducedWidth / 2,
-      y: reducedHeight / 2,
-      id: 3
-    })
+    this.createStoryWindow(3);
+    // let id = 3;
+    // WindowManager.createWindow(this, `story3`, StoryWindow, {
+    //   x: reducedWidth / 2 - storyCardWidths[id],
+    //   y: reducedHeight / 2 - storyCardHeights[id],
+    //   w: storyCardWidths[id],
+    //   h: storyCardHeights[id],
+    //   id: id
+    // });
   }
 
   private addPrince(tileID: number = 72) {
@@ -703,9 +668,12 @@ export default class GameScene extends Phaser.Scene {
     witch.setInteractive({useHandCursor: true}).setScale(0.75);
     witch.on('pointerdown', (pointer) => {
       if (self.scene.isVisible("witchwindow")) {
-        var thescene = WindowManager.get(self, "witchwindow")
-        thescene.disconnectListeners()
-        WindowManager.destroy(this, "witchwindow");
+        // var thescene = WindowManager.get(self, "witchwindow")
+        // thescene.disconnectListeners()
+        // WindowManager.destroy(this, "witchwindow");
+        var window = WindowManager.get(this, "witchwindow")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       } else {
         WindowManager.createWindow(self, `witchwindow`, WitchWindow, {
           controller: self.gameinstance,
@@ -721,30 +689,33 @@ export default class GameScene extends Phaser.Scene {
   private narratorG() {
     // Remove prince
     this.prince.destroy();
-    WindowManager.createWindow(this, `story7`, StoryWindow, {
-      x: reducedWidth / 2,
-      y: reducedHeight / 2,
-      id: 7
-    })
+    // WindowManager.createWindow(this, `story7`, StoryWindow, {
+    //   x: reducedWidth / 2,
+    //   y: reducedHeight / 2,
+    //   id: 7
+    // })
+    this.createStoryWindow(7);
   }
 
   private narratorN(win: boolean) {
     // console.log("At narrator NNNNN. client game narratorN: ", win)
     var self = this;
     if (win) {
-      console.log("kokoniiruyo")
-      WindowManager.createWindow(self, `story9`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 9
-      })
+      // console.log("kokoniiruyo")
+      // WindowManager.createWindow(self, `story9`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 9
+      // })
+      this.createStoryWindow(9);
     }
     else {
-      WindowManager.createWindow(self, `story10`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 10
-      })
+      // WindowManager.createWindow(self, `story10`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 10
+      // })
+      this.createStoryWindow(10);
     }
     self.scene.pause();
     self.overlay.toggleInteractive(false);
@@ -955,11 +926,12 @@ export default class GameScene extends Phaser.Scene {
     // Reveal the witch
     this.gameinstance.revealWitch(tileID => {
       // Witch story
-      WindowManager.createWindow(self, `story8`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 8
-      })
+      // WindowManager.createWindow(self, `story8`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 8
+      // })
+      this.createStoryWindow(8);
       self.addWitch(tileID);
     })
 
@@ -979,7 +951,10 @@ export default class GameScene extends Phaser.Scene {
      */
     this.gameinstance.receiveBattleInvite(function (monstertileid) {
       if (self.scene.isVisible('battleinv')) {
-        WindowManager.destroy(self, 'battleinv');
+        // WindowManager.destroy(self, 'battleinv');
+        var window = WindowManager.get(this, "battleinv")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
       WindowManager.createWindow(self, 'battleinv', BattleInvWindow,
         {
@@ -993,9 +968,12 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.continueFightPrompt(function () {
-      console.log('continuefightprompt xxxxxxxxxxxxxxxxxxxxxxxxxx')
+      // console.log('continuefightprompt xxxxxxxxxxxxxxxxxxxxxxxxxx')
       if (self.scene.isVisible('continuefightprompt')) {
-        WindowManager.destroy(self, 'continuefightprompt');
+        // WindowManager.destroy(self, 'continuefightprompt');
+        var window = WindowManager.get(this, "continuefightprompt")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
       WindowManager.createWindow(self, 'continuefightprompt', ContinueFightWindow,
         {
@@ -1015,7 +993,10 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.forceFight(function (monstername) {
       var monster = self.monsterNameMap[monstername]
       if (self.scene.isVisible(monster.name)) {
-        WindowManager.destroy(self, monster.name);
+        // WindowManager.destroy(self, monster.name);
+        var window = WindowManager.get(this, monster.name)
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
       else {
         var princetile = -69
@@ -1037,7 +1018,10 @@ export default class GameScene extends Phaser.Scene {
 
     this.gameinstance.receiveDeathNotice(function () {
       if (self.scene.isVisible('deathnotice')) {
-        WindowManager.destroy(self, 'deathnotice');
+        // WindowManager.destroy(self, 'deathnotice');
+        var window = WindowManager.get(this, "deathnotice")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
       WindowManager.createWindow(self, 'deathnotice', DeathWindow, { controller: self.gameinstance });
     })
@@ -1083,11 +1067,12 @@ export default class GameScene extends Phaser.Scene {
 
     // Listen for end of game state
     this.gameinstance.receiveEndOfGame(function () {
-      WindowManager.createWindow(self, `story10`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 10
-      })
+      // WindowManager.createWindow(self, `story10`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 10
+      // })
+      self.createStoryWindow(10);
       self.scene.pause();
       self.overlay.toggleInteractive(false);
     });
@@ -1125,14 +1110,15 @@ export default class GameScene extends Phaser.Scene {
       tempMerchant.on('pointerdown', function (pointer) {
         if (self.hero.tile.id == 9) {
           if (self.scene.isVisible('temp_merchant')) {
-            WindowManager.destroy(self, 'temp_merchant');
+            var window = WindowManager.get(this, "temp_merchant")
+            window.disconnectListeners() // TODO: check if this call is actually necessary
+            window.destroy();
           } else {
             WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
               x: pointer.x + 20,
               y: pointer.y,
               w: 150,
               h: 150, });
-            let window = WindowManager.get(self, 'temp_merchant')
           }
         }
       }, self);
@@ -1226,7 +1212,11 @@ export default class GameScene extends Phaser.Scene {
     tempMerchant.on('pointerdown', function (pointer) {
       if (self.hero.tile.id == 9) {
         if (self.scene.isVisible('temp_merchant')) {
-          WindowManager.destroy(self, 'temp_merchant');
+          // WindowManager.destroy(self, 'temp_merchant');
+          var window = WindowManager.get(this, "temp_merchant") // TODO: move window destruction to separate method
+          // TODO: better yet, just combine the get and destroy and package everything into WindowManager method
+          window.disconnectListeners() // TODO: check if this call is actually necessary
+          window.destroy();
         } else {
           WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
             x: pointer.x + 20,

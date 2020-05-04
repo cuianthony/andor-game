@@ -1,5 +1,6 @@
 import { Chat } from './chatwindow';
 import { HeroWindow } from './herowindow';
+import { Window } from './window'
 import { WindowManager } from "../utils/WindowManager";
 import { game } from '../api/game';
 import { Tile } from '../objects/tile';
@@ -116,7 +117,9 @@ export default class BoardOverlay extends Phaser.Scene {
         this.chatButton.setInteractive({useHandCursor: true});
         this.chatButton.on('pointerdown', function (pointer) {
             if (this.scene.isVisible('chat')) {
-                WindowManager.destroy(this, 'chat');
+                // WindowManager.destroy(this, 'chat');
+                var window = WindowManager.get(this, "chat")
+                window.destroy();
             }
             else {
                 this.tweens.add({
@@ -126,7 +129,15 @@ export default class BoardOverlay extends Phaser.Scene {
                     ease: 'Power3',
                     yoyo: true
                 });
-                WindowManager.createWindow(this, 'chat', Chat, { controller: self.gameinstance });
+                WindowManager.createWindow(this, "chat", Chat, 
+                    { 
+                        controller: self.gameinstance, 
+                        x: 10, 
+                        y: 10, 
+                        w: 350, 
+                        h: 250
+                    }
+                )
             }
         }, this);
 
@@ -291,9 +302,10 @@ export default class BoardOverlay extends Phaser.Scene {
             this.gameinstance.getHeroAttributes(type, (herodata) => {
                 const cardID = `${type}Card`;
                 if (this.scene.isVisible(cardID)) {
-                    var thescene = WindowManager.get(this, cardID)
-                    thescene.disconnectListeners() // TODO: check if this call is actually necessary
-                    WindowManager.destroy(this, cardID);
+                    var heroWindow = WindowManager.get(this, cardID)
+                    heroWindow.disconnectListeners() // TODO: check if this call is actually necessary
+                    // WindowManager.destroy(this, cardID);
+                    heroWindow.destroy();
                 } else {
                     WindowManager.createWindow(this, cardID, HeroWindow,
                         {

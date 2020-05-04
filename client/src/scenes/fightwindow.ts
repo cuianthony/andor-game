@@ -83,7 +83,7 @@ export class Fight extends Window {
     windowZone: Phaser.GameObjects.Zone
   ) {
     super(key, windowData, windowZone);
-    this.windowname = key;
+    this.windowname = key; // TODO: just use key property inherited from window instead
     this.gameinstance = data.controller;
     this.monstertexture = data.monster.texture;
     this.monstername = data.monster.name;

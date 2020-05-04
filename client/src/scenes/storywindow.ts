@@ -1,10 +1,10 @@
 import { Window } from "./window";
 import { WindowManager } from "../utils/WindowManager"
 import { storyCardWidths, storyCardHeights, 
-        storyCardTexts, storyCardStyleText, storyCardStyleTitle } from '../constants'
+        storyCardTexts, storyCardStyleText, storyCardStyleTitle, reducedWidth, reducedHeight } from '../constants'
 
 export class StoryWindow extends Window {
-    private key;
+    // private key;
     private id;
     private okButton: Phaser.GameObjects.Image;
     private runestoneLocs;
@@ -43,19 +43,23 @@ To interact with a merchant, left click the merchant icon on the appropriate til
     public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
         super(key, 
             {
-                x: data.id==-1 ? data.x - data.w/2 : data.x - storyCardWidths[data.id]/2, 
-                y: data.id==-1 ? data.y - data.h/2 : data.y - storyCardHeights[data.id]/2,
-                width: data.id==-1 ? data.w : storyCardWidths[data.id],
-                height: data.id==-1 ? data.h : storyCardHeights[data.id]
+                x: data.x, 
+                y: data.y,
+                width: data.w,
+                height: data.h
+                // x: data.id==-1 ? data.x - data.w/2 : data.x - storyCardWidths[data.id]/2, 
+                // y: data.id==-1 ? data.y - data.h/2 : data.y - storyCardHeights[data.id]/2,
+                // width: data.id==-1 ? data.w : storyCardWidths[data.id],
+                // height: data.id==-1 ? data.h : storyCardHeights[data.id]
             }, 
             windowZone
         );
-        this.key = key;
+        // this.key = key;
         this.id = data.id;
-        this.x = data.id==-1 ? data.x - 300 : data.x - storyCardWidths[data.id]/2;
-        this.y = data.id==-1 ? data.y - 250 : data.y - storyCardHeights[data.id]/2;
-        this.width = data.id==-1 ? 600 : storyCardWidths[data.id];
-        this.height = data.id==-1 ? 500 : storyCardHeights[data.id];
+        this.x = data.x;
+        this.y = data.y;
+        this.width = data.w;
+        this.height = data.h;
         this.runestoneLocs = data.locs;
         if (data.gameController) {
             this.gameController = data.gameController;
@@ -69,7 +73,6 @@ To interact with a merchant, left click the merchant icon on the appropriate til
     }
 
     protected initialize() {
-        console.log('initialize story window')
         var self = this
         var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0);
         var storyText;
@@ -90,30 +93,48 @@ To interact with a merchant, left click the merchant icon on the appropriate til
         // Start of game story and instructions, IDs 0, 1 and 2
         let continueCards = [-1, 0, 1, 3, 4]
         if (continueCards.includes(this.id)) {
-            if (this.id == -1) {
-                this.okButton.on('pointerdown', function (pointer) {
-                    // start the next story window
-                    WindowManager.createWindow(self, `story0`, StoryWindow, {
-                        x: this.x + 300,
-                        y: this.y + 250,
-                        id: 0,
-                        gameController: this.gameController,
-                        firstNarrAdvance: this.firstNarrAdvance
-                    })
-                    this.scene.remove(this.key)
-                }, this);
-            } else {
-                this.okButton.on('pointerdown', function (pointer) {
-                    // start the next story window
-                    WindowManager.createWindow(self, `story${this.id+1}`, StoryWindow, {
-                        x: this.x + storyCardWidths[this.id]/2,
-                        y: this.y + storyCardHeights[this.id]/2,
-                        id: this.id+1,
-                        gameController: this.gameController,
-                        firstNarrAdvance: this.firstNarrAdvance
-                    })
-                    this.scene.remove(this.key)
-                }, this);}
+            this.okButton.on('pointerdown', function (pointer) {
+                // start the next story window
+                let nextID = this.id + 1;
+                WindowManager.createWindow(self, `story${nextID}`, StoryWindow, {
+                    x: reducedWidth / 2 - storyCardWidths[nextID] / 2,
+                    y: reducedHeight / 2 - storyCardHeights[nextID] / 2,
+                    w: storyCardWidths[nextID],
+                    h: storyCardHeights[nextID],
+                    id: nextID,
+                    gameController: this.gameController,
+                    firstNarrAdvance: this.firstNarrAdvance
+                })
+                // this.scene.remove(this.key)
+                this.destroy();
+            }, this);
+
+            // if (this.id == -1) {
+            //     this.okButton.on('pointerdown', function (pointer) {
+            //         // start the next story window
+            //         WindowManager.createWindow(self, `story0`, StoryWindow, {
+            //             x: this.x + 300,
+            //             y: this.y + 250,
+            //             w: storyCardWidths[storyID],
+            //             h: storyCardHeights[storyID],
+            //             id: 0,
+            //             gameController: this.gameController,
+            //             firstNarrAdvance: this.firstNarrAdvance
+            //         })
+            //         this.scene.remove(this.key)
+            //     }, this);
+            // } else {
+            //     this.okButton.on('pointerdown', function (pointer) {
+            //         // start the next story window
+            //         WindowManager.createWindow(self, `story${this.id+1}`, StoryWindow, {
+            //             x: this.x + storyCardWidths[this.id]/2,
+            //             y: this.y + storyCardHeights[this.id]/2,
+            //             id: this.id+1,
+            //             gameController: this.gameController,
+            //             firstNarrAdvance: this.firstNarrAdvance
+            //         })
+            //         this.scene.remove(this.key)
+            //     }, this);}
         } else if (this.id == 2) {
             // Legend A5: determine placement of the Rune Stones Legend
             if (this.firstNarrAdvance) {
@@ -122,11 +143,13 @@ To interact with a merchant, left click the merchant icon on the appropriate til
             this.okButton.on('pointerdown', function (pointer) {
                 this.scene.bringToTop('collab')
                 this.scene.wake('collab')
-                this.scene.remove(this.key)
+                // this.scene.remove(this.key)
+                this.destroy();
             }, this);
         } else {
             this.okButton.on('pointerdown', function (pointer) {
-                this.scene.remove(this.key)
+                // this.scene.remove(this.key)
+                this.destroy();
             }, this);
         }
 
