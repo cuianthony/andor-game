@@ -1,7 +1,5 @@
 import { Tile } from "./tile";
 import { game } from "../api/game";
-import { WindowManager, MerchantWindow } from "../scenes/windows";
-import { Hero } from "./hero";
 
 export class Merchant extends Phaser.GameObjects.Image {
     private tile: Tile;

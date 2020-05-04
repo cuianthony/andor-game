@@ -3,7 +3,6 @@ import { game } from '../api/game';
 import { WindowManager } from "../utils/WindowManager";
 import { CollabWindow } from './collabwindow';
 import { collabColWidth, collabHeaderHeight, collabRowHeight, collabFooterHeight, reducedWidth, reducedHeight } from "../constants";
-import { Hero } from "../objects/hero";
 
 export class BattleInvWindow extends Window {
 

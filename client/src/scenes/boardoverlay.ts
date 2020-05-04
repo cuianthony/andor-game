@@ -233,7 +233,7 @@ export default class BoardOverlay extends Phaser.Scene {
             // DEBUG TODO: remove this
             this.toggleInteractive(true);
             //
-            
+
             if (this.initialCollabDone) {
                 this.toggleInteractive(true);
             }
@@ -292,7 +292,7 @@ export default class BoardOverlay extends Phaser.Scene {
                 const cardID = `${type}Card`;
                 if (this.scene.isVisible(cardID)) {
                     var thescene = WindowManager.get(this, cardID)
-                    thescene.disconnectListeners()
+                    thescene.disconnectListeners() // TODO: check if this call is actually necessary
                     WindowManager.destroy(this, cardID);
                 } else {
                     WindowManager.create(this, cardID, HeroWindow,

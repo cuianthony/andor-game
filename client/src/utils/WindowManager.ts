@@ -1,14 +1,14 @@
-import { HeroWindow } from "../scenes/herowindow";
-import { Fight } from "../scenes/fightwindow"
 export class WindowManager extends Phaser.Scene {
-    public static create(self, key: string, obj, data={}) {
-        var win = new obj(key, data);
-        console.log(self.scene, 'in window manageru')
-        self.scene.add(key, win, true);
-        console.log(key)
-        return win;
+
+    public static create(parentScene: Phaser.Scene, key: string, windowFunc, windowData = {}) {
+        var window = new windowFunc(key, windowData);
+        // console.log(self.scene, 'in window manageru')
+        console.log('WindowManager creating and adding window', key)
+        parentScene.scene.add(key, window, true);
+        return window;
     }
 
+    // unused
     public static toggle(self, key: string) {
         if (self.scene.isVisible(key)) {
             self.scene.setVisible(false, key)

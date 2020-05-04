@@ -338,14 +338,13 @@ export default class GameScene extends Phaser.Scene {
 
     // click: for movement callback, ties pointerdown to move request
     // shift+click: tile items pickup interface
-    // ctrl+click: move the prince
+    // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
     var self = this
     this.tiles.map(function (tile) {
       tile.on('pointerdown', function (pointer) {
         if (this.shiftKey.isDown) {
           const tileWindowID = `tileWindow${tile.getID()}`;
           if (this.scene.isVisible(tileWindowID)) {
-            // console.log(this)
             var thescene = WindowManager.get(this, tileWindowID)
             thescene.disconnectListeners()
             WindowManager.destroy(this, tileWindowID);

@@ -42,6 +42,8 @@ export class MerchantWindow extends Window {
     
 }*/
 
+// TODO: clean up this whole fucking class
+
 import { Window } from "./window";
 import { game } from '../api/game';
 import { Farmer } from "../objects/farmer";
