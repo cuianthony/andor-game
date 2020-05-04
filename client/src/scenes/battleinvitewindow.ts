@@ -26,8 +26,8 @@ export class BattleInvWindow extends Window {
     private monstertileid;
     private overlayRef;
 
-    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 400, height: 250 }) {
-        super(key, windowData);
+    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 400, height: 250 }, windowZone: Phaser.GameObjects.Zone) {
+        super(key, windowData, windowZone);
         this.gameinstance = data.controller
         this.windowname = key
         this.herokind = data.hero.getKind()
@@ -166,7 +166,7 @@ export class BattleInvWindow extends Window {
                             ownHeroKind: self.hero.getKind(),
                             type: 'distribute'
                           }
-                          WindowManager.create(self.gamescene, windowname, CollabWindow, collabWindowData);
+                          WindowManager.createWindow(self.gamescene, windowname, CollabWindow, collabWindowData);
                     })
                     self.scene.remove(self.windowname)
                 })   

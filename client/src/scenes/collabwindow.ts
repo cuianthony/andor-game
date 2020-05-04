@@ -47,8 +47,8 @@ export class CollabWindow extends Window {
     private eventID
     private eventToBeBlockedID
     private desc
-    public constructor(key: string, data) {
-        super(key, {x: data.x, y: data.y, width: data.w, height: data.h});
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, {x: data.x, y: data.y, width: data.w, height: data.h}, windowZone);
 
         this.gameinstance = data.controller;
         this.isOwner = data.isOwner;
@@ -96,7 +96,7 @@ export class CollabWindow extends Window {
             console.log(this.resourceMaxes);
         }
 
-        var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0.5);
+        var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0);
         this.populateWindow();
 
         //This drag is pretty f'd up.

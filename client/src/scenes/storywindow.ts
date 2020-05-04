@@ -15,6 +15,8 @@ export class StoryWindow extends Window {
     private y;
     private width;
     private height;
+
+    // TODO: this is gross, change it
     private instructions = 
 `PLAYING INSTRUCTIONS:\n\n
 To move: left click on a tree\n
@@ -38,14 +40,15 @@ To interact with a merchant, left click the merchant icon on the appropriate til
         wordWrap: { width: 540, useAdvancedWrap: true }
     }
 
-    public constructor(key: string, data) {
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
         super(key, 
             {
-                x: data.id==-1 ? data.x - 300 : data.x - storyCardWidths[data.id]/2, 
-                y: data.id==-1 ? data.y - 250 : data.y - storyCardHeights[data.id]/2,
-                width: data.id==-1 ? 600 : storyCardWidths[data.id],
-                height: data.id==-1 ? 500 : storyCardHeights[data.id]
-            }
+                x: data.id==-1 ? data.x - data.w/2 : data.x - storyCardWidths[data.id]/2, 
+                y: data.id==-1 ? data.y - data.h/2 : data.y - storyCardHeights[data.id]/2,
+                width: data.id==-1 ? data.w : storyCardWidths[data.id],
+                height: data.id==-1 ? data.h : storyCardHeights[data.id]
+            }, 
+            windowZone
         );
         this.key = key;
         this.id = data.id;
@@ -66,8 +69,9 @@ To interact with a merchant, left click the merchant icon on the appropriate til
     }
 
     protected initialize() {
+        console.log('initialize story window')
         var self = this
-        var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0.5);
+        var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0);
         var storyText;
         if (this.id == -1) {
             storyText = this.add.text(10, 10, this.instructions, this.instrStyle);
@@ -89,7 +93,7 @@ To interact with a merchant, left click the merchant icon on the appropriate til
             if (this.id == -1) {
                 this.okButton.on('pointerdown', function (pointer) {
                     // start the next story window
-                    WindowManager.create(self, `story0`, StoryWindow, {
+                    WindowManager.createWindow(self, `story0`, StoryWindow, {
                         x: this.x + 300,
                         y: this.y + 250,
                         id: 0,
@@ -101,7 +105,7 @@ To interact with a merchant, left click the merchant icon on the appropriate til
             } else {
                 this.okButton.on('pointerdown', function (pointer) {
                     // start the next story window
-                    WindowManager.create(self, `story${this.id+1}`, StoryWindow, {
+                    WindowManager.createWindow(self, `story${this.id+1}`, StoryWindow, {
                         x: this.x + storyCardWidths[this.id]/2,
                         y: this.y + storyCardHeights[this.id]/2,
                         id: this.id+1,

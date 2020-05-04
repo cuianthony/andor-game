@@ -11,8 +11,8 @@ export class EventWindow extends Window {
     private w = 300;
     private h = 250;
 
-    public constructor(key: string, data) {
-        super(key, { x: data.x - 150, y: data.y - 125, width: 300, height: 250 });
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, { x: data.x - 150, y: data.y - 125, width: 300, height: 250 }, windowZone);
         this.key = key;
         this.id = data.id;
         this.x = data.x - this.w/2;

@@ -126,7 +126,7 @@ export default class BoardOverlay extends Phaser.Scene {
                     ease: 'Power3',
                     yoyo: true
                 });
-                WindowManager.create(this, 'chat', Chat, { controller: self.gameinstance });
+                WindowManager.createWindow(this, 'chat', Chat, { controller: self.gameinstance });
             }
         }, this);
 
@@ -295,7 +295,7 @@ export default class BoardOverlay extends Phaser.Scene {
                     thescene.disconnectListeners() // TODO: check if this call is actually necessary
                     WindowManager.destroy(this, cardID);
                 } else {
-                    WindowManager.create(this, cardID, HeroWindow,
+                    WindowManager.createWindow(this, cardID, HeroWindow,
                         {
                             controller: this.gameinstance,
                             icon: `${type}male`,
@@ -304,7 +304,9 @@ export default class BoardOverlay extends Phaser.Scene {
                             ...herodata,
                             clientherotile: this.clientheroobject.tile.id,
                             x: pointer.x,
-                            y: pointer.y + 20
+                            y: pointer.y + 20,
+                            w: 400,
+                            h: 400
                         }
                     );
                 }

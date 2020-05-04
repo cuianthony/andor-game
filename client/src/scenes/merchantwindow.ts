@@ -89,8 +89,8 @@ export class MerchantWindow extends Window {
     private wineBuy;
     private strengthBuy;
 
-    public constructor(key: string, data) {
-        super(key, { x: data.x, y: data.y, width: 400, height: 400 });
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, { x: data.x, y: data.y, width: 400, height: 400 }, windowZone);
         this.key = key
         this.icon = data.icon
         this.gameinstance = data.controller

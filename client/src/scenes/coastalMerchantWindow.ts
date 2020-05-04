@@ -6,8 +6,8 @@ export class CoastalMerchantWindow extends Window {
     private gameController: game;
     private buyStrengthButton: Phaser.GameObjects.Text;
     private gameScene
-    public constructor(key: string, data) {
-        super(key, { x: data.x, y: data.y, width: data.w, height: data.h });
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
         this.gameController = data.controller;
         this.gameScene = data.gameScene
     }

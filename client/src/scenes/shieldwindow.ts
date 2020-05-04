@@ -7,8 +7,8 @@ export class ShieldWindow extends Window {
     private hero;
     private damaged:boolean
 
-    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 400, height: 250 }) {
-        super(key, windowData);
+    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 400, height: 250 }, windowZone: Phaser.GameObjects.Zone) {
+        super(key, windowData, windowZone);
         this.gameinstance = data.controller
         this.windowname = key
         this.potentialdamage = data.potentialdamage

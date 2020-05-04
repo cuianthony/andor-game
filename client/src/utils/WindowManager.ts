@@ -1,10 +1,26 @@
-export class WindowManager extends Phaser.Scene {
+export class WindowManager {
 
-    public static create(parentScene: Phaser.Scene, key: string, windowFunc, windowData = {}) {
-        var window = new windowFunc(key, windowData);
+    public static createWindow(parentScene: Phaser.Scene, key: string, windowFunc, windowData) {
+        var windowZone = parentScene.add.zone(windowData.x, windowData.y, windowData.w, windowData.h).setInteractive().setOrigin(0);
+        var window = new windowFunc(key, windowData, windowZone);
+        parentScene.input.setDraggable(windowZone);
+        windowZone.on('drag', function (pointer, dragX, dragY) {
+            // console.log('window drag event')
+            this.x = dragX;
+            this.y = dragY;
+            window.refresh()
+        });
+        // windowZone.on('pointerdown', function (pointer) {
+        //     console.log('window zone pointer down')
+        // });
+        console.log('window zone:', windowZone)
+
         // console.log(self.scene, 'in window manageru')
         console.log('WindowManager creating and adding window', key)
         parentScene.scene.add(key, window, true);
+        console.log('window', key, 'isVisible: ', parentScene.scene.isVisible(key));
+        parentScene.scene.bringToTop(key);
+        console.log('active scenes: ', parentScene.game.scene.getScenes(true, false));
         return window;
     }
 

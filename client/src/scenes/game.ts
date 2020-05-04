@@ -215,7 +215,7 @@ export default class GameScene extends Phaser.Scene {
       this.gameStartHeroPosition = data.startGamePos;
 
       // DEBUG TODO: uncomment addNarrator
-      // this.addNarrator(data.runestoneCardPos);
+      this.addNarrator(data.runestoneCardPos);
       //
 
       // Listen for all updates triggered by narrator advancing
@@ -353,7 +353,7 @@ export default class GameScene extends Phaser.Scene {
             this.gameinstance.getTileItems(tile.id, function (tileItems) {
               let items = tileItems;
               // let itemsSize = Object.keys(items).length;
-              WindowManager.create(self, tileWindowID, TileWindow,
+              WindowManager.createWindow(self, tileWindowID, TileWindow,
                 {
                   controller: self.gameinstance,
                   x: pointer.x + 20,
@@ -501,7 +501,7 @@ export default class GameScene extends Phaser.Scene {
         catch {
           princetile = -69
         }
-        WindowManager.create(this, monster.name, Fight, {
+        WindowManager.createWindow(this, monster.name, Fight, {
           controller: this.gameinstance,
           hero: this.hero, monster: monster, heroes: this.heroes,
           overlayRef: this.overlay,
@@ -568,7 +568,7 @@ export default class GameScene extends Phaser.Scene {
         if (this.scene.isVisible('merchant')) {
           WindowManager.destroy(self, 'merchant');
         } else {
-          WindowManager.create(self, 'merchant', MerchantWindow, { controller: self.gameinstance });
+          WindowManager.createWindow(self, 'merchant', MerchantWindow, { controller: self.gameinstance });
           let window = WindowManager.get(self, 'merchant')
         }
 
@@ -586,9 +586,11 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.getNarratorPosition(function (pos: number) {
       // Trigger start of game instructions/story
       if (pos == -1) {
-        WindowManager.create(self, `story`, StoryWindow, {
+        WindowManager.createWindow(self, `story`, StoryWindow, {
           x: reducedWidth / 2,
           y: reducedHeight / 2,
+          w: 600,
+          h: 500,
           id: -1,
           gameController: self.gameinstance,
           firstNarrAdvance: (self.gameStartHeroPosition == self.heroes.length)
@@ -667,7 +669,7 @@ export default class GameScene extends Phaser.Scene {
   private narratorRunestones(stoneLocs: number[]) {
     console.log("client narratorRunestones", stoneLocs)
     // Display StoryWindows
-    WindowManager.create(this, `story6`, StoryWindow, {
+    WindowManager.createWindow(this, `story6`, StoryWindow, {
       x: reducedWidth / 2,
       y: reducedHeight / 2,
       id: 6,
@@ -682,7 +684,7 @@ export default class GameScene extends Phaser.Scene {
     this.addFarmer(2, 28);
     this.addPrince();
     
-    WindowManager.create(this, `story3`, StoryWindow, {
+    WindowManager.createWindow(this, `story3`, StoryWindow, {
       x: reducedWidth / 2,
       y: reducedHeight / 2,
       id: 3
@@ -705,7 +707,7 @@ export default class GameScene extends Phaser.Scene {
         thescene.disconnectListeners()
         WindowManager.destroy(this, "witchwindow");
       } else {
-        WindowManager.create(self, `witchwindow`, WitchWindow, {
+        WindowManager.createWindow(self, `witchwindow`, WitchWindow, {
           controller: self.gameinstance,
           x: pointer.x + 20,
           y: pointer.y,
@@ -719,7 +721,7 @@ export default class GameScene extends Phaser.Scene {
   private narratorG() {
     // Remove prince
     this.prince.destroy();
-    WindowManager.create(this, `story7`, StoryWindow, {
+    WindowManager.createWindow(this, `story7`, StoryWindow, {
       x: reducedWidth / 2,
       y: reducedHeight / 2,
       id: 7
@@ -731,14 +733,14 @@ export default class GameScene extends Phaser.Scene {
     var self = this;
     if (win) {
       console.log("kokoniiruyo")
-      WindowManager.create(self, `story9`, StoryWindow, {
+      WindowManager.createWindow(self, `story9`, StoryWindow, {
         x: reducedWidth / 2,
         y: reducedHeight / 2,
         id: 9
       })
     }
     else {
-      WindowManager.create(self, `story10`, StoryWindow, {
+      WindowManager.createWindow(self, `story10`, StoryWindow, {
         x: reducedWidth / 2,
         y: reducedHeight / 2,
         id: 10
@@ -821,7 +823,7 @@ export default class GameScene extends Phaser.Scene {
       // }
     }
     console.log("created eventWindow")
-    WindowManager.create(this, `eventWindow${event.id}`, EventWindow, {
+    WindowManager.createWindow(this, `eventWindow${event.id}`, EventWindow, {
       x: reducedWidth / 2,
       y: reducedHeight / 2,
       id: event.id,
@@ -882,7 +884,7 @@ export default class GameScene extends Phaser.Scene {
       eventID: 0
     };
 
-    WindowManager.create(this, 'collab', CollabWindow, collabWindowData);
+    WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
     // Freeze main game while collab window is active
     this.scene.pause();
   }
@@ -953,7 +955,7 @@ export default class GameScene extends Phaser.Scene {
     // Reveal the witch
     this.gameinstance.revealWitch(tileID => {
       // Witch story
-      WindowManager.create(self, `story8`, StoryWindow, {
+      WindowManager.createWindow(self, `story8`, StoryWindow, {
         x: reducedWidth / 2,
         y: reducedHeight / 2,
         id: 8
@@ -979,7 +981,7 @@ export default class GameScene extends Phaser.Scene {
       if (self.scene.isVisible('battleinv')) {
         WindowManager.destroy(self, 'battleinv');
       }
-      WindowManager.create(self, 'battleinv', BattleInvWindow,
+      WindowManager.createWindow(self, 'battleinv', BattleInvWindow,
         {
           controller: self.gameinstance,
           hero: self.hero,
@@ -995,7 +997,7 @@ export default class GameScene extends Phaser.Scene {
       if (self.scene.isVisible('continuefightprompt')) {
         WindowManager.destroy(self, 'continuefightprompt');
       }
-      WindowManager.create(self, 'continuefightprompt', ContinueFightWindow,
+      WindowManager.createWindow(self, 'continuefightprompt', ContinueFightWindow,
         {
           controller: self.gameinstance,
           hero: self.hero,
@@ -1023,7 +1025,7 @@ export default class GameScene extends Phaser.Scene {
         catch {
           princetile = -69
         }
-        WindowManager.create(self, monster.name, Fight, {
+        WindowManager.createWindow(self, monster.name, Fight, {
           controller: self.gameinstance,
           hero: self.hero, monster: monster, heroes: self.heroes,
           overlayRef: self.overlay,
@@ -1037,7 +1039,7 @@ export default class GameScene extends Phaser.Scene {
       if (self.scene.isVisible('deathnotice')) {
         WindowManager.destroy(self, 'deathnotice');
       }
-      WindowManager.create(self, 'deathnotice', DeathWindow, { controller: self.gameinstance });
+      WindowManager.createWindow(self, 'deathnotice', DeathWindow, { controller: self.gameinstance });
     })
     // Listening for shields lost due to monster attack
     this.gameinstance.updateShields(function (shieldsRemaining: number) {
@@ -1051,7 +1053,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.receiveShieldPrompt(function (damaged_shield, potentialdamage) {
-      WindowManager.create(self, 'shieldprompt', ShieldWindow, { controller: self.gameinstance, hero: self.hero, potentialdamage: potentialdamage, damaged: damaged_shield });
+      WindowManager.createWindow(self, 'shieldprompt', ShieldWindow, { controller: self.gameinstance, hero: self.hero, potentialdamage: potentialdamage, damaged: damaged_shield });
     })
 
     // FARMERS
@@ -1076,12 +1078,12 @@ export default class GameScene extends Phaser.Scene {
 
     // TRADE
     this.gameinstance.receiveTradeInvite(function (host, invitee) {
-      WindowManager.create(self, 'tradewindow', TradeWindow, { gameinstance: self.gameinstance, hosthero: host, inviteehero: invitee, parentkey: 'None', clienthero: invitee })
+      WindowManager.createWindow(self, 'tradewindow', TradeWindow, { gameinstance: self.gameinstance, hosthero: host, inviteehero: invitee, parentkey: 'None', clienthero: invitee })
     })
 
     // Listen for end of game state
     this.gameinstance.receiveEndOfGame(function () {
-      WindowManager.create(self, `story10`, StoryWindow, {
+      WindowManager.createWindow(self, `story10`, StoryWindow, {
         x: reducedWidth / 2,
         y: reducedHeight / 2,
         id: 10
@@ -1125,7 +1127,7 @@ export default class GameScene extends Phaser.Scene {
           if (self.scene.isVisible('temp_merchant')) {
             WindowManager.destroy(self, 'temp_merchant');
           } else {
-            WindowManager.create(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
+            WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
               x: pointer.x + 20,
               y: pointer.y,
               w: 150,
@@ -1203,7 +1205,7 @@ export default class GameScene extends Phaser.Scene {
           eventToBeBlockedID: eventToBeBlockedID
         };
 
-        WindowManager.create(this, 'collab', CollabWindow, collabWindowData);
+        WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
         // Freeze main game while collab window is active
         this.scene.pause();
       }
@@ -1226,7 +1228,7 @@ export default class GameScene extends Phaser.Scene {
         if (self.scene.isVisible('temp_merchant')) {
           WindowManager.destroy(self, 'temp_merchant');
         } else {
-          WindowManager.create(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
+          WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
             x: pointer.x + 20,
             y: pointer.y,
             w: 150,

@@ -7,8 +7,8 @@ export class Chat extends Window {
     private gameinstance: game;
     private chatwindow: any;
 
-    public constructor(key, data, windowData = { x: 10, y: 10, width: 350, height: 250 }) {
-        super(key, windowData);
+    public constructor(key, data, windowData = { x: 10, y: 10, width: 350, height: 250 }, windowZone: Phaser.GameObjects.Zone) {
+        super(key, windowData, windowZone);
         this.gameinstance = data.controller
 
         var self = this;

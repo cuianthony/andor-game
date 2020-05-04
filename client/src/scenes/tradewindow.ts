@@ -29,8 +29,8 @@ export class TradeWindow extends Window {
     private yourconfirmtext_pointer
     private confirmed: boolean = false
 
-    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 624, height: 624 }) {
-        super(key, windowData);
+    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 624, height: 624 }, windowZone: Phaser.GameObjects.Zone) {
+        super(key, windowData, windowZone);
         this.gameinstance = data.gameinstance
         this.windowname = key
         this.parentkey = data.parentkey

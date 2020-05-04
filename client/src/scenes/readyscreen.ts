@@ -128,7 +128,7 @@ export default class ReadyScreenScene extends Phaser.Scene {
         }, this);
 
         // chat window
-        WindowManager.create(this, 'chat', Chat, { controller: self.gameController });
+        WindowManager.createWindow(this, 'chat', Chat, { controller: self.gameController });
         this.chatButton = this.add.image(775, 540, 'chaticon').setScale(0.3)
         this.chatButton.setInteractive({useHandCursor: true})
         this.chatButton.on('pointerdown', function (pointer) {
@@ -136,7 +136,7 @@ export default class ReadyScreenScene extends Phaser.Scene {
                 WindowManager.destroy(this, "chat")
             }
             else {
-                WindowManager.create(this, "chat", Chat, { controller: self.gameController })
+                WindowManager.createWindow(this, "chat", Chat, { controller: self.gameController })
             }
 
         }, this);
