@@ -17,7 +17,6 @@ export class HeroWindow extends Window {
     private strtext
     private farmtext
     private dice
-    // private name
     private gameinstance: game;
     private clienthero;
     private windowhero;
@@ -63,7 +62,7 @@ export class HeroWindow extends Window {
 
     protected initialize() { 
         var self = this
-        var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0.5)
+        var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0)
         this.add.sprite(20, 20, 'hero_border').setOrigin(0);
         this.add.sprite(24, 24, this.icon).setDisplaySize(72, 72).setOrigin(0);
 
@@ -119,22 +118,35 @@ export class HeroWindow extends Window {
             }
         })
 
-        this.add.text(20, 305, heroCardInfo[`${this.windowhero}Ability`], { color: '#4B2504', fontSize: 12 })
-        this.add.text(10, 385, this.dice, { color: 'red', fontSize: 12})
+        let infoText = this.add.text(20, 305, heroCardInfo[`${this.windowhero}Ability`], { color: '#4B2504', fontSize: 12 })
+        let yPos = infoText.y + infoText.displayHeight + 10;
+        let diceText = this.add.text(20, yPos, this.dice, { color: 'red', fontSize: 12, wordWrap: { width: 350, useAdvancedWrap: true }})
+        yPos += diceText.displayHeight + 20;
+        bg.setDisplaySize(400, yPos);
+
+        // TODO DEBUG: game size debugging
+        var info = this.add.text(320, 20, `dragX: 0\ndragY: 0`);
+
+        // TODO: DRAGGING FUNCTION
         bg.setInteractive()
         this.input.setDraggable(bg)
         //This drag is pretty f'd up.
         bg.on('drag', function (pointer, dragX, dragY) {
-            if (dragX < this.scene.parent.x - 10 && dragY < this.scene.parent.y - 10) {
-                this.scene.parent.x = this.scene.parent.x - 10;
-                this.scene.parent.y = this.scene.parent.y - 10;
-                this.scene.refresh()
-            }
-            else {
-                this.scene.parent.x = dragX;
-                this.scene.parent.y = dragY;
-                this.scene.refresh()
-            }
+            console.log(this.scene.parent, this.scene.parent.x)
+            info.setText(`dragX: ${dragX}\ndragY: ${dragY}`)
+            // if (dragX < this.scene.parent.x - 10 && dragY < this.scene.parent.y - 10) {
+            //     this.scene.parent.x = this.scene.parent.x - 10;
+            //     this.scene.parent.y = this.scene.parent.y - 10;
+            //     this.scene.refresh()
+            // }
+            // else {
+            //     this.scene.parent.x = dragX;
+            //     this.scene.parent.y = dragY;
+            //     this.scene.refresh()
+            // }
+            this.scene.parent.x += dragX < 0 ? -5 : 5;
+            this.scene.parent.y += dragY < 0 ? -5 : 5;
+            this.scene.refresh()
         });
 
         var self = this

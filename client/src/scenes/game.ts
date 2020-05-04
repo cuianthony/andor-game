@@ -1,12 +1,13 @@
 import { Farmer, Hero, HourTracker, Monster, HeroKind, BrokenWell, Well, Tile, Narrator, EventCard } from '../objects';
 import { game } from '../api';
-import {
-  WindowManager, StoryWindow, CollabWindow, MerchantWindow, DeathWindow, Fight, EventWindow,
-  BattleInvWindow, GameOverWindow, TradeWindow, ShieldWindow, WitchWindow, ContinueFightWindow, CoastalMerchantWindow
-} from "./windows";
+import { Prince } from '../objects/Prince';
+import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
-
+import {
+  WindowManager, StoryWindow, CollabWindow, MerchantWindow, DeathWindow, Fight, EventWindow, TileWindow,
+  BattleInvWindow, TradeWindow, ShieldWindow, WitchWindow, ContinueFightWindow, CoastalMerchantWindow
+} from "./windows";
 import {
   expandedWidth, expandedHeight, borderWidth,
   fullWidth, fullHeight, htX, htY, scaleFactor,
@@ -17,12 +18,6 @@ import {
   wellTile1, wellTile2, wellTile3, wellTile4,
   mOffset, enumPositionOfNarrator
 } from '../constants'
-//import { TradeHostWindow } from './tradehostwindow';
-
-import { TileWindow } from './tilewindow';
-import { Prince } from '../objects/Prince';
-import { Merchant } from '../objects/merchant';
-
 
 export default class GameScene extends Phaser.Scene {
   private heroes: Hero[];
@@ -62,6 +57,7 @@ export default class GameScene extends Phaser.Scene {
   private tempMerchant
   private shiftKey;
   private ctrlKey;
+
   constructor() {
     super({ key: 'Game' });
     this.heroes = Array<Hero>();
@@ -107,9 +103,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("eventcard", "../assets/fog-tokens/eventcard.png");
     this.load.image("Strength", "../assets/fog-tokens/strength.png");
 
-    //items
-    // this.load.image("Brew", "../assets/brew.png");
-    // this.load.image("Wineskin", "../assets/wineskin.png");
+    // Items
     this.load.image("menubackground", "../assets/menubackground.png");
     this.load.image("blue_runestone", "../assets/stones/runestone_b.PNG");
     this.load.image("green_runestone", "../assets/stones/runestone_g.PNG");
@@ -145,15 +139,16 @@ export default class GameScene extends Phaser.Scene {
     this.shiftKey = this.input.keyboard.addKey('shift');
     this.ctrlKey = this.input.keyboard.addKey('CTRL');
     this.sceneplugin = this.scene
-    // Centered gameboard with border
+
+    // Centred gameboard with border
     this.add.image(fullWidth / 2, fullHeight / 2, 'gameboard')
       .setDisplaySize(expandedWidth, expandedHeight);
 
     this.gameinstance.getGameData((data) => {
-      console.log("GAME DATA IS:::::::::::::\n", data)
+      // console.log("GAME DATA IS:::::::::::::\n", data)
 
       this.setRegions(data.regions);
-      console.log("FOGS ARE::****", data.fogs)
+      // console.log("FOGS ARE::****", data.fogs)
       this.addFog(data.fogs);
       this.addShieldsToRietburg(data.castle.numDefenseShields - data.castle.numDefenseShieldsUsed);
 
@@ -218,9 +213,12 @@ export default class GameScene extends Phaser.Scene {
       // Add narrator: this happens here because we want initial game instructions to be
       // added on top of the collab decision
       this.gameStartHeroPosition = data.startGamePos;
-      // console.log("gameStartHeroPos", this.gameStartHeroPosition);
-      this.addNarrator(data.runestoneCardPos);
-      // Listens for all updates triggered by narrator advancing
+
+      // DEBUG TODO: uncomment addNarrator
+      // this.addNarrator(data.runestoneCardPos);
+      //
+
+      // Listen for all updates triggered by narrator advancing
       this.receiveNarratorEvents();
     })
 
@@ -267,15 +265,15 @@ export default class GameScene extends Phaser.Scene {
         camera.scrollY = 3296 * scaleFactor + borderWidth;
         break;
     }
-    // Set keys for scrolling
+
     // Set keys for scrolling and zooming
     this.cameraKeys = this.input.keyboard.addKeys({
-      up: 'up',
-      down: 'down',
-      left: 'left',
-      right: 'right',
-      zoomIn: 'plus',
-      zoomOut: 'minus'
+      up: 'w',
+      down: 'a',
+      left: 's',
+      right: 'd',
+      zoomIn: 'q',
+      zoomOut: 'e'
     });
   }
 
@@ -1084,15 +1082,6 @@ export default class GameScene extends Phaser.Scene {
 
     // Listen for end of game state
     this.gameinstance.receiveEndOfGame(function () {
-      // let windowData = {
-      //   controller: self.gameinstance,
-      //   x: reducedWidth / 2 - 200,
-      //   y: reducedHeight / 2 - 100,
-      //   w: 400,
-      //   h: 200,
-      // }
-      // // Display end of game window
-      // WindowManager.create(self, 'gameover', GameOverWindow, windowData);
       WindowManager.create(self, `story10`, StoryWindow, {
         x: reducedWidth / 2,
         y: reducedHeight / 2,

@@ -74,52 +74,16 @@ export default class BoardOverlay extends Phaser.Scene {
         this.load.image("saveicon", "./assets/overlay-components/save.png")
     }
 
-    private addHeroCard(type, x) {
-        var self = this;
-        switch (type) {
-            case "archer":
-                this.heroButtons.set(type, this.add.image(x+55, 25, 'archericon').setScale(0.25));
-                break;
-            case "dwarf":
-                this.heroButtons.set(type, this.add.image(x+55, 25, 'dwarficon').setScale(0.25));
-                break;
-            case "mage":
-                this.heroButtons.set(type, this.add.image(x+55, 25, 'mageicon').setScale(0.25));
-                break;
-            case "warrior":
-                this.heroButtons.set(type, this.add.image(x+55, 25, 'warrioricon').setScale(0.25));
-                break;
-        }
-        this.heroButtons.get(type).on('pointerdown', (pointer) => {
-            this.gameinstance.getHeroAttributes(type, (herodata) => {
-                const cardID = `${type}Card`;
-                if (this.scene.isVisible(cardID)) {
-                    var thescene = WindowManager.get(this, cardID)
-                    thescene.disconnectListeners()
-                    WindowManager.destroy(this, cardID);
-                } else {
-                    WindowManager.create(this, cardID, HeroWindow,
-                        {
-                            controller: this.gameinstance,
-                            icon: `${type}male`,
-                            clienthero: this.hk,
-                            windowhero: type,
-                            ...herodata,
-                            clientherotile: this.clientheroobject.tile.id,
-                            x: pointer.x,
-                            y: pointer.y + 20
-                        }
-                    );
-                }
-            })
-
-        }, this);
-    }
-
     public create() {
         // Set the overlay as a top bar on the game
         this.parent = this.add.zone(this.x, this.y, this.width, this.height).setOrigin(0);
         this.cameras.main.setViewport(this.parent.x, this.parent.y, this.width, this.height);
+        
+        // game size debugging
+        var info = this.add.text(5, 75, `xpos: 0\nypos: 0`);
+        this.input.on('pointerdown', (pointer) => {
+            info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)
+        });
 
         var self = this;
 
@@ -266,6 +230,10 @@ export default class BoardOverlay extends Phaser.Scene {
                 }
             });
 
+            // DEBUG TODO: remove this
+            this.toggleInteractive(true);
+            //
+            
             if (this.initialCollabDone) {
                 this.toggleInteractive(true);
             }
@@ -301,6 +269,48 @@ export default class BoardOverlay extends Phaser.Scene {
     
         panel.layout();
         return panel;
+    }
+
+    private addHeroCard(type, x) {
+        var self = this;
+        switch (type) {
+            case "archer":
+                this.heroButtons.set(type, this.add.image(x+55, 25, 'archericon').setScale(0.25));
+                break;
+            case "dwarf":
+                this.heroButtons.set(type, this.add.image(x+55, 25, 'dwarficon').setScale(0.25));
+                break;
+            case "mage":
+                this.heroButtons.set(type, this.add.image(x+55, 25, 'mageicon').setScale(0.25));
+                break;
+            case "warrior":
+                this.heroButtons.set(type, this.add.image(x+55, 25, 'warrioricon').setScale(0.25));
+                break;
+        }
+        this.heroButtons.get(type).on('pointerdown', (pointer) => {
+            this.gameinstance.getHeroAttributes(type, (herodata) => {
+                const cardID = `${type}Card`;
+                if (this.scene.isVisible(cardID)) {
+                    var thescene = WindowManager.get(this, cardID)
+                    thescene.disconnectListeners()
+                    WindowManager.destroy(this, cardID);
+                } else {
+                    WindowManager.create(this, cardID, HeroWindow,
+                        {
+                            controller: this.gameinstance,
+                            icon: `${type}male`,
+                            clienthero: this.hk,
+                            windowhero: type,
+                            ...herodata,
+                            clientherotile: this.clientheroobject.tile.id,
+                            x: pointer.x,
+                            y: pointer.y + 20
+                        }
+                    );
+                }
+            })
+
+        }, this);
     }
 
     private endDaySetup() {

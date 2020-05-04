@@ -1,14 +1,14 @@
 import * as Phaser from 'phaser';
 import Scenes from './scenes/';
-import {fullWidth, fullHeight} from './constants'
+import {reducedWidth, reducedHeight} from './constants'
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Sample',
  
   type: Phaser.AUTO,
  
-  width: fullWidth,
-  height: fullHeight,
+  width: reducedWidth,
+  height: reducedHeight,
   dom:{
     createContainer: true
   },
@@ -25,7 +25,7 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
 
   scale : {
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH
+    // autoCenter: Phaser.Scale.CENTER_BOTH
   }
 };
  

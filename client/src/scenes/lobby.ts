@@ -53,16 +53,23 @@ export default class LobbyScene extends Phaser.Scene {
         // scenes (lobby, load, join, etc). This has the effect of keeping desired
         // behaviour of Phaser Game autoscaling, while keeping the actual game size
         // larger.
-        this.scale.setGameSize(reducedWidth, reducedHeight);
+        // this.scale.setGameSize(reducedWidth, reducedHeight);
 
         this.makeMenuButtons()
+
+        // TODO DEBUG: game size debugging
+        var info = this.add.text(5, 5, `xpos: 0\nypos: 0`);
+        this.input.on('pointerdown', (pointer) => {
+            info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)
+        });
 
         this.lobbyController.addNewPlayerToLobby()
     }
 
     private makeMenuButtons() {
         // load background
-        var bg = this.add.image(500, 300, 'main').setDisplaySize(1000, 600)
+        // var bg = this.add.image(500, 300, 'main').setDisplaySize(1000, 600)
+        var bg = this.add.image(0, 0, 'main').setOrigin(0).setDisplaySize(reducedWidth, reducedHeight)
 
         // menuText for menu text
         var menuText = {
