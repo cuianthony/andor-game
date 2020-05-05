@@ -2,7 +2,6 @@ import { Window } from "./window";
 import { storyCardTexts, storyCardStyleText } from '../constants'
 
 export class EventWindow extends Window {
-    private key;
     private id;
     private okButton: Phaser.GameObjects.Image;
     private x;
@@ -11,9 +10,8 @@ export class EventWindow extends Window {
     private w = 300;
     private h = 250;
 
-    public constructor(key: string, data) {
-        super(key, { x: data.x - 150, y: data.y - 125, width: 300, height: 250 });
-        this.key = key;
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, { x: data.x - 150, y: data.y - 125, width: 300, height: 250 }, windowZone);
         this.id = data.id;
         this.x = data.x - this.w/2;
         this.flavorText = data.flavorText;

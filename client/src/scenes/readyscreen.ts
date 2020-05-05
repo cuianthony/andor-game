@@ -115,7 +115,8 @@ export default class ReadyScreenScene extends Phaser.Scene {
             self.gameController.allPlayersReady((ready) => {
                 if (this.ready && ready) {
                     if (this.scene.isVisible('chat')) {
-                        WindowManager.destroy(this, 'chat');
+                        var window = WindowManager.get(this, "chat")
+                        window.destroy();
                     }
                     this.gameController.enterGame()
                     this.scene.start('Game', { controller: self.gameController, heroType: self.selection.name });
@@ -128,19 +129,25 @@ export default class ReadyScreenScene extends Phaser.Scene {
         }, this);
 
         // chat window
-        WindowManager.create(this, 'chat', Chat, { controller: self.gameController });
         this.chatButton = this.add.image(775, 540, 'chaticon').setScale(0.3)
         this.chatButton.setInteractive({useHandCursor: true})
         this.chatButton.on('pointerdown', function (pointer) {
             if (this.scene.isVisible('chat')) {
-                WindowManager.destroy(this, "chat")
+                var window = WindowManager.get(this, "chat")
+                window.destroy();
             }
             else {
-                WindowManager.create(this, "chat", Chat, { controller: self.gameController })
+                WindowManager.createWindow(this, "chat", Chat, 
+                    { 
+                        controller: self.gameController, 
+                        x: 510, 
+                        y: 220, 
+                        w: 350, 
+                        h: 250
+                    }
+                )
             }
-
         }, this);
-        WindowManager.destroy(this, "chat")
 
         this.gameController.updateHeroList((hero) => {
             console.log(self[hero])

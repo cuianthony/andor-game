@@ -1,12 +1,10 @@
 import { Window } from "./window";
 import { game } from '../api/game';
-import { Farmer } from "../objects/farmer";
 import {WindowManager} from "../utils/WindowManager";
 import {TradeWindow} from './tradewindow';
 import { heroCardInfo } from '../constants';
 
 export class HeroWindow extends Window {
-
     public icon
     public gold: number
     public will: number
@@ -20,7 +18,6 @@ export class HeroWindow extends Window {
     private gameinstance: game;
     private clienthero;
     private windowhero;
-    private key
     private windowherotile
     private clientherotile
 
@@ -43,8 +40,8 @@ export class HeroWindow extends Window {
     private smallItem2Drop;
     private smallItem3Drop;
 
-    public constructor(key: string, data) {
-        super(key, { x: data.x, y: data.y, width: 400, height: 400 });
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
         this.key = key
         this.icon = data.icon
         this.gameinstance = data.controller
@@ -123,31 +120,6 @@ export class HeroWindow extends Window {
         let diceText = this.add.text(20, yPos, this.dice, { color: 'red', fontSize: 12, wordWrap: { width: 350, useAdvancedWrap: true }})
         yPos += diceText.displayHeight + 20;
         bg.setDisplaySize(400, yPos);
-
-        // TODO DEBUG: game size debugging
-        var info = this.add.text(320, 20, `dragX: 0\ndragY: 0`);
-
-        // TODO: DRAGGING FUNCTION
-        bg.setInteractive()
-        this.input.setDraggable(bg)
-        //This drag is pretty f'd up.
-        bg.on('drag', function (pointer, dragX, dragY) {
-            console.log(this.scene.parent, this.scene.parent.x)
-            info.setText(`dragX: ${dragX}\ndragY: ${dragY}`)
-            // if (dragX < this.scene.parent.x - 10 && dragY < this.scene.parent.y - 10) {
-            //     this.scene.parent.x = this.scene.parent.x - 10;
-            //     this.scene.parent.y = this.scene.parent.y - 10;
-            //     this.scene.refresh()
-            // }
-            // else {
-            //     this.scene.parent.x = dragX;
-            //     this.scene.parent.y = dragY;
-            //     this.scene.refresh()
-            // }
-            this.scene.parent.x += dragX < 0 ? -5 : 5;
-            this.scene.parent.y += dragY < 0 ? -5 : 5;
-            this.scene.refresh()
-        });
 
         var self = this
         if (this.clienthero == this.windowhero){
@@ -267,7 +239,7 @@ export class HeroWindow extends Window {
             if (self.clienthero != self.windowhero && (self.windowherotile == self.clientherotile ) || self.clienthero != self.windowhero && dict['largeItem'] == 'falcon') {
                 self.add.text(320,20, 'TRADE',{color: "#4944A4"}).setInteractive({useHandCursor: true}).on('pointerdown', function(pointer) {
                     self.gameinstance.sendTradeInvite(self.clienthero, self.windowhero)
-                    WindowManager.create(self, 'tradewindow', TradeWindow, {gameinstance:self.gameinstance, hosthero:self.clienthero, inviteehero:self.windowhero, parentkey:self.key, clienthero:self.clienthero})
+                    WindowManager.createWindow(self, 'tradewindow', TradeWindow, {gameinstance:self.gameinstance, hosthero:self.clienthero, inviteehero:self.windowhero, parentkey:self.key, clienthero:self.clienthero})
                 }, self)
             }
         })

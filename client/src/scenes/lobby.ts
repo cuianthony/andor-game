@@ -57,7 +57,7 @@ export default class LobbyScene extends Phaser.Scene {
 
         this.makeMenuButtons()
 
-        // TODO DEBUG: game size debugging
+        // DEBUG TODO: game size debugging
         var info = this.add.text(5, 5, `xpos: 0\nypos: 0`);
         this.input.on('pointerdown', (pointer) => {
             info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)

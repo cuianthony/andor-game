@@ -42,7 +42,6 @@ export const wellTile4 = 55;
 // fog tile IDs
 export const fogs = [8, 11, 12, 13, 49, 16, 32, 48, 42, 44, 47, 46, 64, 56, 63];
 
-
 // narrator image's X-coord is a constant
 export const narratorXCoord = 9450 * scaleFactor + borderWidth
 
@@ -218,3 +217,6 @@ export const storyCardStyleTitle = {
     color: '#FFFFFF',
     backgroundColor: '#4B2504'
 }
+
+export const merchantWindowWidth = 400;
+export const merchantWindowHeight = 400;

@@ -79,10 +79,11 @@ export class Fight extends Window {
   public constructor(
     key,
     data,
-    windowData = { x: 10, y: 10, width: 500, height: 380 }
+    windowData = { x: 10, y: 10, width: 500, height: 380 }, 
+    windowZone: Phaser.GameObjects.Zone
   ) {
-    super(key, windowData);
-    this.windowname = key;
+    super(key, windowData, windowZone);
+    this.windowname = key; // TODO: just use key property inherited from window instead
     this.gameinstance = data.controller;
     this.monstertexture = data.monster.texture;
     this.monstername = data.monster.name;
@@ -844,7 +845,7 @@ export class Fight extends Window {
           type: "distribute",
         };
 
-        WindowManager.create(
+        WindowManager.createWindow(
           this,
           self.monstername + "collab",
           CollabWindow,
@@ -891,7 +892,7 @@ export class Fight extends Window {
           type: "distribute",
         };
 
-        WindowManager.create(
+        WindowManager.createWindow(
           this,
           self.monstername + "collab",
           CollabWindow,

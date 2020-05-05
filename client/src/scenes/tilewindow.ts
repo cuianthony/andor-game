@@ -19,8 +19,8 @@ export class TileWindow extends Window {
 
     private windowHeight;
 
-    public constructor(key: string, data) {
-        super(key, { x: data.x, y: data.y, width: data.w, height: data.h });
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
         this.gameController = data.controller;
         this.tileID = data.tileID;
         this.items = data.items;

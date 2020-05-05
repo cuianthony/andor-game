@@ -1,55 +1,5 @@
-/*import { Window } from "./window";
-import { game } from '../api/game';
-import { WindowManager } from "../utils/WindowManager";
-export class MerchantWindow extends Window {
-
-    private yes;
-    private no;
-    private key;
-    private gameinstance: game;
-
-    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 450, height: 150 }) {
-        super(key, windowData);
-        this.gameinstance = data.controller;
-        this.key = key;
-    }
-
-    protected initialize() {
-
-        var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0.5)
-        this.add.text(10, 50, 'So lookin\' to acquire some strength, eh?', { backgroundColor: 'fx00' })
-        this.yes = this.add.text(50, 120, 'Yes', { backgroundColor: 'fx00' })
-        this.no = this.add.text(100, 120, 'No', { backgroundColor: 'fx00'  })
-    
-        bg.setInteractive()
-        
-        this.yes.setInteractive()
-        this.no.setInteractive();
-
-        var self = this
-        this.yes.on('pointerdown', function (pointer) {
-            self.gameinstance.merchant(function(){
-                WindowManager.destroy(self, self.key);
-            });
-
-        }, this);
-
-        this.no.on('pointerdown', function (pointer) {
-            WindowManager.destroy(self, self.key);
-        }, this);
-    }
-
-    
-}*/
-
-// TODO: clean up this whole fucking class
-
 import { Window } from "./window";
 import { game } from '../api/game';
-import { Farmer } from "../objects/farmer";
-import {WindowManager} from "../utils/WindowManager";
-import {TradeWindow} from './tradewindow';
-import { heroCardInfo } from '../constants';
 
 export class MerchantWindow extends Window {
 
@@ -62,23 +12,7 @@ export class MerchantWindow extends Window {
     private willtext
     private strtext
     private farmtext
-    // private name
     private gameinstance: game;
-    private clienthero;
-    private windowhero;
-    private key
-    private windowherotile
-    private clientherotile
-
-    //items
-    private largeItem: Phaser.GameObjects.Image;
-    private helm: Phaser.GameObjects.Image;
-    private smallItem1: Phaser.GameObjects.Image;
-    private smallItem2: Phaser.GameObjects.Image;
-    private smallItem3: Phaser.GameObjects.Image;
-    private smallItem1key: string = "none";
-    private smallItem2key: string = "none";
-    private smallItem3key: string = "none";
 
     // buy buttons
     private bowBuy
@@ -89,20 +23,14 @@ export class MerchantWindow extends Window {
     private wineBuy;
     private strengthBuy;
 
-    public constructor(key: string, data) {
-        super(key, { x: data.x, y: data.y, width: 400, height: 400 });
-        this.key = key
+    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
+        super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
         this.icon = data.icon
         this.gameinstance = data.controller
         this.gold = data.gold
         this.will = data.will
         this.str = data.strength
         this.farmers = data.farmers
-        this.clienthero = data.clienthero
-        this.windowhero = data.windowhero
-        this.largeItem = data.largeItem
-        this.windowherotile = data.currtileid
-        this.clientherotile  = data.clientherotile
     }
 
     protected initialize() { 
@@ -135,7 +63,7 @@ export class MerchantWindow extends Window {
         var self = this
         this.strengthBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("strength", function(){
-                WindowManager.destroy(self, self.key);
+                self.destroy();
             });
 
         }, this);
@@ -147,7 +75,7 @@ export class MerchantWindow extends Window {
         this.bowBuy.setInteractive({useHandCursor: true})
         this.bowBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("bow", function(){
-                WindowManager.destroy(self, self.key);
+                self.destroy();
             });
 
         }, this);
@@ -160,7 +88,7 @@ export class MerchantWindow extends Window {
 
         this.helmBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("helm", function(){
-                WindowManager.destroy(self, self.key);
+                self.destroy();
             });
 
         }, this);
@@ -173,7 +101,7 @@ export class MerchantWindow extends Window {
 
         this.wineBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("wine", function(){
-                WindowManager.destroy(self, self.key);
+                self.destroy();
             });
 
         }, this);
@@ -186,7 +114,7 @@ export class MerchantWindow extends Window {
 
         this.falconBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("falcon", function(){
-                WindowManager.destroy(self, self.key);
+                self.destroy();
             });
 
         }, this);
@@ -199,7 +127,7 @@ export class MerchantWindow extends Window {
 
         this.telescopeBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("telescope", function(){
-                WindowManager.destroy(self, self.key);
+                self.destroy();
             });
 
         }, this);
@@ -212,40 +140,12 @@ export class MerchantWindow extends Window {
 
         this.shieldBuy.on('pointerdown', function (pointer) {
             self.gameinstance.merchant("shield", function(){
-                WindowManager.destroy(self, self.key);
+                self.destroy();
             });
 
         }, this);
 
-        bg.setInteractive()
-        this.input.setDraggable(bg)
-        //This drag is pretty f'd up.
-        bg.on('drag', function (pointer, dragX, dragY) {
-            if (dragX < this.scene.parent.x - 10 && dragY < this.scene.parent.y - 10) {
-                this.scene.parent.x = this.scene.parent.x - 10;
-                this.scene.parent.y = this.scene.parent.y - 10;
-                this.scene.refresh()
-            }
-            else {
-                this.scene.parent.x = dragX;
-                this.scene.parent.y = dragY;
-                this.scene.refresh()
-            }
-        });
-
         var self = this
-        /*if (this.clienthero == this.windowhero){
-            this.goldDrop.setInteractive()
-            this.farmerDrop.setInteractive()
-            this.largeItemDrop.setInteractive()
-            this.helmDrop.setInteractive()
-            this.smallItem1Drop.setInteractive()
-            this.smallItem2Drop.setInteractive()
-            this.smallItem3Drop.setInteractive()
-        }*/
-        
-      
-
     }
 
     public setGold(amt: number) {
@@ -280,10 +180,5 @@ export class MerchantWindow extends Window {
     public disconnectListeners() {
         //MUST be called before deleting the window, or else it will bug when opened subsequently!
         //turn off any socket.on(...) that u add here!
-        this.gameinstance.disconnectUpdateDropGold();
-        this.gameinstance.disconnectUpdatePickupGold();
-        this.gameinstance.disconnectUpdateDropItemHero();
-        this.gameinstance.disconnectUpdatePickupItemHero();
-        this.gameinstance.disconnectReceiveUseWineskin();
     }
 }

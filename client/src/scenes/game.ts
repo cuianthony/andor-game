@@ -16,7 +16,7 @@ import {
   collabTextHeight, collabColWidth, collabRowHeight,
   collabFooterHeight, collabHeaderHeight,
   wellTile1, wellTile2, wellTile3, wellTile4,
-  mOffset, enumPositionOfNarrator
+  mOffset, enumPositionOfNarrator, storyCardWidths, storyCardHeights, merchantWindowWidth, merchantWindowHeight
 } from '../constants'
 
 export default class GameScene extends Phaser.Scene {
@@ -215,7 +215,7 @@ export default class GameScene extends Phaser.Scene {
       this.gameStartHeroPosition = data.startGamePos;
 
       // DEBUG TODO: uncomment addNarrator
-      // this.addNarrator(data.runestoneCardPos);
+      this.addNarrator(data.runestoneCardPos);
       //
 
       // Listen for all updates triggered by narrator advancing
@@ -269,8 +269,8 @@ export default class GameScene extends Phaser.Scene {
     // Set keys for scrolling and zooming
     this.cameraKeys = this.input.keyboard.addKeys({
       up: 'w',
-      down: 'a',
-      left: 's',
+      down: 's',
+      left: 'a',
       right: 'd',
       zoomIn: 'q',
       zoomOut: 'e'
@@ -283,82 +283,36 @@ export default class GameScene extends Phaser.Scene {
     // var tilesData = require("../utils/xycoords").map;
     var treeTile = this.textures.get('tiles').getFrameNames()[12];
     for (let t of tilesData) {
-      // console.log(t, scaleFactor, borderWidth)
-      var tile = new Tile(t.id, this, t.xcoord * scaleFactor + borderWidth, t.ycoord * scaleFactor + borderWidth, treeTile, t.adjRegionsIds);
+      let xPos = t.xcoord * scaleFactor + borderWidth;
+      let yPos = t.ycoord * scaleFactor + borderWidth;
+      var tile = new Tile(t.id, this, xPos, yPos, treeTile, t.adjRegionsIds);
       this.tiles[t.id] = tile;
       tile.setInteractive({useHandCursor: true});
       this.add.existing(tile);
-
       
-        // coordinates taken from previous version, adding wells to allocated wells positions
-      switch (t.id) {
-        case 5:
-          this.addFunctionalWell(209, 2244, t.id as number, t.wellUsed);
-          break;
-        case 35:
-          if(t.hasWell){
-            this.addFunctionalWell(1353, 4873, t.id as number, t.wellUsed);
-          }
-          else{
-            this.addBrokenWell(1353, 4873, t.id as number);
-          }
-          break;
-        case 45:
-          if(t.hasWell){
-            this.addFunctionalWell(7073, 3333, t.id as number, t.wellUsed);
-          }
-          else{
-            this.addBrokenWell(7073, 3333, t.id as number);
-          }
-          break;
-        case 55:
-          this.addFunctionalWell(5962, 770, t.id as number, t.wellUsed);
-          break;
-        // this approach adds well on top of the trees
-        // this.addWell(t.x, t.y, t.id as number);
-      }
+      this.checkWell(t);
+      this.checkMerchant(t);
 
-      if (t.hasMerchant) {
-        switch (t.id) {
-          case 9:
-            this.addCoastalTraderToScene()
-            break;
-          case 18:
-            this.addMerchant(3060, 3680, t.id as number);
-            break;
-          case 57:
-            this.addMerchant(7708, 1340, t.id as number);
-            break;
-          case 71:
-            this.addMerchant(7426, 4320, t.id as number);
-            break;
-        }
-      }
-    }
-
-    // click: for movement callback, ties pointerdown to move request
-    // shift+click: tile items pickup interface
-    // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
-    var self = this
-    this.tiles.map(function (tile) {
+      // click: for movement callback, ties pointerdown to move request
+      // shift+click: tile items pickup interface
+      // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
       tile.on('pointerdown', function (pointer) {
         if (this.shiftKey.isDown) {
           const tileWindowID = `tileWindow${tile.getID()}`;
           if (this.scene.isVisible(tileWindowID)) {
-            var thescene = WindowManager.get(this, tileWindowID)
-            thescene.disconnectListeners()
-            WindowManager.destroy(this, tileWindowID);
+            var window = WindowManager.get(this, tileWindowID)
+            window.disconnectListeners()
+            window.destroy()
           } else {
             // width of tile window depends on number of items on it
             this.gameinstance.getTileItems(tile.id, function (tileItems) {
               let items = tileItems;
-              // let itemsSize = Object.keys(items).length;
-              WindowManager.create(self, tileWindowID, TileWindow,
+              WindowManager.createWindow(self, tileWindowID, TileWindow,
                 {
                   controller: self.gameinstance,
                   x: pointer.x + 20,
                   y: pointer.y + 20,
-                  w: 670, // based on total number of unique items that could populate
+                  w: 670, // default to total number of unique items that could populate
                   h: 60,
                   tileID: tile.getID(),
                   items: items
@@ -372,7 +326,9 @@ export default class GameScene extends Phaser.Scene {
           self.gameinstance.moveRequest(tile.id, updateMoveRequest)
         }
       }, this)
-    }, this)
+    }
+
+    var self = this
 
     this.gameinstance.updateMoveRequest(updateMoveRequest)
     this.gameinstance.updateMovePrinceRequest(updateMovePrinceRequest)
@@ -406,6 +362,53 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+  private checkWell(tile) {
+    // coordinates taken from previous version, adding wells to allocated wells positions
+    switch (tile.id) {
+      case 5:
+        this.addFunctionalWell(209, 2244, tile.id as number, tile.wellUsed);
+        break;
+      case 35:
+        if(tile.hasWell){
+          this.addFunctionalWell(1353, 4873, tile.id as number, tile.wellUsed);
+        }
+        else{
+          this.addBrokenWell(1353, 4873, tile.id as number);
+        }
+        break;
+      case 45:
+        if(tile.hasWell){
+          this.addFunctionalWell(7073, 3333, tile.id as number, tile.wellUsed);
+        }
+        else{
+          this.addBrokenWell(7073, 3333, tile.id as number);
+        }
+        break;
+      case 55:
+        this.addFunctionalWell(5962, 770, tile.id as number, tile.wellUsed);
+        break;
+    }
+  }
+
+  private checkMerchant(tile) {
+    if (tile.hasMerchant) {
+      switch (tile.id) {
+        case 9:
+          this.addCoastalTraderToScene()
+          break;
+        case 18:
+          this.addMerchant(3060, 3680, tile.id as number);
+          break;
+        case 57:
+          this.addMerchant(7708, 1340, tile.id as number);
+          break;
+        case 71:
+          this.addMerchant(7426, 4320, tile.id as number);
+          break;
+      }
+    }
+  }
+
   private addShieldsToRietburg(numShields) {
     var overlayoffsetsX = 10;
     var overlayoffsetsY = 20;
@@ -429,58 +432,6 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  /*private addMerchant(tileID: number) {
-    const merchtile_18: Tile = this.tiles[18];
-    const merchtile_57: Tile = this.tiles[57];
-    const merchtile_71: Tile = this.tiles[71];
-
-    var self = this;
-
-    merchtile_18.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == merchtile_18.id) {
-
-        if (this.scene.isVisible('merchant1')) {
-          WindowManager.destroy(self, 'merchant1');
-        } else {
-          WindowManager.create(self, 'merchant1', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant1')
-
-        }
-
-      }
-
-    }, this);
-
-    merchtile_57.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == merchtile_18.id) {
-
-        if (this.scene.isVisible('merchant2')) {
-          WindowManager.destroy(self, 'merchant2');
-        } else {
-          WindowManager.create(self, 'merchant2', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant2')
-        }
-
-      }
-
-    }, this);
-
-    merchtile_71.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == merchtile_18.id) {
-
-        if (this.scene.isVisible('merchant3')) {
-          WindowManager.destroy(self, 'merchant3');
-        } else {
-          WindowManager.create(self, 'merchant3', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant3')
-        }
-
-      }
-
-    }, this);
-
-  }*/
-
   private addMonster(monsterTile: number, type: string, id: string) {
     const tile: Tile = this.tiles[monsterTile];
 
@@ -491,7 +442,8 @@ export default class GameScene extends Phaser.Scene {
     this.add.existing(monster);
     monster.on('pointerdown', function (pointer) {
       if (this.scene.isVisible(monster.name)) {
-        WindowManager.destroy(this, monster.name);
+        var window = WindowManager.get(this, monster.name)
+        window.destroy();
       }
       else {
         var princetile = -69
@@ -501,7 +453,7 @@ export default class GameScene extends Phaser.Scene {
         catch {
           princetile = -69
         }
-        WindowManager.create(this, monster.name, Fight, {
+        WindowManager.createWindow(this, monster.name, Fight, {
           controller: this.gameinstance,
           hero: this.hero, monster: monster, heroes: this.heroes,
           overlayRef: this.overlay,
@@ -561,22 +513,26 @@ export default class GameScene extends Phaser.Scene {
       y * scaleFactor + borderWidth, "merchant-trade", tile, this.gameinstance).setDisplaySize(35, 35);
 
     var self = this;
-
     newMerchant.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == newMerchant.getTileID()) {
-
+      if (self.hero.tile.id == newMerchant.getTileID()) { // TODO: fix this validation, all heroes should be able to see the merchant
         if (this.scene.isVisible('merchant')) {
-          WindowManager.destroy(self, 'merchant');
+          var window = WindowManager.get(this, "merchant")
+          window.disconnectListeners() // TODO: check if this call is actually necessary
+          window.destroy();
         } else {
-          WindowManager.create(self, 'merchant', MerchantWindow, { controller: self.gameinstance });
-          let window = WindowManager.get(self, 'merchant')
+          WindowManager.createWindow(self, 'merchant', MerchantWindow, 
+            { 
+              controller: self.gameinstance,
+              x: reducedWidth / 2 - merchantWindowWidth / 2,
+              y: reducedHeight / 2 - merchantWindowHeight / 2,
+              w: merchantWindowWidth,
+              h: merchantWindowHeight 
+            }
+          );
         }
-
       }
-
     }, this);
     this.add.existing(newMerchant);
-
   }
 
   // Add the narrator pawn to the game board
@@ -586,9 +542,11 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.getNarratorPosition(function (pos: number) {
       // Trigger start of game instructions/story
       if (pos == -1) {
-        WindowManager.create(self, `story`, StoryWindow, {
-          x: reducedWidth / 2,
-          y: reducedHeight / 2,
+        WindowManager.createWindow(self, `story`, StoryWindow, {
+          x: reducedWidth / 2 - 300,
+          y: reducedHeight / 2 - 250,
+          w: 600,
+          h: 500,
           id: -1,
           gameController: self.gameinstance,
           firstNarrAdvance: (self.gameStartHeroPosition == self.heroes.length)
@@ -664,15 +622,29 @@ export default class GameScene extends Phaser.Scene {
     this.narrator.setRunestonePos(runestonePos);
   }
 
+  private createStoryWindow(storyID: number) {
+    WindowManager.createWindow(this, `story${storyID}`, StoryWindow, {
+      x: reducedWidth / 2 - storyCardWidths[storyID] / 2,
+      y: reducedHeight / 2 - storyCardHeights[storyID] / 2,
+      w: storyCardWidths[storyID],
+      h: storyCardHeights[storyID],
+      id: storyID
+    });
+  }
+
   private narratorRunestones(stoneLocs: number[]) {
     console.log("client narratorRunestones", stoneLocs)
     // Display StoryWindows
-    WindowManager.create(this, `story6`, StoryWindow, {
-      x: reducedWidth / 2,
-      y: reducedHeight / 2,
-      id: 6,
-      locs: stoneLocs
-    })
+    // let id = 6;
+    // WindowManager.createWindow(this, `story6`, StoryWindow, {
+    //   x: reducedWidth / 2 - storyCardWidths[id],
+    //   y: reducedHeight / 2 - storyCardHeights[id],
+    //   w: storyCardWidths[id],
+    //   h: storyCardHeights[id],
+    //   id: id,
+    //   locs: stoneLocs
+    // })
+    this.createStoryWindow(6)
   }
 
   // Note that adding monsters is handled in setupListeners
@@ -682,11 +654,15 @@ export default class GameScene extends Phaser.Scene {
     this.addFarmer(2, 28);
     this.addPrince();
     
-    WindowManager.create(this, `story3`, StoryWindow, {
-      x: reducedWidth / 2,
-      y: reducedHeight / 2,
-      id: 3
-    })
+    this.createStoryWindow(3);
+    // let id = 3;
+    // WindowManager.createWindow(this, `story3`, StoryWindow, {
+    //   x: reducedWidth / 2 - storyCardWidths[id],
+    //   y: reducedHeight / 2 - storyCardHeights[id],
+    //   w: storyCardWidths[id],
+    //   h: storyCardHeights[id],
+    //   id: id
+    // });
   }
 
   private addPrince(tileID: number = 72) {
@@ -701,11 +677,11 @@ export default class GameScene extends Phaser.Scene {
     witch.setInteractive({useHandCursor: true}).setScale(0.75);
     witch.on('pointerdown', (pointer) => {
       if (self.scene.isVisible("witchwindow")) {
-        var thescene = WindowManager.get(self, "witchwindow")
-        thescene.disconnectListeners()
-        WindowManager.destroy(this, "witchwindow");
+        var window = WindowManager.get(this, "witchwindow")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       } else {
-        WindowManager.create(self, `witchwindow`, WitchWindow, {
+        WindowManager.createWindow(self, `witchwindow`, WitchWindow, {
           controller: self.gameinstance,
           x: pointer.x + 20,
           y: pointer.y,
@@ -719,30 +695,33 @@ export default class GameScene extends Phaser.Scene {
   private narratorG() {
     // Remove prince
     this.prince.destroy();
-    WindowManager.create(this, `story7`, StoryWindow, {
-      x: reducedWidth / 2,
-      y: reducedHeight / 2,
-      id: 7
-    })
+    // WindowManager.createWindow(this, `story7`, StoryWindow, {
+    //   x: reducedWidth / 2,
+    //   y: reducedHeight / 2,
+    //   id: 7
+    // })
+    this.createStoryWindow(7);
   }
 
   private narratorN(win: boolean) {
     // console.log("At narrator NNNNN. client game narratorN: ", win)
     var self = this;
     if (win) {
-      console.log("kokoniiruyo")
-      WindowManager.create(self, `story9`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 9
-      })
+      // console.log("kokoniiruyo")
+      // WindowManager.createWindow(self, `story9`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 9
+      // })
+      this.createStoryWindow(9);
     }
     else {
-      WindowManager.create(self, `story10`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 10
-      })
+      // WindowManager.createWindow(self, `story10`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 10
+      // })
+      this.createStoryWindow(10);
     }
     self.scene.pause();
     self.overlay.toggleInteractive(false);
@@ -821,7 +800,7 @@ export default class GameScene extends Phaser.Scene {
       // }
     }
     console.log("created eventWindow")
-    WindowManager.create(this, `eventWindow${event.id}`, EventWindow, {
+    WindowManager.createWindow(this, `eventWindow${event.id}`, EventWindow, {
       x: reducedWidth / 2,
       y: reducedHeight / 2,
       id: event.id,
@@ -882,7 +861,7 @@ export default class GameScene extends Phaser.Scene {
       eventID: 0
     };
 
-    WindowManager.create(this, 'collab', CollabWindow, collabWindowData);
+    WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
     // Freeze main game while collab window is active
     this.scene.pause();
   }
@@ -953,11 +932,12 @@ export default class GameScene extends Phaser.Scene {
     // Reveal the witch
     this.gameinstance.revealWitch(tileID => {
       // Witch story
-      WindowManager.create(self, `story8`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 8
-      })
+      // WindowManager.createWindow(self, `story8`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 8
+      // })
+      this.createStoryWindow(8);
       self.addWitch(tileID);
     })
 
@@ -977,9 +957,11 @@ export default class GameScene extends Phaser.Scene {
      */
     this.gameinstance.receiveBattleInvite(function (monstertileid) {
       if (self.scene.isVisible('battleinv')) {
-        WindowManager.destroy(self, 'battleinv');
+        var window = WindowManager.get(this, "battleinv")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
-      WindowManager.create(self, 'battleinv', BattleInvWindow,
+      WindowManager.createWindow(self, 'battleinv', BattleInvWindow,
         {
           controller: self.gameinstance,
           hero: self.hero,
@@ -991,11 +973,12 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.continueFightPrompt(function () {
-      console.log('continuefightprompt xxxxxxxxxxxxxxxxxxxxxxxxxx')
       if (self.scene.isVisible('continuefightprompt')) {
-        WindowManager.destroy(self, 'continuefightprompt');
+        var window = WindowManager.get(this, "continuefightprompt")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
-      WindowManager.create(self, 'continuefightprompt', ContinueFightWindow,
+      WindowManager.createWindow(self, 'continuefightprompt', ContinueFightWindow,
         {
           controller: self.gameinstance,
           hero: self.hero,
@@ -1013,7 +996,9 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.forceFight(function (monstername) {
       var monster = self.monsterNameMap[monstername]
       if (self.scene.isVisible(monster.name)) {
-        WindowManager.destroy(self, monster.name);
+        var window = WindowManager.get(this, monster.name)
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
       else {
         var princetile = -69
@@ -1023,7 +1008,7 @@ export default class GameScene extends Phaser.Scene {
         catch {
           princetile = -69
         }
-        WindowManager.create(self, monster.name, Fight, {
+        WindowManager.createWindow(self, monster.name, Fight, {
           controller: self.gameinstance,
           hero: self.hero, monster: monster, heroes: self.heroes,
           overlayRef: self.overlay,
@@ -1034,10 +1019,12 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.receiveDeathNotice(function () {
-      if (self.scene.isVisible('deathnotice')) {
-        WindowManager.destroy(self, 'deathnotice');
+      if (self.scene.isVisible('deathnotice')) {``
+        var window = WindowManager.get(this, "deathnotice")
+        window.disconnectListeners() // TODO: check if this call is actually necessary
+        window.destroy();
       }
-      WindowManager.create(self, 'deathnotice', DeathWindow, { controller: self.gameinstance });
+      WindowManager.createWindow(self, 'deathnotice', DeathWindow, { controller: self.gameinstance });
     })
     // Listening for shields lost due to monster attack
     this.gameinstance.updateShields(function (shieldsRemaining: number) {
@@ -1051,7 +1038,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.receiveShieldPrompt(function (damaged_shield, potentialdamage) {
-      WindowManager.create(self, 'shieldprompt', ShieldWindow, { controller: self.gameinstance, hero: self.hero, potentialdamage: potentialdamage, damaged: damaged_shield });
+      WindowManager.createWindow(self, 'shieldprompt', ShieldWindow, { controller: self.gameinstance, hero: self.hero, potentialdamage: potentialdamage, damaged: damaged_shield });
     })
 
     // FARMERS
@@ -1076,16 +1063,17 @@ export default class GameScene extends Phaser.Scene {
 
     // TRADE
     this.gameinstance.receiveTradeInvite(function (host, invitee) {
-      WindowManager.create(self, 'tradewindow', TradeWindow, { gameinstance: self.gameinstance, hosthero: host, inviteehero: invitee, parentkey: 'None', clienthero: invitee })
+      WindowManager.createWindow(self, 'tradewindow', TradeWindow, { gameinstance: self.gameinstance, hosthero: host, inviteehero: invitee, parentkey: 'None', clienthero: invitee })
     })
 
     // Listen for end of game state
     this.gameinstance.receiveEndOfGame(function () {
-      WindowManager.create(self, `story10`, StoryWindow, {
-        x: reducedWidth / 2,
-        y: reducedHeight / 2,
-        id: 10
-      })
+      // WindowManager.createWindow(self, `story10`, StoryWindow, {
+      //   x: reducedWidth / 2,
+      //   y: reducedHeight / 2,
+      //   id: 10
+      // })
+      self.createStoryWindow(10);
       self.scene.pause();
       self.overlay.toggleInteractive(false);
     });
@@ -1123,14 +1111,15 @@ export default class GameScene extends Phaser.Scene {
       tempMerchant.on('pointerdown', function (pointer) {
         if (self.hero.tile.id == 9) {
           if (self.scene.isVisible('temp_merchant')) {
-            WindowManager.destroy(self, 'temp_merchant');
+            var window = WindowManager.get(this, "temp_merchant")
+            window.disconnectListeners() // TODO: check if this call is actually necessary
+            window.destroy();
           } else {
-            WindowManager.create(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
+            WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
               x: pointer.x + 20,
               y: pointer.y,
               w: 150,
               h: 150, });
-            let window = WindowManager.get(self, 'temp_merchant')
           }
         }
       }, self);
@@ -1203,7 +1192,7 @@ export default class GameScene extends Phaser.Scene {
           eventToBeBlockedID: eventToBeBlockedID
         };
 
-        WindowManager.create(this, 'collab', CollabWindow, collabWindowData);
+        WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
         // Freeze main game while collab window is active
         this.scene.pause();
       }
@@ -1218,20 +1207,22 @@ export default class GameScene extends Phaser.Scene {
 
   public addCoastalTraderToScene(){
     var self = this
-    //console.log("entered addCoastalTrader listener")
     let tempMerchant = self.add.image(self.tiles[9].x + 50, self.tiles[9].y - 5, "merchant-trade");
     tempMerchant.setInteractive({useHandCursor: true}).setScale(0.75);
     tempMerchant.on('pointerdown', function (pointer) {
       if (self.hero.tile.id == 9) {
         if (self.scene.isVisible('temp_merchant')) {
-          WindowManager.destroy(self, 'temp_merchant');
+          // TODO: move window destruction to separate method
+          // TODO: better yet, just combine the get and destroy and package everything into WindowManager method
+          var window = WindowManager.get(this, "temp_merchant") 
+          window.disconnectListeners() // TODO: check if this call is actually necessary
+          window.destroy();
         } else {
-          WindowManager.create(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
+          WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
             x: pointer.x + 20,
             y: pointer.y,
             w: 150,
             h: 150, });
-          let window = WindowManager.get(self, 'temp_merchant')
         }
       }
     }, self);
@@ -1253,6 +1244,10 @@ export default class GameScene extends Phaser.Scene {
     } else if (this.cameraKeys["right"].isDown) {
       camera.scrollX += this.cameraScrollSpeed;
     }
+
+    // DEBUG TODO: REMOVE
+    if (this.overlay)
+      this.overlay.updateCameraPosInfo(camera.scrollX, camera.scrollY)
 
     // Zoom updates
     if (this.cameraKeys["zoomIn"].isDown && camera.zoom < this.maxZoom) {

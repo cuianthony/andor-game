@@ -1,5 +1,6 @@
 import { Chat } from './chatwindow';
 import { HeroWindow } from './herowindow';
+import { Window } from './window'
 import { WindowManager } from "../utils/WindowManager";
 import { game } from '../api/game';
 import { Tile } from '../objects/tile';
@@ -43,6 +44,10 @@ export default class BoardOverlay extends Phaser.Scene {
     private COLOR_DARK = 0x4B2504;
     private content; // game log content
 
+    // DEBUG TODO: remove position overlay
+    private posInfo;
+    private cameraInfo;
+
     constructor(data) {
         super({
             key: 'BoardOverlay'
@@ -79,10 +84,11 @@ export default class BoardOverlay extends Phaser.Scene {
         this.parent = this.add.zone(this.x, this.y, this.width, this.height).setOrigin(0);
         this.cameras.main.setViewport(this.parent.x, this.parent.y, this.width, this.height);
         
-        // game size debugging
-        var info = this.add.text(5, 75, `xpos: 0\nypos: 0`);
+        // DEBUG TODO: game size debugging
+        this.posInfo = this.add.text(5, 75, `posX: 0\nposY: 0`);
+        this.cameraInfo = this.add.text(5, 115, `cameraX: 0\ncameraY: 0`);
         this.input.on('pointerdown', (pointer) => {
-            info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)
+            this.posInfo.setText(`posX: ${pointer.x}\nposY: ${pointer.y}`)
         });
 
         var self = this;
@@ -116,7 +122,8 @@ export default class BoardOverlay extends Phaser.Scene {
         this.chatButton.setInteractive({useHandCursor: true});
         this.chatButton.on('pointerdown', function (pointer) {
             if (this.scene.isVisible('chat')) {
-                WindowManager.destroy(this, 'chat');
+                var window = WindowManager.get(this, "chat")
+                window.destroy();
             }
             else {
                 this.tweens.add({
@@ -126,14 +133,21 @@ export default class BoardOverlay extends Phaser.Scene {
                     ease: 'Power3',
                     yoyo: true
                 });
-                WindowManager.create(this, 'chat', Chat, { controller: self.gameinstance });
+                WindowManager.createWindow(this, "chat", Chat, 
+                    { 
+                        controller: self.gameinstance, 
+                        x: 510, 
+                        y: 245, 
+                        w: 350, 
+                        h: 250
+                    }
+                )
             }
         }, this);
 
         // end turn button
         this.endTurnButton = this.add.image(900, 565, 'endturnicon').setScale(0.3)
         this.endTurnButton.on('pointerdown', function (pointer) {
-            // if (this.gameinstance.myTurn) {
             this.gameinstance.endTurn();
             // Todo: Tween will trigger whether or not it is your turn, not sure if we want to change that
             this.tweens.add({
@@ -143,8 +157,6 @@ export default class BoardOverlay extends Phaser.Scene {
                 ease: 'Power3',
                 yoyo: true
             });
-
-            // }
         }, this)
 
         // end day setup
@@ -204,8 +216,7 @@ export default class BoardOverlay extends Phaser.Scene {
             console.log("game log update:", update, "||")
             self.updateContent(panel, update);
         })
-        // x: 170,
-        //     y: 545,
+
         // Indicator of the hero you are playing
         let heroTexture = this.clientheroobject.getKind();
         this.add.image(10, 512, heroTexture).setScale(0.16).setOrigin(0);
@@ -291,11 +302,11 @@ export default class BoardOverlay extends Phaser.Scene {
             this.gameinstance.getHeroAttributes(type, (herodata) => {
                 const cardID = `${type}Card`;
                 if (this.scene.isVisible(cardID)) {
-                    var thescene = WindowManager.get(this, cardID)
-                    thescene.disconnectListeners() // TODO: check if this call is actually necessary
-                    WindowManager.destroy(this, cardID);
+                    var heroWindow = WindowManager.get(this, cardID)
+                    heroWindow.disconnectListeners() // TODO: check if this call is actually necessary
+                    heroWindow.destroy();
                 } else {
-                    WindowManager.create(this, cardID, HeroWindow,
+                    WindowManager.createWindow(this, cardID, HeroWindow,
                         {
                             controller: this.gameinstance,
                             icon: `${type}male`,
@@ -304,7 +315,9 @@ export default class BoardOverlay extends Phaser.Scene {
                             ...herodata,
                             clientherotile: this.clientheroobject.tile.id,
                             x: pointer.x,
-                            y: pointer.y + 20
+                            y: pointer.y + 20,
+                            w: 400,
+                            h: 400
                         }
                     );
                 }
@@ -461,5 +474,10 @@ export default class BoardOverlay extends Phaser.Scene {
                 button.disableInteractive();
             })
         }
+    }
+
+    // DEBUG TODO
+    public updateCameraPosInfo(xPos, yPos) {
+        this.cameraInfo.setText(`cameraX: ${xPos}\ncameraY: ${yPos}`)
     }
 }
