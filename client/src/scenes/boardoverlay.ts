@@ -44,6 +44,10 @@ export default class BoardOverlay extends Phaser.Scene {
     private COLOR_DARK = 0x4B2504;
     private content; // game log content
 
+    // DEBUG TODO: remove position overlay
+    private posInfo;
+    private cameraInfo;
+
     constructor(data) {
         super({
             key: 'BoardOverlay'
@@ -80,10 +84,11 @@ export default class BoardOverlay extends Phaser.Scene {
         this.parent = this.add.zone(this.x, this.y, this.width, this.height).setOrigin(0);
         this.cameras.main.setViewport(this.parent.x, this.parent.y, this.width, this.height);
         
-        // TODO DEBUG: game size debugging
-        var info = this.add.text(5, 75, `xpos: 0\nypos: 0`);
+        // DEBUG TODO: game size debugging
+        this.posInfo = this.add.text(5, 75, `posX: 0\nposY: 0`);
+        this.cameraInfo = this.add.text(5, 115, `cameraX: 0\ncameraY: 0`);
         this.input.on('pointerdown', (pointer) => {
-            info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)
+            this.posInfo.setText(`posX: ${pointer.x}\nposY: ${pointer.y}`)
         });
 
         var self = this;
@@ -469,5 +474,10 @@ export default class BoardOverlay extends Phaser.Scene {
                 button.disableInteractive();
             })
         }
+    }
+
+    // DEBUG TODO
+    public updateCameraPosInfo(xPos, yPos) {
+        this.cameraInfo.setText(`cameraX: ${xPos}\ncameraY: ${yPos}`)
     }
 }

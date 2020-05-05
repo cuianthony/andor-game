@@ -1,9 +1,5 @@
 import { Window } from "./window";
 import { game } from '../api/game';
-import { Farmer } from "../objects/farmer";
-import {WindowManager} from "../utils/WindowManager";
-import {TradeWindow} from './tradewindow';
-import { heroCardInfo } from '../constants';
 
 export class MerchantWindow extends Window {
 
@@ -16,22 +12,7 @@ export class MerchantWindow extends Window {
     private willtext
     private strtext
     private farmtext
-    // private name
     private gameinstance: game;
-    private clienthero;
-    private windowhero;
-    private windowherotile
-    private clientherotile
-
-    //items
-    private largeItem: Phaser.GameObjects.Image;
-    private helm: Phaser.GameObjects.Image;
-    private smallItem1: Phaser.GameObjects.Image;
-    private smallItem2: Phaser.GameObjects.Image;
-    private smallItem3: Phaser.GameObjects.Image;
-    private smallItem1key: string = "none";
-    private smallItem2key: string = "none";
-    private smallItem3key: string = "none";
 
     // buy buttons
     private bowBuy
@@ -43,18 +24,13 @@ export class MerchantWindow extends Window {
     private strengthBuy;
 
     public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
-        super(key, { x: data.x, y: data.y, width: 400, height: 400 }, windowZone);
+        super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
         this.icon = data.icon
         this.gameinstance = data.controller
         this.gold = data.gold
         this.will = data.will
         this.str = data.strength
         this.farmers = data.farmers
-        this.clienthero = data.clienthero
-        this.windowhero = data.windowhero
-        this.largeItem = data.largeItem
-        this.windowherotile = data.currtileid
-        this.clientherotile  = data.clientherotile
     }
 
     protected initialize() { 

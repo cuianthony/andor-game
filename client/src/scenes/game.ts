@@ -16,7 +16,7 @@ import {
   collabTextHeight, collabColWidth, collabRowHeight,
   collabFooterHeight, collabHeaderHeight,
   wellTile1, wellTile2, wellTile3, wellTile4,
-  mOffset, enumPositionOfNarrator, storyCardWidths, storyCardHeights
+  mOffset, enumPositionOfNarrator, storyCardWidths, storyCardHeights, merchantWindowWidth, merchantWindowHeight
 } from '../constants'
 
 export default class GameScene extends Phaser.Scene {
@@ -283,64 +283,19 @@ export default class GameScene extends Phaser.Scene {
     // var tilesData = require("../utils/xycoords").map;
     var treeTile = this.textures.get('tiles').getFrameNames()[12];
     for (let t of tilesData) {
-      // console.log(t, scaleFactor, borderWidth)
-      var tile = new Tile(t.id, this, t.xcoord * scaleFactor + borderWidth, t.ycoord * scaleFactor + borderWidth, treeTile, t.adjRegionsIds);
+      let xPos = t.xcoord * scaleFactor + borderWidth;
+      let yPos = t.ycoord * scaleFactor + borderWidth;
+      var tile = new Tile(t.id, this, xPos, yPos, treeTile, t.adjRegionsIds);
       this.tiles[t.id] = tile;
       tile.setInteractive({useHandCursor: true});
       this.add.existing(tile);
-
       
-        // coordinates taken from previous version, adding wells to allocated wells positions
-      switch (t.id) {
-        case 5:
-          this.addFunctionalWell(209, 2244, t.id as number, t.wellUsed);
-          break;
-        case 35:
-          if(t.hasWell){
-            this.addFunctionalWell(1353, 4873, t.id as number, t.wellUsed);
-          }
-          else{
-            this.addBrokenWell(1353, 4873, t.id as number);
-          }
-          break;
-        case 45:
-          if(t.hasWell){
-            this.addFunctionalWell(7073, 3333, t.id as number, t.wellUsed);
-          }
-          else{
-            this.addBrokenWell(7073, 3333, t.id as number);
-          }
-          break;
-        case 55:
-          this.addFunctionalWell(5962, 770, t.id as number, t.wellUsed);
-          break;
-        // this approach adds well on top of the trees
-        // this.addWell(t.x, t.y, t.id as number);
-      }
+      this.checkWell(t);
+      this.checkMerchant(t);
 
-      if (t.hasMerchant) {
-        switch (t.id) {
-          case 9:
-            this.addCoastalTraderToScene()
-            break;
-          case 18:
-            this.addMerchant(3060, 3680, t.id as number);
-            break;
-          case 57:
-            this.addMerchant(7708, 1340, t.id as number);
-            break;
-          case 71:
-            this.addMerchant(7426, 4320, t.id as number);
-            break;
-        }
-      }
-    }
-
-    // click: for movement callback, ties pointerdown to move request
-    // shift+click: tile items pickup interface
-    // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
-    var self = this
-    this.tiles.map(function (tile) {
+      // click: for movement callback, ties pointerdown to move request
+      // shift+click: tile items pickup interface
+      // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
       tile.on('pointerdown', function (pointer) {
         if (this.shiftKey.isDown) {
           const tileWindowID = `tileWindow${tile.getID()}`;
@@ -352,13 +307,12 @@ export default class GameScene extends Phaser.Scene {
             // width of tile window depends on number of items on it
             this.gameinstance.getTileItems(tile.id, function (tileItems) {
               let items = tileItems;
-              // let itemsSize = Object.keys(items).length;
               WindowManager.createWindow(self, tileWindowID, TileWindow,
                 {
                   controller: self.gameinstance,
                   x: pointer.x + 20,
                   y: pointer.y + 20,
-                  w: 670, // based on total number of unique items that could populate
+                  w: 670, // default to total number of unique items that could populate
                   h: 60,
                   tileID: tile.getID(),
                   items: items
@@ -372,7 +326,9 @@ export default class GameScene extends Phaser.Scene {
           self.gameinstance.moveRequest(tile.id, updateMoveRequest)
         }
       }, this)
-    }, this)
+    }
+
+    var self = this
 
     this.gameinstance.updateMoveRequest(updateMoveRequest)
     this.gameinstance.updateMovePrinceRequest(updateMovePrinceRequest)
@@ -403,6 +359,53 @@ export default class GameScene extends Phaser.Scene {
           }
         }
       })
+    }
+  }
+
+  private checkWell(tile) {
+    // coordinates taken from previous version, adding wells to allocated wells positions
+    switch (tile.id) {
+      case 5:
+        this.addFunctionalWell(209, 2244, tile.id as number, tile.wellUsed);
+        break;
+      case 35:
+        if(tile.hasWell){
+          this.addFunctionalWell(1353, 4873, tile.id as number, tile.wellUsed);
+        }
+        else{
+          this.addBrokenWell(1353, 4873, tile.id as number);
+        }
+        break;
+      case 45:
+        if(tile.hasWell){
+          this.addFunctionalWell(7073, 3333, tile.id as number, tile.wellUsed);
+        }
+        else{
+          this.addBrokenWell(7073, 3333, tile.id as number);
+        }
+        break;
+      case 55:
+        this.addFunctionalWell(5962, 770, tile.id as number, tile.wellUsed);
+        break;
+    }
+  }
+
+  private checkMerchant(tile) {
+    if (tile.hasMerchant) {
+      switch (tile.id) {
+        case 9:
+          this.addCoastalTraderToScene()
+          break;
+        case 18:
+          this.addMerchant(3060, 3680, tile.id as number);
+          break;
+        case 57:
+          this.addMerchant(7708, 1340, tile.id as number);
+          break;
+        case 71:
+          this.addMerchant(7426, 4320, tile.id as number);
+          break;
+      }
     }
   }
 
@@ -511,13 +514,21 @@ export default class GameScene extends Phaser.Scene {
 
     var self = this;
     newMerchant.on('pointerdown', function (pointer) {
-      if (self.hero.tile.id == newMerchant.getTileID()) {
+      if (self.hero.tile.id == newMerchant.getTileID()) { // TODO: fix this validation, all heroes should be able to see the merchant
         if (this.scene.isVisible('merchant')) {
           var window = WindowManager.get(this, "merchant")
           window.disconnectListeners() // TODO: check if this call is actually necessary
           window.destroy();
         } else {
-          WindowManager.createWindow(self, 'merchant', MerchantWindow, { controller: self.gameinstance });
+          WindowManager.createWindow(self, 'merchant', MerchantWindow, 
+            { 
+              controller: self.gameinstance,
+              x: reducedWidth / 2 - merchantWindowWidth / 2,
+              y: reducedHeight / 2 - merchantWindowHeight / 2,
+              w: merchantWindowWidth,
+              h: merchantWindowHeight 
+            }
+          );
         }
       }
     }, this);
@@ -1233,6 +1244,10 @@ export default class GameScene extends Phaser.Scene {
     } else if (this.cameraKeys["right"].isDown) {
       camera.scrollX += this.cameraScrollSpeed;
     }
+
+    // DEBUG TODO: REMOVE
+    if (this.overlay)
+      this.overlay.updateCameraPosInfo(camera.scrollX, camera.scrollY)
 
     // Zoom updates
     if (this.cameraKeys["zoomIn"].isDown && camera.zoom < this.maxZoom) {
