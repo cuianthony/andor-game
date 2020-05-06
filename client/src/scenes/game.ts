@@ -292,11 +292,15 @@ export default class GameScene extends Phaser.Scene {
       
       this.checkWell(t);
       this.checkMerchant(t);
+    }
 
+    var self = this
+    this.tiles.map(function (tile) {
       // click: for movement callback, ties pointerdown to move request
       // shift+click: tile items pickup interface
       // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
       tile.on('pointerdown', function (pointer) {
+        console.log('tile id sanity check', tile.id)
         if (this.shiftKey.isDown) {
           const tileWindowID = `tileWindow${tile.getID()}`;
           if (this.scene.isVisible(tileWindowID)) {
@@ -326,9 +330,7 @@ export default class GameScene extends Phaser.Scene {
           self.gameinstance.moveRequest(tile.id, updateMoveRequest)
         }
       }, this)
-    }
-
-    var self = this
+    }, this)
 
     this.gameinstance.updateMoveRequest(updateMoveRequest)
     this.gameinstance.updateMovePrinceRequest(updateMovePrinceRequest)
