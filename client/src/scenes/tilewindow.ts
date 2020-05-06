@@ -1,7 +1,8 @@
 import { game } from '../api/game';
 import { Window } from "./window";
+import { BasicWindow } from './basicwindow';
 
-export class TileWindow extends Window {
+export class TileWindow extends BasicWindow {
     private goldIcon: Phaser.GameObjects.Image;
     private goldButton: Phaser.GameObjects.Text;
     private currX = 30;
@@ -18,9 +19,12 @@ export class TileWindow extends Window {
     private hiddenStoneIDs = ["blue_runestone_h", "yellow_runestone_h", "green_runestone_h"];
 
     private windowHeight;
+    private parentScene: Phaser.Scene;
 
-    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
-        super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
+    public constructor(key: string, parentScene: Phaser.Scene, data) {
+        // super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
+        super(parentScene);
+        this.parentScene = parentScene;
         this.gameController = data.controller;
         this.tileID = data.tileID;
         this.items = data.items;
@@ -34,8 +38,8 @@ export class TileWindow extends Window {
         let extraWidth = 40 * (itemsLength > 1 ? itemsLength-1 : 0);
         // Size the background image based on how many distinct items need to be displayed
         let bgWidth = 110 + extraWidth;
-        this.bgImage = this.add.image(0, 0, 'scrollbg').setDisplaySize(bgWidth, this.windowHeight).setOrigin(0);
-        this.titleText = this.add.text(5, 5, `Region ${this.tileID} items:`, { fontSize: 10, backgroundColor: '#f00' });
+        this.bgImage = this.parentScene.add.image(0, 0, 'scrollbg').setDisplaySize(bgWidth, this.windowHeight).setOrigin(0);
+        this.titleText = this.parentScene.add.text(5, 5, `Region ${this.tileID} items:`, { fontSize: 10, backgroundColor: '#f00' });
 
         this.populateGold();
         this.populateItems();
@@ -96,18 +100,29 @@ export class TileWindow extends Window {
                 throw Error("Tried to pick up item that is not on tile");
             }
         });
+
+        this.addToContents(
+            [
+                this.bgImage, 
+                this.titleText,
+                this.goldIcon,
+                this.goldButton,
+            ]
+        );
+        this.addToContents(this.itemIcons);
+        this.addToContents(Array.from(this.itemButtons.values()));
     }
 
     // Populates the TileWindow with the current amount of gold.
     public populateGold() {
         var self = this;
         // Gold interaction (replaces addGold in GameScene)
-        this.goldIcon = this.add.image(this.currX, 25, 'gold').setDisplaySize(30, 30).setOrigin(0);
+        this.goldIcon = this.parentScene.add.image(this.currX, 25, 'gold').setDisplaySize(30, 30).setOrigin(0);
         this.currX += 40;
         // Get the tile's gold amount from server
         this.gameController.getTileGold(this.tileID, function(goldAmount: number) {
             self.goldQuantity = goldAmount;
-            self.goldButton = self.add.text(58, 23, ""+self.goldQuantity, { fontSize: 10, backgroundColor: '#f00' });
+            self.goldButton = this.parentScene.add.text(58, 23, ""+self.goldQuantity, { fontSize: 10, backgroundColor: '#f00' });
             self.goldButton.setInteractive({useHandCursor: true})
             self.goldButton.on("pointerdown", function(pointer) {
                 self.gameController.pickupGold(self.tileID)
@@ -125,9 +140,9 @@ export class TileWindow extends Window {
             if (this.hiddenStoneIDs.includes(key)) {
                 continue;
             }
-            var icon = this.add.image(this.currX, 25, key).setDisplaySize(30, 30).setOrigin(0);
+            var icon = this.parentScene.add.image(this.currX, 25, key).setDisplaySize(30, 30).setOrigin(0);
             let buttonX = this.currX + 28;
-            var iconButton = this.add.text(buttonX, 23, ""+value, { fontSize: 10, backgroundColor: '#f00' });
+            var iconButton = this.parentScene.add.text(buttonX, 23, ""+value, { fontSize: 10, backgroundColor: '#f00' });
             iconButton.setInteractive({useHandCursor: true})
             iconButton.on('pointerdown', function(pointer) {
                 self.gameController.pickupItem(self.tileID, key, self.getItemTypeFromName(key));
@@ -143,7 +158,7 @@ export class TileWindow extends Window {
                 continue;
             }
             for (let i = 0; i < value; i++) {
-                var icon = this.add.image(this.currX, 25, key).setDisplaySize(30, 30).setOrigin(0);
+                var icon = this.parentScene.add.image(this.currX, 25, key).setDisplaySize(30, 30).setOrigin(0);
                 icon.setInteractive({useHandCursor: true})
                 // Request to server to reveal the runestone (key) on tile tileID
                 icon.on('pointerdown', function() {
@@ -165,8 +180,8 @@ export class TileWindow extends Window {
         let itemsLength = Object.keys(this.items).length + hiddenStoneExtraW;
         let extraWidth = 40 * (itemsLength > 1 ? itemsLength-1 : 0);
         let bgWidth = 110 + extraWidth;
-        this.bgImage = this.add.image(0, 0, 'scrollbg').setDisplaySize(bgWidth, this.windowHeight).setOrigin(0);
-        this.titleText = this.add.text(5, 5, `Region ${this.tileID} items:`, { fontSize: 10, backgroundColor: '#f00' });
+        this.bgImage = this.parentScene.add.image(0, 0, 'scrollbg').setDisplaySize(bgWidth, this.windowHeight).setOrigin(0);
+        this.titleText = this.parentScene.add.text(5, 5, `Region ${this.tileID} items:`, { fontSize: 10, backgroundColor: '#f00' });
 
         this.populateGold();
         // Populate with items received from server

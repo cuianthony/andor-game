@@ -18,6 +18,7 @@ import {
   wellTile1, wellTile2, wellTile3, wellTile4,
   mOffset, enumPositionOfNarrator, storyCardWidths, storyCardHeights, merchantWindowWidth, merchantWindowHeight
 } from '../constants'
+import { BasicWindowManager } from '../utils/BasicWindowManager';
 
 export default class GameScene extends Phaser.Scene {
   private heroes: Hero[];
@@ -299,15 +300,19 @@ export default class GameScene extends Phaser.Scene {
       tile.on('pointerdown', function (pointer) {
         if (this.shiftKey.isDown) {
           const tileWindowID = `tileWindow${tile.getID()}`;
-          if (this.scene.isVisible(tileWindowID)) {
-            var window = WindowManager.get(this, tileWindowID)
-            window.disconnectListeners()
-            window.destroy()
+          // TODO: BASICWINDOW MANAGER FOR DESTROYING WINDOWS
+          if (BasicWindowManager.hasWindow(tileWindowID)) {
+            let window = BasicWindowManager.removeWindow(tileWindowID);
+            window.destroy();
+          //   var window = WindowManager.get(this, tileWindowID)
+          //   window.disconnectListeners()
+          //   window.destroy()
           } else {
             // width of tile window depends on number of items on it
             this.gameinstance.getTileItems(tile.id, function (tileItems) {
               let items = tileItems;
-              WindowManager.createWindow(self, tileWindowID, TileWindow,
+              console.log(items);
+              BasicWindowManager.createWindow(self, tileWindowID, TileWindow,
                 {
                   controller: self.gameinstance,
                   x: pointer.x + 20,
@@ -317,7 +322,19 @@ export default class GameScene extends Phaser.Scene {
                   tileID: tile.getID(),
                   items: items
                 }
-              );
+              )
+              // WindowManager.createWindow(self, tileWindowID, TileWindow,
+                // {
+                //   controller: self.gameinstance,
+                //   x: pointer.x + 20,
+                //   y: pointer.y + 20,
+                //   w: 670, // default to total number of unique items that could populate
+                //   h: 60,
+                //   tileID: tile.getID(),
+                //   items: items
+                // }
+              // );
+
             })
           }
         } else if (this.ctrlKey.isDown) {  //to move prince, hold ctrl key
