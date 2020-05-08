@@ -11,4 +11,3 @@ export * from './shieldwindow';
 export * from './continuefightwindow';
 export * from './eventwindow';
 export * from './coastalMerchantWindow';
-export * from './tilewindow';

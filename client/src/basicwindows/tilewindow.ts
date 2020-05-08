@@ -1,5 +1,4 @@
 import { game } from '../api/game';
-import { Window } from "./window";
 import { BasicWindow } from './basicwindow';
 
 export class TileWindow extends BasicWindow {

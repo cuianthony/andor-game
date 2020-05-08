@@ -1,4 +1,4 @@
-import { BasicWindow } from "../scenes/basicwindow";
+import { BasicWindow } from "../basicwindows/basicwindow";
 
 export class BasicWindowManager {
     private static windowMap: Map<string, BasicWindow> = new Map(); // not sure if this works the way I intend

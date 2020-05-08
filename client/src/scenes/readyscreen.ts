@@ -1,6 +1,6 @@
 import { game } from "../api";
 import { WindowManager } from "../utils/WindowManager";
-import { Chat } from './chatwindow';
+import { Chat } from '../windows/chatwindow';
 import { GameObjects } from "phaser";
 import { reducedWidth } from "../constants";
 

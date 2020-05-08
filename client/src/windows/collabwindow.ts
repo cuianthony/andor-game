@@ -3,7 +3,7 @@ import { game } from '../api/game';
 import { collabTextHeight, collabColWidth, collabRowHeight,
         collabHeaderHeight, collabFooterHeight } from '../constants'
 import { ResourceToggle } from "../widgets/ResourceToggle";
-import BoardOverlay from "./boardoverlay";
+import BoardOverlay from "../scenes/boardoverlay";
 import { HeroKind } from "../objects";
 
 export class CollabWindow extends Window {
