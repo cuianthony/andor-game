@@ -20,7 +20,7 @@ export class WitchWindow extends BasicWindow {
     }
 
     protected initialize() { 
-        var bg = this.parentScene.add.image(this.posX, this.posY, 'scrollbg').setDisplaySize(this.w, this.h).setOrigin(0);;
+        var bg = this.parentScene.add.image(this.posX, this.posY, 'scrollbg').setDisplaySize(this.w, this.h).setOrigin(0);
         var title = this.parentScene.add.text(this.posX+5, this.posY+5, `The witch sells\nher magic brew:`, { fontSize: 10, backgroundColor: '#f00' });
 
         var self = this;

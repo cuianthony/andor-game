@@ -6,10 +6,10 @@ import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
   StoryWindow, CollabWindow, MerchantWindow, DeathWindow, Fight, EventWindow,
-  BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow, CoastalMerchantWindow
+  BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow
 } from "../windows/windows";
 import {
-  TileWindow, WitchWindow
+  TileWindow, WitchWindow, CoastalMerchantWindow
 } from '../basicwindows/basicwindows';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
@@ -1096,7 +1096,7 @@ export default class GameScene extends Phaser.Scene {
       this.scene.pause();
     })
 
-    //Destorying Well
+    //Destroying Well
     this.gameinstance.removeWell(function (tileID){
       let well: Well = self.wells.get(tileID)
       well.destroy()
@@ -1108,29 +1108,31 @@ export default class GameScene extends Phaser.Scene {
         self.addBrokenWell(7073, 3333, tileID as number);
       }
     })
+
     var self = this
-    this.gameinstance.addCoastalTrader(function(){
+    this.gameinstance.addCoastalTrader(function() {
       //console.log("entered addCoastalTrader listener")
-      let tempMerchant = self.add.image(self.tiles[9].x + 50, self.tiles[9].y - 5, "merchant-trade");
-      tempMerchant.setInteractive({useHandCursor: true}).setScale(0.75);
-      tempMerchant.on('pointerdown', function (pointer) {
+      self.tempMerchant = self.add.image(self.tiles[9].x + 50, self.tiles[9].y - 5, "merchant-trade");
+      self.tempMerchant.setInteractive({useHandCursor: true}).setScale(0.75);
+      self.tempMerchant.on('pointerdown', function (pointer) {
         if (self.hero.tile.id == 9) {
-          if (self.scene.isVisible('temp_merchant')) {
-            var window = WindowManager.get(this, "temp_merchant")
-            window.disconnectListeners() // TODO: check if this call is actually necessary
-            window.destroy();
+          if (BasicWindowManager.hasWindow("temp_merchant")) {
+            let window = BasicWindowManager.removeWindow("temp_merchant");
+            window.disconnectListeners();
+            window.destroyWindow();
           } else {
-            WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
-              x: pointer.x + 20,
-              y: pointer.y,
-              w: 150,
-              h: 150, });
+            BasicWindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, 
+              { 
+                controller: self.gameinstance,
+                x: self.tiles[9].x + 50,
+                y: self.tiles[9].y + 30,
+                w: 150,
+                h: 150, 
+              }
+            );
           }
         }
-      }, self);
-      self.tempMerchant = tempMerchant
-      self.add.existing(self.tempMerchant);
-      
+      });
     })
     this.gameinstance.removeCoastalTrader(function(){
       self.tempMerchant.destroy()
@@ -1212,28 +1214,29 @@ export default class GameScene extends Phaser.Scene {
 
   public addCoastalTraderToScene(){
     var self = this
-    let tempMerchant = self.add.image(self.tiles[9].x + 50, self.tiles[9].y - 5, "merchant-trade");
-    tempMerchant.setInteractive({useHandCursor: true}).setScale(0.75);
-    tempMerchant.on('pointerdown', function (pointer) {
+    this.tempMerchant = self.add.image(self.tiles[9].x + 50, self.tiles[9].y - 5, "merchant-trade");
+    this.tempMerchant.setInteractive({useHandCursor: true}).setScale(0.75);
+    this.tempMerchant.on('pointerdown', function (pointer) {
       if (self.hero.tile.id == 9) {
-        if (self.scene.isVisible('temp_merchant')) {
-          // TODO: move window destruction to separate method
-          // TODO: better yet, just combine the get and destroy and package everything into WindowManager method
-          var window = WindowManager.get(this, "temp_merchant") 
-          window.disconnectListeners() // TODO: check if this call is actually necessary
-          window.destroy();
+        if (BasicWindowManager.hasWindow("temp_merchant")) {
+          let window = BasicWindowManager.removeWindow("temp_merchant");
+          window.disconnectListeners();
+          window.destroyWindow();
         } else {
-          WindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, { controller: self.gameinstance,
-            x: pointer.x + 20,
-            y: pointer.y,
-            w: 150,
-            h: 150, });
+          BasicWindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, 
+            { 
+              controller: self.gameinstance,
+              x: self.tiles[9].x + 50,
+              y: self.tiles[9].y + 15,
+              w: 115,
+              h: 90
+            }
+          );
         }
       }
-    }, self);
-    self.tempMerchant = tempMerchant
-    self.add.existing(self.tempMerchant);
+    });
   }
+
   public update() {
     var camera = this.cameras.main;
 
