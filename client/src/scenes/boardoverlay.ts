@@ -478,6 +478,7 @@ export default class BoardOverlay extends Phaser.Scene {
 
     // DEBUG TODO
     public updateCameraPosInfo(xPos, yPos) {
-        this.cameraInfo.setText(`cameraX: ${xPos}\ncameraY: ${yPos}`)
+        if (this.cameraInfo)
+            this.cameraInfo.setText(`cameraX: ${xPos}\ncameraY: ${yPos}`)
     }
 }

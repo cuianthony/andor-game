@@ -10,7 +10,6 @@ export class BasicWindowManager {
     }
 
     public static hasWindow(key: string) {
-        console.log('BasicWindowManager windowMap', this.windowMap)
         return this.windowMap.has(key);
     }
 

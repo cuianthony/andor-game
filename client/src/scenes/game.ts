@@ -206,7 +206,8 @@ export default class GameScene extends Phaser.Scene {
       // prevent initial collab decision from happening again when we load game
       if (!data.initialCollabDone) {
         // Need to wait for heroes to be created before creating collab decision
-        this.startingCollabDecisionSetup();
+        // DEBUG TODO: uncomment
+        // this.startingCollabDecisionSetup();
       } else {
         this.scene.resume();
       }
@@ -216,7 +217,7 @@ export default class GameScene extends Phaser.Scene {
       this.gameStartHeroPosition = data.startGamePos;
 
       // DEBUG TODO: uncomment addNarrator
-      this.addNarrator(data.runestoneCardPos);
+      // this.addNarrator(data.runestoneCardPos);
       //
 
       // Listen for all updates triggered by narrator advancing
@@ -293,7 +294,10 @@ export default class GameScene extends Phaser.Scene {
       
       this.checkWell(t);
       this.checkMerchant(t);
+    }
 
+    var self = this
+    this.tiles.map(function (tile) {
       // click: for movement callback, ties pointerdown to move request
       // shift+click: tile items pickup interface
       // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
@@ -303,38 +307,23 @@ export default class GameScene extends Phaser.Scene {
           // TODO: BASICWINDOW MANAGER FOR DESTROYING WINDOWS
           if (BasicWindowManager.hasWindow(tileWindowID)) {
             let window = BasicWindowManager.removeWindow(tileWindowID);
-            window.destroy();
-          //   var window = WindowManager.get(this, tileWindowID)
-          //   window.disconnectListeners()
-          //   window.destroy()
+            window.disconnectListeners();
+            window.destroyWindow();
           } else {
             // width of tile window depends on number of items on it
             this.gameinstance.getTileItems(tile.id, function (tileItems) {
               let items = tileItems;
-              console.log(items);
               BasicWindowManager.createWindow(self, tileWindowID, TileWindow,
                 {
                   controller: self.gameinstance,
-                  x: pointer.x + 20,
-                  y: pointer.y + 20,
+                  x: tile.x + 20,
+                  y: tile.y + 20,
                   w: 670, // default to total number of unique items that could populate
                   h: 60,
                   tileID: tile.getID(),
                   items: items
                 }
               )
-              // WindowManager.createWindow(self, tileWindowID, TileWindow,
-                // {
-                //   controller: self.gameinstance,
-                //   x: pointer.x + 20,
-                //   y: pointer.y + 20,
-                //   w: 670, // default to total number of unique items that could populate
-                //   h: 60,
-                //   tileID: tile.getID(),
-                //   items: items
-                // }
-              // );
-
             })
           }
         } else if (this.ctrlKey.isDown) {  //to move prince, hold ctrl key
@@ -343,9 +332,7 @@ export default class GameScene extends Phaser.Scene {
           self.gameinstance.moveRequest(tile.id, updateMoveRequest)
         }
       }, this)
-    }
-
-    var self = this
+    }, this)
 
     this.gameinstance.updateMoveRequest(updateMoveRequest)
     this.gameinstance.updateMovePrinceRequest(updateMovePrinceRequest)
