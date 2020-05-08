@@ -18,13 +18,11 @@ export class TileWindow extends BasicWindow {
     private hiddenStoneIDs = ["blue_runestone_h", "yellow_runestone_h", "green_runestone_h"];
 
     private windowHeight: number;
-    // private parentScene: Phaser.Scene;
     private posX: number;
     private posY: number;
 
-    public constructor(key: string, parentScene: Phaser.Scene, data) {
+    public constructor(parentScene: Phaser.Scene, data) {
         super(parentScene);
-        // this.parentScene = parentScene;
         this.posX = data.x;
         this.posY = data.y;
         this.gameController = data.controller;

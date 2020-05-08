@@ -1,1 +1,2 @@
-export * from '../basicwindows/tilewindow';
+export * from './tilewindow';
+export * from './witchwindow';

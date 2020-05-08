@@ -5,22 +5,19 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  WindowManager, StoryWindow, CollabWindow, MerchantWindow, DeathWindow, Fight, EventWindow,
-  BattleInvWindow, TradeWindow, ShieldWindow, WitchWindow, ContinueFightWindow, CoastalMerchantWindow
+  StoryWindow, CollabWindow, MerchantWindow, DeathWindow, Fight, EventWindow,
+  BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow, CoastalMerchantWindow
 } from "../windows/windows";
 import {
-  TileWindow
+  TileWindow, WitchWindow
 } from '../basicwindows/basicwindows';
 import {
-  expandedWidth, expandedHeight, borderWidth,
-  fullWidth, fullHeight, htX, htY, scaleFactor,
-  mageTile, archerTile, warriorTile, dwarfTile,
-  reducedWidth, reducedHeight, htShift,
-  collabTextHeight, collabColWidth, collabRowHeight,
-  collabFooterHeight, collabHeaderHeight,
-  wellTile1, wellTile2, wellTile3, wellTile4,
-  mOffset, enumPositionOfNarrator, storyCardWidths, storyCardHeights, merchantWindowWidth, merchantWindowHeight
+  expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
+  reducedWidth, reducedHeight, htX, htY, htShift, mOffset, 
+  collabColWidth, collabRowHeight, collabFooterHeight, collabHeaderHeight,
+  storyCardWidths, storyCardHeights, merchantWindowWidth, merchantWindowHeight
 } from '../constants'
+import { WindowManager } from '../utils/WindowManager';
 import { BasicWindowManager } from '../utils/BasicWindowManager';
 
 export default class GameScene extends Phaser.Scene {
@@ -683,15 +680,16 @@ export default class GameScene extends Phaser.Scene {
     var witch = this.add.image(this.tiles[tileID].x + 50, this.tiles[tileID].y - 5, "witch");
     witch.setInteractive({useHandCursor: true}).setScale(0.75);
     witch.on('pointerdown', (pointer) => {
-      if (self.scene.isVisible("witchwindow")) {
-        var window = WindowManager.get(this, "witchwindow")
-        window.disconnectListeners() // TODO: check if this call is actually necessary
-        window.destroy();
+      if (BasicWindowManager.hasWindow(`witchwindow`)) {
+        let window = BasicWindowManager.removeWindow(`witchwindow`);
+        window.disconnectListeners();
+        window.destroyWindow();
       } else {
-        WindowManager.createWindow(self, `witchwindow`, WitchWindow, {
+        BasicWindowManager.createWindow(self, `witchwindow`, WitchWindow, 
+        {
           controller: self.gameinstance,
-          x: pointer.x + 20,
-          y: pointer.y,
+          x: self.tiles[tileID].x + 50,
+          y: self.tiles[tileID].y + 40,
           w: 105,
           h: 70,
         })
