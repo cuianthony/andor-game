@@ -81,7 +81,7 @@ export class CollabWindow extends Window {
         if (this.initialSleep) {
             console.log('immediately sleep some collabs')
             // DEBUG TODO: UNCOMMENT
-            // this.scene.sleep(this.name);
+            this.scene.sleep(this.name);
         }
         // Initialize lists of resource names and max values
         if (this.resources) {

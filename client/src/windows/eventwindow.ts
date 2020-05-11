@@ -1,5 +1,4 @@
 import { Window } from "./window";
-import { storyCardTexts, storyCardStyleText } from '../constants'
 
 export class EventWindow extends Window {
     private id;
@@ -16,7 +15,6 @@ export class EventWindow extends Window {
         this.x = data.x - this.w/2;
         this.flavorText = data.flavorText;
         this.descText = data.descText;
-        
     }
 
     protected initialize() {

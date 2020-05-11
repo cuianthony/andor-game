@@ -4,7 +4,6 @@ export * from './collabwindow';
 export * from './deathwindow'
 export * from './merchantwindow';
 export * from './tradewindow';
-export * from './storywindow';
 export * from './shieldwindow';
 export * from './continuefightwindow';
 export * from './eventwindow';
