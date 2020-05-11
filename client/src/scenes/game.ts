@@ -692,7 +692,7 @@ export default class GameScene extends Phaser.Scene {
       console.log('create story window 10')
       this.createStoryWindow(10);
     }
-    this.scene.pause();
+    // this.scene.pause(); // TODO: toggle interactivity instead of pausing whole scene
     this.overlay.toggleInteractive(false);
   }
 
@@ -768,9 +768,11 @@ export default class GameScene extends Phaser.Scene {
       // }
     }
     console.log("created eventWindow")
-    WindowManager.createWindow(this, `eventWindow${event.id}`, EventWindow, {
-      x: reducedWidth / 2,
-      y: reducedHeight / 2,
+    BasicWindowManager.createWindow(this, `eventWindow${event.id}`, EventWindow, {
+      x: self.getCameraX() + reducedWidth / 2 - 150,
+      y: self.getCameraY() + reducedHeight / 2 - 125,
+      w: 300,
+      h: 250, 
       id: event.id,
       flavorText: event.flavorText,
       descText: event.desc,
@@ -1031,7 +1033,7 @@ export default class GameScene extends Phaser.Scene {
     // Listen for end of game state
     this.gameinstance.receiveEndOfGame(function () {
       self.createStoryWindow(10);
-      self.scene.pause(); // TODO: check if story window is added before update loop stops
+      // self.scene.pause(); // TODO: check if story window is added before update loop stops
       self.overlay.toggleInteractive(false);
     });
 
@@ -1154,7 +1156,7 @@ export default class GameScene extends Phaser.Scene {
 
         WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
         // Freeze main game while collab window is active
-        this.scene.pause();
+        // this.scene.pause();
       }
     })
   }

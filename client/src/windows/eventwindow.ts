@@ -1,20 +1,28 @@
-import { Window } from "./window";
+import { BasicWindow } from "../basicwindows/basicwindow";
+import { BasicWindowManager } from "../utils/BasicWindowManager";
 
-export class EventWindow extends Window {
+export class EventWindow extends BasicWindow {
     private id;
     private okButton: Phaser.GameObjects.Image;
-    private x;
     private flavorText;
     private descText;
-    private w = 300;
-    private h = 250;
 
-    public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
-        super(key, { x: data.x - 150, y: data.y - 125, width: 300, height: 250 }, windowZone);
+    private posX: number;
+    private posY: number;
+    private w: number;
+    private h: number;
+
+    public constructor(parentScene: Phaser.Scene, data) {
+        super(parentScene);
         this.id = data.id;
-        this.x = data.x - this.w/2;
+        this.posX = data.x;
+        this.posY = data.y;
+        this.w = data.w;
+        this.h = data.h;
         this.flavorText = data.flavorText;
         this.descText = data.descText;
+
+        this.initialize();
     }
 
     protected initialize() {
@@ -42,37 +50,52 @@ export class EventWindow extends Window {
         }
         
         let currY = 10
-        var title = this.add.text(this.w/2, currY, `Event Card ${this.id}`, titleStyle).setOrigin(0.5, 0);
+        var bg = this.parentScene.add.image(this.posX, this.posY, 'scrollbg').setOrigin(0);
+        var title = this.parentScene.add.text(this.posX+this.w/2, this.posY+currY, `Event Card ${this.id}`, titleStyle).setOrigin(0.5, 0);
         currY = currY + title.displayHeight + 20;
-        var flavor = this.add.text(this.w/2, currY, this.flavorText, flavorTextStyle).setOrigin(0.5, 0);
+        var flavor = this.parentScene.add.text(this.posX+this.w/2, this.posY+currY, this.flavorText, flavorTextStyle).setOrigin(0.5, 0);
         currY = currY + flavor.displayHeight + 10;
-        var desc = this.add.text(this.w/2, currY, this.descText, descTextStyle).setOrigin(0.5, 0);
+        var desc = this.parentScene.add.text(this.posX+this.w/2, this.posY+currY, this.descText, descTextStyle).setOrigin(0.5, 0);
         currY = currY + desc.displayHeight + 50;
-        var bg = this.add.image(0, 0, 'scrollbg').setDisplaySize(this.w, currY).setOrigin(0);
-
-        this.okButton = this.add.image(this.w - 35, bg.displayHeight - 35, 'okay');
+        bg.setDisplaySize(this.w, currY);
+        
+        this.okButton = this.parentScene.add.image(this.posX+this.w - 35, this.posY+bg.displayHeight - 35, 'okay');
         this.okButton.setInteractive({useHandCursor: true}).setDisplaySize(30, 30).setOrigin(0);
+        let windowName = `eventWindow${this.id}`;
         this.okButton.on('pointerdown', function (pointer) {
-            if(this.id == 16){
-                this.scene.remove(this.key)
+            // if(this.id == 16){
+            //     BasicWindowManager.removeWindow(windowName);
+            //     this.destroyWindow();
+            // }
+            // else if (this.parentScene.scene.get('collab')) {
+            //     this.parentScene.scene.bringToTop('collab')
+            //     this.parentScene.scene.wake('collab')
+            //     BasicWindowManager.removeWindow(windowName);
+            //     this.destroyWindow();
+            // }
+            // else{
+            //     BasicWindowManager.removeWindow(windowName);
+            //     this.destroyWindow();
+            // }
+            if (this.parentScene.scene.get('collab')) {
+                this.parentScene.scene.bringToTop('collab')
+                this.parentScene.scene.wake('collab')
             }
-            else if (this.scene.get('collab')) {
-                this.scene.bringToTop('collab')
-                this.scene.wake('collab')
-                this.scene.remove(this.key)
-            }
-            else{
-                this.scene.remove(this.key)
-            }
+            BasicWindowManager.removeWindow(windowName);
+            this.destroyWindow();
         }, this);
 
         // Animate the "scene" in. Can't target the scene but can add everything to a container
-        let storyContainer = this.add.container(0, 0, [bg, title, flavor, desc, this.okButton]);
-        storyContainer.alpha = 0;
-        this.tweens.add({
-            targets: storyContainer,
+        let elements = [bg, title, flavor, desc, this.okButton];
+        this.addElements(elements);
+        this.contents.setAlpha(0);
+        this.parentScene.tweens.add({
+            targets: this.contents.getChildren(),
             duration: 500,
             alpha: 1
         })
+    }
+
+    public disconnectListeners() {
     }
 }

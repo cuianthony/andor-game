@@ -109,7 +109,7 @@ export const gameInstrTextStyle = {
 
 // Narrator story info
 export const storyCardWidths = [470, 470, 470, 470, 470, 470, 470, 470, 470, 470, 470]
-export const storyCardHeights = [120, 155, 115, 200, 185, 100, 165, 160, 200, 200, 200]
+export const storyCardHeights = [120, 155, 115, 200, 185, 100, 165, 130, 200, 200, 200]
 
 export const storyCardStyleText = {
     fontSize: 12,
