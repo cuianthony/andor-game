@@ -234,7 +234,7 @@ export class HeroWindow extends Window {
         // TODO WELL: Listen for well use (WP inc) and farmer pickups/drops
 
         //todo account for falcon
-        console.log('ids:xxxxxxxxxxx', this.windowherotile, this.clientherotile)
+        // console.log('ids:xxxxxxxxxxx', this.windowherotile, this.clientherotile)
         this.gameinstance.getHeroItems(this.clienthero, function(dict) {
             if (self.clienthero != self.windowhero && (self.windowherotile == self.clientherotile ) || self.clienthero != self.windowhero && dict['largeItem'] == 'falcon') {
                 self.add.text(320,20, 'TRADE',{color: "#4944A4"}).setInteractive({useHandCursor: true}).on('pointerdown', function(pointer) {
@@ -270,7 +270,7 @@ export class HeroWindow extends Window {
                 case 'half_wineskin':
                     itemIcon.on('pointerdown', function(pointer) {
                         self.gameinstance.useWineskin('half', function() {
-                            console.log('dont get drunk')
+                            // console.log('dont get drunk')
                             itemIcon.removeAllListeners('pointerdown')
                             itemIcon.destroy();
                             switch (slot) {
@@ -287,13 +287,13 @@ export class HeroWindow extends Window {
                     })
                     break;
                 default:
-                    console.log(itemtype, 'does nothing from herowindow.')
+                    // console.log(itemtype, 'does nothing from herowindow.')
             }
         }
 
         switch (slot) {
             case 0:
-                console.log("load image into slot 0", item);
+                // console.log("load image into slot 0", item);
                 self.smallItem1 = self.add.image(25,255,item).setDisplaySize(35,35).setOrigin(0);
                 self.smallItem1key = item;
                 if (self.clienthero == self.windowhero){
@@ -301,7 +301,7 @@ export class HeroWindow extends Window {
                 }
                 break;
             case 1:
-                console.log("load image into slot 1", item);
+                // console.log("load image into slot 1", item);
                 self.smallItem2 = self.add.image(125,255,item).setDisplaySize(35,35).setOrigin(0);
                 self.smallItem2key = item;
                 if (self.clienthero == self.windowhero){
@@ -309,7 +309,7 @@ export class HeroWindow extends Window {
                 }
                 break;
             case 2:
-                console.log("load image into slot 2", item);
+                // console.log("load image into slot 2", item);
                 self.smallItem3 = self.add.image(225,255,item).setDisplaySize(35,35).setOrigin(0);
                 self.smallItem3key = item;
                 if (self.clienthero == self.windowhero){

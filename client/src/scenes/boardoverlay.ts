@@ -1,6 +1,6 @@
-import { Chat } from './chatwindow';
-import { HeroWindow } from './herowindow';
-import { Window } from './window'
+import { Chat } from '../windows/chatwindow';
+import { HeroWindow } from '../windows/herowindow';
+import { Window } from '../windows/window'
 import { WindowManager } from "../utils/WindowManager";
 import { game } from '../api/game';
 import { Tile } from '../objects/tile';
@@ -478,6 +478,7 @@ export default class BoardOverlay extends Phaser.Scene {
 
     // DEBUG TODO
     public updateCameraPosInfo(xPos, yPos) {
-        this.cameraInfo.setText(`cameraX: ${xPos}\ncameraY: ${yPos}`)
+        if (this.cameraInfo)
+            this.cameraInfo.setText(`cameraX: ${xPos}\ncameraY: ${yPos}`)
     }
 }

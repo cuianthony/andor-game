@@ -10,7 +10,7 @@ import {
   collabHeaderHeight,
   collabFooterHeight,
 } from "../constants";
-import BoardOverlay from "./boardoverlay";
+import BoardOverlay from "../scenes/boardoverlay";
 import { HeroKind } from "../objects";
 
 export class Fight extends Window {

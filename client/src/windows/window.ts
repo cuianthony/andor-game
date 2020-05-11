@@ -13,7 +13,6 @@ export abstract class Window extends Phaser.Scene {
     } 
  
     create () {
-        console.log('window create()', this.parent.x, this.parent.y, this.windowData.width, this.windowData.height)
         this.cameras.main.setViewport(this.parent.x, this.parent.y, this.windowData.width, this.windowData.height);
         this.initialize();
     }

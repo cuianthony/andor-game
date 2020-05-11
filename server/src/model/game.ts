@@ -504,15 +504,19 @@ export class Game {
         let hero = this.availableHeros.filter((hero) => hero.hk === heroType) // find hero
         if (hero.length === 1) {
             this.heroList.set(id, hero[0]);
+
+            // DEBUG TODO: REMOVE HARDCODED ITEMS
+            // hero[0]?.pickUpSmallItem(hero[0].getRegion().getID(), SmallItem.Telescope)
+            // hero[0]?.pickUpSmallItem(hero[0].getRegion().getID(), SmallItem.Telescope)
+            //
+
             if (!this.activeHeros.includes(heroType)) {
                 this.activeHeros.push(heroType);
             }
             // update start of game currPlayersTurn
-            console.log("binding hero rank", hero[0].getRank())
             if (!this.initialCollabDone && hero[0].getRank() < this.gameStartMinRank) {
                 this.gameStartMinRank = hero[0].getRank();
                 this.currPlayersTurn = heroType;
-                console.log("currplayersturn updated to", heroType, hero[0].getRank());
             }
             return true;
         }

@@ -9,12 +9,9 @@ export class WindowManager {
             this.y = dragY;
             window.refresh()
         });
-        console.log('window zone:', windowZone)
 
         parentScene.scene.add(key, window, true);
-        // console.log('window', key, 'isVisible: ', parentScene.scene.isVisible(key));
         parentScene.scene.bringToTop(key);
-        // console.log('active scenes: ', parentScene.game.scene.getScenes(true, false));
         return window;
     }
 
