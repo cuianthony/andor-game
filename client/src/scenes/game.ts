@@ -207,7 +207,7 @@ export default class GameScene extends Phaser.Scene {
       if (!data.initialCollabDone) {
         // Need to wait for heroes to be created before creating collab decision
         // DEBUG TODO: uncomment
-        // this.startingCollabDecisionSetup();
+        this.startingCollabDecisionSetup();
       } else {
         this.scene.resume();
       }
@@ -217,7 +217,7 @@ export default class GameScene extends Phaser.Scene {
       this.gameStartHeroPosition = data.startGamePos;
 
       // DEBUG TODO: uncomment addNarrator
-      // this.addNarrator(data.runestoneCardPos);
+      this.addNarrator(data.runestoneCardPos);
       //
 
       // Listen for all updates triggered by narrator advancing
@@ -546,22 +546,17 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.getNarratorPosition(function (pos: number) {
       // Trigger start of game instructions/story
       if (pos == -1) {
-        WindowManager.createWindow(self, `story`, StoryWindow, {
-          x: reducedWidth / 2 - 300,
-          y: reducedHeight / 2 - 250,
-          w: 600,
-          h: 500,
-          id: -1,
-          gameController: self.gameinstance,
-          firstNarrAdvance: (self.gameStartHeroPosition == self.heroes.length)
-        })
-        // WindowManager.create(self, `story0`, StoryWindow, {
-        //   x: reducedWidth / 2,
-        //   y: reducedHeight / 2,
-        //   id: 0,
-        //   gameController: self.gameinstance,
-        //   firstNarrAdvance: (self.gameStartHeroPosition == self.heroes.length)
-        // })
+        BasicWindowManager.createWindow(self, `story`, StoryWindow,
+          { 
+            x: self.getCameraX() + reducedWidth / 2 - 300,
+            y: self.getCameraY() + reducedHeight / 2 - 175,
+            w: 600,
+            h: 350,
+            id: -1,
+            gameController: self.gameinstance,
+            firstNarrAdvance: (self.gameStartHeroPosition == self.heroes.length)
+          }
+        );
 
         // First hero to enter the game triggers placement of the runestone legend
         // This is the only "narrator event" that gets directly triggered from the client
@@ -627,27 +622,20 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private createStoryWindow(storyID: number) {
-    WindowManager.createWindow(this, `story${storyID}`, StoryWindow, {
-      x: reducedWidth / 2 - storyCardWidths[storyID] / 2,
-      y: reducedHeight / 2 - storyCardHeights[storyID] / 2,
-      w: storyCardWidths[storyID],
-      h: storyCardHeights[storyID],
-      id: storyID
-    });
+    BasicWindowManager.createWindow(this, `story${storyID}`, StoryWindow,
+      { 
+        x: this.getCameraX() + reducedWidth / 2 - storyCardWidths[storyID] / 2,
+        y: this.getCameraY() + reducedHeight / 2 - storyCardHeights[storyID] / 2,
+        w: storyCardWidths[storyID],
+        h: storyCardHeights[storyID],
+        id: storyID
+      }
+    );
   }
 
   private narratorRunestones(stoneLocs: number[]) {
     console.log("client narratorRunestones", stoneLocs)
     // Display StoryWindows
-    // let id = 6;
-    // WindowManager.createWindow(this, `story6`, StoryWindow, {
-    //   x: reducedWidth / 2 - storyCardWidths[id],
-    //   y: reducedHeight / 2 - storyCardHeights[id],
-    //   w: storyCardWidths[id],
-    //   h: storyCardHeights[id],
-    //   id: id,
-    //   locs: stoneLocs
-    // })
     this.createStoryWindow(6)
   }
 
@@ -659,14 +647,6 @@ export default class GameScene extends Phaser.Scene {
     this.addPrince();
     
     this.createStoryWindow(3);
-    // let id = 3;
-    // WindowManager.createWindow(this, `story3`, StoryWindow, {
-    //   x: reducedWidth / 2 - storyCardWidths[id],
-    //   y: reducedHeight / 2 - storyCardHeights[id],
-    //   w: storyCardWidths[id],
-    //   h: storyCardHeights[id],
-    //   id: id
-    // });
   }
 
   private addPrince(tileID: number = 72) {
@@ -700,42 +680,25 @@ export default class GameScene extends Phaser.Scene {
   private narratorG() {
     // Remove prince
     this.prince.destroy();
-    // WindowManager.createWindow(this, `story7`, StoryWindow, {
-    //   x: reducedWidth / 2,
-    //   y: reducedHeight / 2,
-    //   id: 7
-    // })
     this.createStoryWindow(7);
   }
 
   private narratorN(win: boolean) {
     // console.log("At narrator NNNNN. client game narratorN: ", win)
-    var self = this;
     if (win) {
-      // console.log("kokoniiruyo")
-      // WindowManager.createWindow(self, `story9`, StoryWindow, {
-      //   x: reducedWidth / 2,
-      //   y: reducedHeight / 2,
-      //   id: 9
-      // })
       this.createStoryWindow(9);
     }
     else {
-      // WindowManager.createWindow(self, `story10`, StoryWindow, {
-      //   x: reducedWidth / 2,
-      //   y: reducedHeight / 2,
-      //   id: 10
-      // })
+      console.log('create story window 10')
       this.createStoryWindow(10);
     }
-    self.scene.pause();
-    self.overlay.toggleInteractive(false);
+    this.scene.pause();
+    this.overlay.toggleInteractive(false);
   }
 
   private addFog(fogs) {
     fogs.forEach((fog) => {
       const tile: Tile = this.tiles[fog[0]];
-      // console.log(fog[0], tile)
       const f = this.add.sprite(tile.x + 50, tile.y - 5, fog[1]).setDisplaySize(60, 60);
       f.name = fog[1];
       f.setTint(0x101010); // darken
@@ -868,7 +831,7 @@ export default class GameScene extends Phaser.Scene {
 
     WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
     // Freeze main game while collab window is active
-    this.scene.pause();
+    // this.scene.pause();
   }
 
   // Creating the hour tracker
@@ -936,12 +899,6 @@ export default class GameScene extends Phaser.Scene {
 
     // Reveal the witch
     this.gameinstance.revealWitch(tileID => {
-      // Witch story
-      // WindowManager.createWindow(self, `story8`, StoryWindow, {
-      //   x: reducedWidth / 2,
-      //   y: reducedHeight / 2,
-      //   id: 8
-      // })
       this.createStoryWindow(8);
       self.addWitch(tileID);
     })
@@ -1073,13 +1030,8 @@ export default class GameScene extends Phaser.Scene {
 
     // Listen for end of game state
     this.gameinstance.receiveEndOfGame(function () {
-      // WindowManager.createWindow(self, `story10`, StoryWindow, {
-      //   x: reducedWidth / 2,
-      //   y: reducedHeight / 2,
-      //   id: 10
-      // })
       self.createStoryWindow(10);
-      self.scene.pause();
+      self.scene.pause(); // TODO: check if story window is added before update loop stops
       self.overlay.toggleInteractive(false);
     });
 
@@ -1093,7 +1045,8 @@ export default class GameScene extends Phaser.Scene {
 
     this.gameinstance.receivePlayerDisconnected((hk) => {
       console.log("FREEZE GAME ", hk, " DISCONNECTED")
-      this.scene.pause();
+      self.scene.pause();
+      self.overlay.toggleInteractive(false);
     })
 
     //Destroying Well
@@ -1265,4 +1218,11 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
+  public getCameraX() : number {
+    return this.cameras.main.scrollX;
+  }
+
+  public getCameraY() : number {
+    return this.cameras.main.scrollY;
+  }
 }

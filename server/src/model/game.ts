@@ -506,8 +506,8 @@ export class Game {
             this.heroList.set(id, hero[0]);
 
             // DEBUG TODO: REMOVE HARDCODED ITEMS
-            hero[0]?.pickUpSmallItem(hero[0].getRegion().getID(), SmallItem.Telescope)
-            hero[0]?.pickUpSmallItem(hero[0].getRegion().getID(), SmallItem.Telescope)
+            // hero[0]?.pickUpSmallItem(hero[0].getRegion().getID(), SmallItem.Telescope)
+            // hero[0]?.pickUpSmallItem(hero[0].getRegion().getID(), SmallItem.Telescope)
             //
 
             if (!this.activeHeros.includes(heroType)) {
