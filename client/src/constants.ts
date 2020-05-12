@@ -103,7 +103,7 @@ export const gameInstructionsText =
 export const gameInstrTextStyle = {
     fontSize: 12,
     color: '#000000',
-    lineSpacing: 10,
+    lineSpacing: 4,
     wordWrap: { width: 570 }
 }
 

@@ -34,4 +34,12 @@ export class Monster extends Phaser.GameObjects.Sprite {
         this.x = this.tile.x + mOffset;
         this.y = this.tile.y;
     }
+
+    public toggleInteractive(flag: boolean) {
+        if (flag) {
+            this.setInteractive({useHandCursor: true});
+        } else {
+            this.disableInteractive();
+        }
+    }
 }

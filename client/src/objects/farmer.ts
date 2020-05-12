@@ -29,8 +29,15 @@ export class Farmer extends Phaser.GameObjects.Sprite {
         this.y = newTile.y
     }
 
-    public destoryFarmer(){
+    public destroyFarmer(){
         this.destroy();
     }
 
+    public toggleInteractive(flag: boolean) {
+        if (flag) {
+            this.setInteractive({useHandCursor: true});
+        } else {
+            this.disableInteractive();
+        }
+    }
 }

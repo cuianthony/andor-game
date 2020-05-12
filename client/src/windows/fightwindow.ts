@@ -2,6 +2,8 @@ import { Window } from "./window";
 import { game } from "../api/game";
 import { WindowManager } from "../utils/WindowManager";
 import { CollabWindow } from "./collabwindow";
+import BoardOverlay from "../scenes/boardoverlay";
+import GameScene from "../scenes/game";
 import {
   reducedWidth,
   reducedHeight,
@@ -10,8 +12,7 @@ import {
   collabHeaderHeight,
   collabFooterHeight,
 } from "../constants";
-import BoardOverlay from "../scenes/boardoverlay";
-import { HeroKind } from "../objects";
+// import { HeroKind } from "../objects";
 
 export class Fight extends Window {
   //  Class to display a fight window through which you can see mosnter stats and engage in a fight.
@@ -66,8 +67,9 @@ export class Fight extends Window {
   private shieldresponsesexpected = 0;
   private shieldresponsecnt = 0;
   private shieldinteractivecheckcnt = 0;
-  // To toggle interactivity of overlay
+  // To toggle interactivity of overlay and gamescene
   private overlayRef: BoardOverlay;
+  private gameSceneRef: GameScene;
 
   //continue fight stuff
   private continueresponsecnt = 0;
@@ -91,6 +93,7 @@ export class Fight extends Window {
     this.monster = data.monster;
     this.princePos = data.princePos;
     this.overlayRef = data.overlayRef;
+    this.gameSceneRef = data.gameSceneRef;
     var self = this;
     this.gameinstance.getHeroAttributes(this.hero.getKind(), function (data) {
         self.yourwill = data.will
@@ -641,7 +644,8 @@ export class Fight extends Window {
         //close without ending turn
         self.overlayRef.toggleInteractive(true);
         try {
-          self.scene.resume("Game");
+          // self.scene.resume("Game");
+          self.gameSceneRef.toggleInteractive(true);
         } catch {
           console.log("its fine");
         }
@@ -661,7 +665,8 @@ export class Fight extends Window {
     this.gameinstance.resetMonsterStats(this.monstername);
     this.overlayRef.toggleInteractive(true);
     try {
-      this.scene.resume("Game");
+      // this.scene.resume("Game");
+      this.gameSceneRef.toggleInteractive(true);
     } catch {
       console.log("its fine");
     }
@@ -841,6 +846,7 @@ export class Fight extends Window {
           h: height,
           infight: true,
           overlayRef: self.overlayRef,
+          gameSceneRef: self.gameSceneRef,
           ownHeroKind: self.hero.getKind(),
           type: "distribute",
         };
@@ -888,6 +894,7 @@ export class Fight extends Window {
           h: height,
           infight: true,
           overlayRef: self.overlayRef,
+          gameSceneRef: self.gameSceneRef,
           ownHeroKind: self.hero.getKind(),
           type: "distribute",
         };
@@ -922,7 +929,8 @@ export class Fight extends Window {
     var text = this.add.text(70, 150, "Click to accept.").setInteractive();
     text.on("pointerdown", function (pointer) {
       self.overlayRef.toggleInteractive(true);
-      self.scene.resume("Game");
+      // self.scene.resume("Game");
+      self.gameSceneRef.toggleInteractive(true);
       self.scene.remove(self.windowname);
       self.gameinstance.endTurn()
       // Deprecated: removed turn logic from frontend
@@ -976,7 +984,8 @@ export class Fight extends Window {
         self.overlayRef.toggleInteractive(true);
         // Deprecated: removed turn logic from frontend
         // self.gameinstance.endTurnOnEndDay()
-        self.scene.resume("Game");
+        // self.scene.resume("Game");
+        self.gameSceneRef.toggleInteractive(true);
         self.scene.remove(this.windowname);
         // self.gameinstance.endTurnOnEndDay()
         //make it their turn and make them immediately start the fight.

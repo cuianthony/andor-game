@@ -1,5 +1,6 @@
 import { Window } from "./window";
 import { game } from '../api/game';
+import GameScene from '../scenes/game';
 import { collabTextHeight, collabColWidth, collabRowHeight,
         collabHeaderHeight, collabFooterHeight } from '../constants'
 import { ResourceToggle } from "../widgets/ResourceToggle";
@@ -33,6 +34,7 @@ export class CollabWindow extends Window {
     private infight: boolean = false;
 
     private overlayRef: BoardOverlay;
+    private gameSceneRef: GameScene;
 
     private name;
     
@@ -46,6 +48,7 @@ export class CollabWindow extends Window {
     private eventID
     private eventToBeBlockedID
     private desc
+
     public constructor(key: string, data, windowZone: Phaser.GameObjects.Zone) {
         super(key, {x: data.x, y: data.y, width: data.w, height: data.h}, windowZone);
 
@@ -57,6 +60,7 @@ export class CollabWindow extends Window {
         this.height = data.h;
         this.infight = data.infight;
         this.overlayRef = data.overlayRef;
+        this.gameSceneRef = data.gameSceneRef;
         this.name = key
 
         this.involvedHeroes = data.involvedHeroes;
@@ -181,7 +185,8 @@ export class CollabWindow extends Window {
                 }
             }
             if(involved){
-                self.scene.resume('Game');
+                // self.scene.resume('Game');
+                self.gameSceneRef.toggleInteractive(true);
 
                 // Reset overlay interactive
                 self.overlayRef.toggleInteractive(true);

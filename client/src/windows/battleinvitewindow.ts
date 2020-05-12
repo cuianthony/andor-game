@@ -3,6 +3,8 @@ import { game } from '../api/game';
 import { WindowManager } from "../utils/WindowManager";
 import { CollabWindow } from './collabwindow';
 import { collabColWidth, collabHeaderHeight, collabRowHeight, collabFooterHeight, reducedWidth, reducedHeight } from "../constants";
+import GameScene from "../scenes/game";
+import BoardOverlay from "../scenes/boardoverlay";
 
 export class BattleInvWindow extends Window {
 
@@ -22,9 +24,9 @@ export class BattleInvWindow extends Window {
     private roll = -1;
     private str = -1;
     private hero
-    private gamescene
+    private gameSceneRef: GameScene
     private monstertileid;
-    private overlayRef;
+    private overlayRef: BoardOverlay;
 
     public constructor(key: string, data, windowData = { x: 350, y: 30, width: 400, height: 250 }, windowZone: Phaser.GameObjects.Zone) {
         super(key, windowData, windowZone);
@@ -32,7 +34,7 @@ export class BattleInvWindow extends Window {
         this.windowname = key
         this.herokind = data.hero.getKind()
         this.hero = data.hero
-        this.gamescene = data.gamescene
+        this.gameSceneRef = data.gamescene
         this.monstertileid = data.monstertileid
         this.overlayRef = data.overlayRef;
     }
@@ -163,10 +165,11 @@ export class BattleInvWindow extends Window {
                             h: height,
                             infight:false,
                             overlayRef: self.overlayRef,
+                            gameSceneRef: self.gameSceneRef,
                             ownHeroKind: self.hero.getKind(),
                             type: 'distribute'
                           }
-                          WindowManager.createWindow(self.gamescene, windowname, CollabWindow, collabWindowData);
+                          WindowManager.createWindow(self.gameSceneRef, windowname, CollabWindow, collabWindowData);
                     })
                     self.scene.remove(self.windowname)
                 })   

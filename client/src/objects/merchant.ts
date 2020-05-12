@@ -16,4 +16,12 @@ export class Merchant extends Phaser.GameObjects.Image {
     public getTileID() {
         return this.tile.getID();
     }
+
+    public toggleInteractive(flag: boolean) {
+        if (flag) {
+            this.setInteractive({useHandCursor: true});
+        } else {
+            this.disableInteractive();
+        }
+    }
 }

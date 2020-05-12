@@ -93,13 +93,6 @@ export default class BoardOverlay extends Phaser.Scene {
 
         var self = this;
 
-        const style2 = {
-            fontFamily: '"Roboto Condensed"',
-            fontSize: "20px",
-            backgroundColor: '#f00',
-            "text-transform": "uppercase"
-        }
-
         //Options
         var optionsIcon = this.add.image(55, 40, 'optionsicon').setInteractive({useHandCursor: true});
         optionsIcon.setScale(0.2)
@@ -222,7 +215,12 @@ export default class BoardOverlay extends Phaser.Scene {
         this.add.image(10, 512, heroTexture).setScale(0.16).setOrigin(0);
 
         // TODO: REMOVE LATER, FOR TESTING NARRATOR ONLY
-        // var advance = this.add.text(400, 560, "ADVANCE NARRATOR", style2).setInteractive()
+        // var advance = this.add.text(400, 560, "ADVANCE NARRATOR", {
+        //     fontFamily: '"Roboto Condensed"',
+        //     fontSize: "20px",
+        //     backgroundColor: '#f00',
+        //     "text-transform": "uppercase"
+        // }).setInteractive()
         // advance.on('pointerdown', function (pointer) {
         //     this.gameinstance.advanceNarrator();
         // }, this)

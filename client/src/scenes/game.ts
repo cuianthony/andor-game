@@ -29,7 +29,6 @@ export default class GameScene extends Phaser.Scene {
   private tiles: Tile[];
   // Note acui: was having trouble using wells map with number typed keys, so converting to strings
   private wells: Map<string, Well>;
-
   private farmers: Farmer[];
   private hourTracker: HourTracker;
   private gameinstance: game;
@@ -38,6 +37,10 @@ export default class GameScene extends Phaser.Scene {
   private castle: RietburgCastle;
   private prince: Prince;
   private herb: Phaser.GameObjects.Image;
+  private witch: Phaser.GameObjects.Image;
+  private fogs: Phaser.GameObjects.Sprite[];
+  private tempMerchant: Phaser.GameObjects.Image;
+  private merchants: Merchant[];
 
   private narrator: Narrator;
   private gameStartHeroPosition: number;
@@ -55,7 +58,6 @@ export default class GameScene extends Phaser.Scene {
   private turntext;
 
   private overlay: BoardOverlay;
-  private tempMerchant
   private shiftKey;
   private ctrlKey;
 
@@ -70,6 +72,8 @@ export default class GameScene extends Phaser.Scene {
     this.monsterNameMap = new Map();
     this.castle = new RietburgCastle();
     this.eventBeingDisplayed = false
+    this.fogs = [];
+    this.merchants = [];
   }
 
   public init(data) {
@@ -209,7 +213,8 @@ export default class GameScene extends Phaser.Scene {
         // DEBUG TODO: uncomment
         this.startingCollabDecisionSetup();
       } else {
-        this.scene.resume();
+        // this.scene.resume();
+        this.toggleInteractive(true);
       }
 
       // Add narrator: this happens here because we want initial game instructions to be
@@ -223,6 +228,22 @@ export default class GameScene extends Phaser.Scene {
       // Listen for all updates triggered by narrator advancing
       this.receiveNarratorEvents();
     })
+
+    // TODO: REMOVE, used for testing GameScene interactivity toggle
+    // let pauseButton = this.add.text(400, 560, "Pause Scene", {
+    //   fontSize: "20px",
+    //   backgroundColor: '#f00',
+    // }).setInteractive()
+    // pauseButton.on('pointerdown', function (pointer) {
+    //     this.toggleInteractive(false);
+    // }, this)
+    // let startButton = this.add.text(400, 530, "Start Scene", {
+    //   fontSize: "20px",
+    //   backgroundColor: '#f00',
+    // }).setInteractive()
+    // startButton.on('pointerdown', function (pointer) {
+    //     this.toggleInteractive(true);
+    // }, this)
 
     // Auto-saving, disabled now so save your games manually
     // setInterval(() => {
@@ -443,7 +464,6 @@ export default class GameScene extends Phaser.Scene {
     let monster: Monster = new Monster(this, tile, type, id).setInteractive({useHandCursor: true}).setScale(.5);
     this.monsters.push(monster);
     this.monsterNameMap[monster.name] = monster;
-    tile.setMonster(monster);
     this.add.existing(monster);
     monster.on('pointerdown', function (pointer) {
       if (this.scene.isVisible(monster.name)) {
@@ -462,9 +482,11 @@ export default class GameScene extends Phaser.Scene {
           controller: this.gameinstance,
           hero: this.hero, monster: monster, heroes: this.heroes,
           overlayRef: this.overlay,
+          gameSceneRef: this,
           princePos: princetile
         });
-        this.scene.pause()
+        // this.scene.pause()
+        this.toggleInteractive(false);
       }
     }, this)
   }
@@ -516,6 +538,7 @@ export default class GameScene extends Phaser.Scene {
     const tile: Tile = this.tiles[tileNumber];
     const newMerchant = new Merchant(this, x * scaleFactor + borderWidth,
       y * scaleFactor + borderWidth, "merchant-trade", tile, this.gameinstance).setDisplaySize(35, 35);
+    this.merchants.push(newMerchant);
 
     var self = this;
     newMerchant.on('pointerdown', function (pointer) {
@@ -547,12 +570,12 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.getNarratorPosition(function (pos: number) {
       // Trigger start of game instructions/story
       if (pos == -1) {
-        BasicWindowManager.createWindow(self, `story`, StoryWindow,
+        BasicWindowManager.createWindow(self, 'story', StoryWindow,
           { 
             x: self.getCameraX() + reducedWidth / 2 - 300,
-            y: self.getCameraY() + reducedHeight / 2 - 175,
+            y: self.getCameraY() + reducedHeight / 2 - 195,
             w: 600,
-            h: 350,
+            h: 390,
             id: -1,
             gameController: self.gameinstance,
             firstNarrAdvance: (self.gameStartHeroPosition == self.heroes.length)
@@ -658,9 +681,9 @@ export default class GameScene extends Phaser.Scene {
   private addWitch(tileID: number) {
     // Place the witch on tileID
     var self = this
-    var witch = this.add.image(this.tiles[tileID].x + 50, this.tiles[tileID].y - 5, "witch");
-    witch.setInteractive({useHandCursor: true}).setScale(0.75);
-    witch.on('pointerdown', (pointer) => {
+    this.witch = this.add.image(this.tiles[tileID].x + 50, this.tiles[tileID].y - 5, "witch");
+    this.witch.setInteractive({useHandCursor: true}).setScale(0.75);
+    this.witch.on('pointerdown', (pointer) => {
       if (BasicWindowManager.hasWindow(`witchwindow`)) {
         let window = BasicWindowManager.removeWindow(`witchwindow`);
         window.disconnectListeners();
@@ -694,6 +717,7 @@ export default class GameScene extends Phaser.Scene {
       this.createStoryWindow(10);
     }
     // this.scene.pause(); // TODO: toggle interactivity instead of pausing whole scene
+    this.toggleInteractive(false);
     this.overlay.toggleInteractive(false);
   }
 
@@ -705,6 +729,7 @@ export default class GameScene extends Phaser.Scene {
       f.setTint(0x101010); // darken
       tile.setFog(f) // add to tile
       f.setInteractive({useHandCursor: true});
+      this.fogs.push(f);
       this.add.existing(f);
       var self = this
       f.on("pointerdown", (pointer) => {
@@ -826,6 +851,7 @@ export default class GameScene extends Phaser.Scene {
       h: height,
       infight: false,
       overlayRef: self.overlay,
+      gameSceneRef: self,
       ownHeroKind: this.ownHeroType,
       type: 'distribute',
       initialSleep: true,
@@ -835,6 +861,7 @@ export default class GameScene extends Phaser.Scene {
     WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
     // Freeze main game while collab window is active
     // this.scene.pause();
+    this.toggleInteractive(false);
   }
 
   // Creating the hour tracker
@@ -977,9 +1004,11 @@ export default class GameScene extends Phaser.Scene {
           controller: self.gameinstance,
           hero: self.hero, monster: monster, heroes: self.heroes,
           overlayRef: self.overlay,
+          gameSceneRef: this,
           princePos: princetile
         });
-        self.scene.pause()
+        // self.scene.pause()
+        self.toggleInteractive(false);
       }
     })
 
@@ -1048,7 +1077,8 @@ export default class GameScene extends Phaser.Scene {
 
     this.gameinstance.receivePlayerDisconnected((hk) => {
       console.log("FREEZE GAME ", hk, " DISCONNECTED")
-      self.scene.pause();
+      // self.scene.pause();
+      self.toggleInteractive(false);
       self.overlay.toggleInteractive(false);
     })
 
@@ -1145,6 +1175,7 @@ export default class GameScene extends Phaser.Scene {
           h: height,
           infight: false,
           overlayRef: self.overlay,
+          gameSceneRef: self,
           ownHeroKind: this.ownHeroType,
           type: type,
           heroMaxes: heroMaxes,
@@ -1191,6 +1222,37 @@ export default class GameScene extends Phaser.Scene {
         }
       }
     });
+  }
+
+  public toggleInteractive(flag: boolean) {
+    // Toggle interactivity of GameScene elements
+    for (let tile of this.tiles) {
+      tile.toggleInteractive(flag);
+    }
+    for (let merchant of this.merchants) {
+      merchant.toggleInteractive(flag);
+    }
+    for (let monster of this.monsters) {
+      monster.toggleInteractive(flag);
+    }
+    for (let well of Array.from(this.wells.values())) {
+      well.toggleInteractive(flag);
+    }
+    for (let farmer of this.farmers) {
+      farmer.toggleInteractive(flag);
+    }
+    for (let fog of this.fogs) {
+      if (flag) fog.setInteractive();
+      else fog.disableInteractive();
+    }
+    if (this.witch) {
+      if (flag) this.witch.setInteractive();
+      else this.witch.disableInteractive();
+    }
+    if (this.tempMerchant) {
+      if (flag) this.tempMerchant.setInteractive();
+      else this.tempMerchant.disableInteractive();
+    }
   }
 
   public update() {
