@@ -87,7 +87,7 @@ export class Hero {
         this.timeOfDay++
     }
 
-    //Prince has oen moveTo, this just increments timeOfDay
+    //Prince has one moveTo, this just increments timeOfDay
     public movePrince(){
         this.movePrinceCtr++;
         this.timeOfDay++;
@@ -269,30 +269,22 @@ export class Hero {
         var r_farmers = this.region.getFarmers();
         if(r_farmers.length != 0 && (this.region.getID() === r_farmers[r_farmers.length-1].getTileID())){
             var farmer = this.region.getFarmers().pop()!;
-            // farmer.carriedBy = this;
             this.farmers.push(farmer);
             return true;
-            // return this.region;
         }
-        // return this.region;
         return false;
     }
 
-    public dropFarmer() {
-        var r_farmers = this.region.getFarmers();
-        var result = new Array()
-        if(r_farmers.length < 2 && this.farmers.length > 0){
+    public dropFarmer() : number {
+        if(this.farmers.length > 0){
             var farmer = this.farmers.pop()!;
-            // farmer.carriedBy = undefined;
             if(this.region.getID() != 0){
                 farmer.setTileID(this.region.getID());
                 this.region.getFarmers().push(farmer);
             }
-            result.push(farmer.getFarmerID())
-            result.push(this.region.getID())
-            return result;
+            return this.region.getID();
         }
-        return result;
+        return -1; // return error code
     }
 
     public dropGold() {        
@@ -345,11 +337,11 @@ export class Hero {
         var reg = this.region;
         if (reg.getHasWell() && !reg.getWellUsed()) {
             if (this.hk == HeroKind.Warrior) {
-                // increase 5WP
+                // Warrior ability is to increase 5WP
                 this.will += 5;
                 wpInc = this.will > 20 ? 25-this.will : 5;
             } else {
-                //increase 3 will power
+                //increase 3WP
                 this.will += 3;
                 wpInc = this.will > 20 ? 23-this.will : 3;
             }

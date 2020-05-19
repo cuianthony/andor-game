@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import Scenes from './scenes/';
-import {reducedWidth, reducedHeight} from './constants'
+import {reducedWidth, reducedHeight} from './constants';
+// import RexUIPlugin from 'phaser3-rex-plugins/templates/ui/ui-plugin.js';
 
 const gameConfig: Phaser.Types.Core.GameConfig = {
   title: 'Sample',
@@ -18,6 +19,16 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
       debug: true,
     },
   },
+
+  // can't get this to work
+  // plugins: {
+  //   scene: [{
+  //       key: 'rexUI',
+  //       plugin: RexUIPlugin,
+  //       mapping: 'rexUI'
+  //     },
+  //   ]
+  // },
  
   parent: 'game',
   backgroundColor: '#000000',

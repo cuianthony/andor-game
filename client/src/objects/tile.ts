@@ -5,15 +5,15 @@ export class Tile extends Phaser.GameObjects.Sprite {
     public id: number;
     public x: number;
     public y: number;
-    public farmers: Array<Farmer>;
+    private farmers: Array<Farmer>;
     private fog: Phaser.GameObjects.Sprite;
 
-    constructor(id, scene, x: number, y: number, texture: string, adj: Array<number>) {
-        super(scene, x, y, 'tiles', texture);
+    constructor(id, scene, x: number, y: number) {
+        super(scene, x, y, 'tiles', 'pipo-map001-3.png');
         this.id = id;
         this.x = x;
         this.y = y;
-        this.farmers = new Array(2);
+        this.farmers = new Array();
         this.fog = null;
     }
 
@@ -27,6 +27,14 @@ export class Tile extends Phaser.GameObjects.Sprite {
 
     public getID() {
         return this.id;
+    }
+
+    public pushFarmer(farmer: Farmer) {
+        this.farmers.push(farmer);
+    }
+
+    public popFarmer() : Farmer {
+        return this.farmers.pop();
     }
 
     public toggleInteractive(flag: boolean) {

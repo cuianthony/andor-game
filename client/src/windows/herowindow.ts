@@ -134,14 +134,12 @@ export class HeroWindow extends Window {
         
         // Drop farmer button
         this.farmerDrop.on('pointerdown', function (pointer) {
-            self.gameinstance.dropFarmer(function (tilenum) {
-                if(self.farmers > 0){
-                    self.farmers--;
-                    self.refreshText();
-                }
+            self.gameinstance.dropFarmer(() => {
+                self.farmers--;
+                self.refreshText();
             })
 
-        }, this);
+        });
 
         // Drop gold button
         this.goldDrop.on('pointerdown', function () {            

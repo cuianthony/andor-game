@@ -4,10 +4,8 @@ import { SmallItem } from './SmallItem';
 import { HeroKind } from './HeroKind';
 
 export const dFarmers = [{
-    id: 0,
     tileID: 24
 }, {
-    id: 1,
     tileID: 36
 }]
 

@@ -26,13 +26,6 @@ export const archerTile = 25;
 export const warriorTile = 14;
 export const mageTile = 34;
 
-// Collab window UI
-export const collabTextHeight = 12;
-export const collabRowHeight = 50;
-export const collabColWidth = 70;
-export const collabHeaderHeight = 75;
-export const collabFooterHeight = 60;
-
 // Well tile IDs
 export const wellTile1 = 5;
 export const wellTile2 = 35;
@@ -41,6 +34,19 @@ export const wellTile4 = 55;
 
 // fog tile IDs
 export const fogs = [8, 11, 12, 13, 49, 16, 32, 48, 42, 44, 47, 46, 64, 56, 63];
+
+// export const treeTextureFrame = 
+
+// Collab window UI
+export const collabTextHeight = 12;
+export const collabRowHeight = 50;
+export const collabColWidth = 70;
+export const collabHeaderHeight = 75;
+export const collabFooterHeight = 60;
+
+// Merchant window UI
+export const merchantWindowWidth = 400;
+export const merchantWindowHeight = 400;
 
 // narrator image's X-coord is a constant
 export const narratorXCoord = 9450 * scaleFactor + borderWidth
@@ -198,6 +204,3 @@ Tips for next time:
   entire reward in gold. Then just one hero has to get to the 
   merchant`
 ]
-
-export const merchantWindowWidth = 400;
-export const merchantWindowHeight = 400;

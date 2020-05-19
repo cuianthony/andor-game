@@ -47,7 +47,7 @@ export class Game {
 
     private fogs: Map<number, Fog>;
     private regions: Array<Region>;
-    private farmers: Array<Farmer>;
+    private farmers: Array<Farmer>; // tracks the farmers that are on the board (not carried by heroes)
     private monsters: Map<string, Monster>;
     private monstersInCastle: string[];
     private endOfGame: boolean = false;
@@ -314,7 +314,7 @@ export class Game {
 
     public setFarmers(f) {
         f.forEach((farmer) => {
-            const farmObj = new Farmer(farmer.id, farmer.tileID);
+            const farmObj = new Farmer(farmer.tileID);
             this.farmers.push(farmObj)
             this.regions[farmObj.getTileID()].addFarmer(farmObj);
         })
@@ -878,7 +878,7 @@ export class Game {
         }
 
         // Add farmer
-        let farmObj = new Farmer(2, 28);
+        let farmObj = new Farmer(28);
         this.farmers.push(farmObj)
         this.regions[farmObj.getTileID()].addFarmer(farmObj);
 

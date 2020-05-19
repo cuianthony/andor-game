@@ -110,21 +110,21 @@ export function game(socket, model: Game, io) {
       if (hero.getTimeOfDay() == 8 && event26) {
         hero.freeMoveTo(targetRegion)
         if(freeMoves == 0){
-          console.log("A")
+          // console.log("A")
           io.of("/" + model.getName()).emit('receiveUpdateHeroTracker', hero.getKind());
         }
       }
       else if ((hero.getTimeOfDay() == 9 || (hero.getTimeOfDay() == 10 && !event9)) && event19) {
         hero.exhaustingMoveTo(targetRegion)
         if(freeMoves == 0){
-          console.log("B")
+          // console.log("B")
           io.of("/" + model.getName()).emit('receiveUpdateHeroTracker', hero.getKind());
         }
       }
       else {
         hero.moveTo(targetRegion)
         if(freeMoves == 0){
-          console.log("C")
+          // console.log("C")
           io.of("/" + model.getName()).emit('receiveUpdateHeroTracker', hero.getKind());
         }
       }
@@ -312,32 +312,29 @@ export function game(socket, model: Game, io) {
           }
         })
         console.log(model.getFarmers())
-        socket.broadcast.emit("destroyFarmer", hero.getRegion().getID());
         callback();
       }
     }
   });
 
   socket.on("dropFarmer", function (callback) {
-    var result = new Array()
     let heroId = socket.conn.id;
     let hero = model.getHero(heroId);
-    if (hero !== undefined) {
-      result = hero.dropFarmer();
+    if (hero == undefined) return;
 
-      //result[1] = dropped region id, result[0] = farmer id
-      // If drop unsuccessful, it will be an empty array
-      if (result.length == 2) {
-        //Farmer dropped on reitburg
-        if (result[1] === 0) {
-          model.getCastle().incShields();
-        }
-        else {
-          model.getFarmers().push(new Farmer(result[0], result[1]))
-        }
-        io.of("/" + model.getName()).emit("addFarmer", result[1], result[0])
-        callback(result[1]);
+    let tileID = hero.dropFarmer();
+
+    // If drop unsuccessful, dropFarmer returns -1 error code
+    if (tileID != -1) {
+      //Farmer dropped on reitburg
+      if (tileID === 0) {
+        model.getCastle().incShields();
       }
+      else {
+        model.getFarmers().push(new Farmer(tileID))
+      }
+      io.of("/" + model.getName()).emit("addFarmer", tileID)
+      callback();
     }
   });
 

@@ -29,7 +29,7 @@ export default class GameScene extends Phaser.Scene {
   private tiles: Tile[];
   // Note acui: was having trouble using wells map with number typed keys, so converting to strings
   private wells: Map<string, Well>;
-  private farmers: Farmer[];
+  private farmersOnBoard: Farmer[];
   private hourTracker: HourTracker;
   private gameinstance: game;
   private monsters: Monster[];
@@ -66,7 +66,7 @@ export default class GameScene extends Phaser.Scene {
     this.heroes = Array<Hero>();
     this.tiles = Array<Tile>();
     this.wells = new Map();
-    this.farmers = new Array<Farmer>();
+    this.farmersOnBoard = new Array<Farmer>();
     this.ownHeroType = HeroKind.Dwarf;
     this.monsters = new Array<Monster>();
     this.monsterNameMap = new Map();
@@ -162,7 +162,7 @@ export default class GameScene extends Phaser.Scene {
       })
 
       data.farmers.forEach(farmer => {
-        this.addFarmer(farmer.id, farmer.tileID);
+        this.addFarmer(farmer.tileID);
       })
 
       data.heroList.forEach(hero => {
@@ -229,7 +229,7 @@ export default class GameScene extends Phaser.Scene {
       this.receiveNarratorEvents();
     })
 
-    // TODO: REMOVE, used for testing GameScene interactivity toggle
+    // DEBUG TODO: REMOVE, used for testing GameScene interactivity toggle
     // let pauseButton = this.add.text(400, 560, "Pause Scene", {
     //   fontSize: "20px",
     //   backgroundColor: '#f00',
@@ -304,11 +304,12 @@ export default class GameScene extends Phaser.Scene {
     // Note that regions 73-79 and 83 are unused, but created anyways to preserve direct
     // indexing between regions array and region IDs
     // var tilesData = require("../utils/xycoords").map;
-    var treeTile = this.textures.get('tiles').getFrameNames()[12];
+    // var treeTile = this.textures.get('tiles').getFrameNames()[12];
+    // console.log('tree texture frame: ', treeTile);
     for (let t of tilesData) {
       let xPos = t.xcoord * scaleFactor + borderWidth;
       let yPos = t.ycoord * scaleFactor + borderWidth;
-      var tile = new Tile(t.id, this, xPos, yPos, treeTile, t.adjRegionsIds);
+      var tile = new Tile(t.id, this, xPos, yPos);
       this.tiles[t.id] = tile;
       tile.setInteractive({useHandCursor: true});
       this.add.existing(tile);
@@ -491,20 +492,20 @@ export default class GameScene extends Phaser.Scene {
     }, this)
   }
 
-  private addFarmer(id: number, tileID: number) {
-    const tile: Tile = this.tiles[tileID];
-    const farmerObj = new Farmer(id, this, tile, 'farmer').setDisplaySize(40, 40).setInteractive({useHandCursor: true});
-    this.farmers.push(farmerObj);
-    tile.farmers.push(farmerObj);
+  private addFarmer(tileID: number) {
+    let tile: Tile = this.tiles[tileID];
+    let farmerObj = new Farmer(tileID, tile.x + 10, tile.y, this);
+    this.farmersOnBoard.push(farmerObj);
+    tile.pushFarmer(farmerObj);
     this.add.existing(farmerObj);
 
     var self = this;
-
     farmerObj.on('pointerdown', () => {
-      self.gameinstance.pickupFarmer(farmerObj.tile.getID(), function (tileid) {
+      self.gameinstance.pickupFarmer(farmerObj.getTileID(), () => {
+        self.farmersOnBoard.splice(self.farmersOnBoard.indexOf(farmerObj), 1);
         farmerObj.destroy();
       });
-    }, this);
+    });
   }
 
 
@@ -667,7 +668,7 @@ export default class GameScene extends Phaser.Scene {
   private narratorC() {
     console.log("client narratorC")
     // Place farmer and prince, these are hardcoded for now
-    this.addFarmer(2, 28);
+    this.addFarmer(28);
     this.addPrince();
     
     this.createStoryWindow(3);
@@ -1038,11 +1039,12 @@ export default class GameScene extends Phaser.Scene {
     // FARMERS
     this.gameinstance.destroyFarmer(function (tileid) {
       console.log("Entered destroyfarmer listener")
-      let pickedFarmer: Farmer = self.tiles[tileid].farmers.pop();
+      let pickedFarmer: Farmer = self.tiles[tileid].popFarmer();
+      self.farmersOnBoard.splice(self.farmersOnBoard.indexOf(pickedFarmer), 1);
       pickedFarmer.destroy()
     });
 
-    this.gameinstance.addFarmer(function (tileid, farmerid) {
+    this.gameinstance.addFarmer(function (tileid) {
       if (tileid === 0) {
         for (var i = 0; i < 6; i++) {
           if (self.castle.shields[i].visible == true) {
@@ -1051,7 +1053,7 @@ export default class GameScene extends Phaser.Scene {
           }
         }
       } else {
-        self.addFarmer(+farmerid, tileid)
+        self.addFarmer(tileid)
       }
     });
 
@@ -1064,6 +1066,7 @@ export default class GameScene extends Phaser.Scene {
     this.gameinstance.receiveEndOfGame(function () {
       self.createStoryWindow(10);
       // self.scene.pause(); // TODO: check if story window is added before update loop stops
+      self.toggleInteractive(false);
       self.overlay.toggleInteractive(false);
     });
 
@@ -1238,7 +1241,7 @@ export default class GameScene extends Phaser.Scene {
     for (let well of Array.from(this.wells.values())) {
       well.toggleInteractive(flag);
     }
-    for (let farmer of this.farmers) {
+    for (let farmer of this.farmersOnBoard) {
       farmer.toggleInteractive(flag);
     }
     for (let fog of this.fogs) {
