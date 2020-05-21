@@ -201,6 +201,12 @@ export class game {
     public disconnectUpdatePickupFarmer() {
         this.socket.off("udpatePickupFarmer")
     }
+    public updateWP(callback) {
+        this.socket.on("updateWP", callback)
+    }
+    public disconnectUpdateWP() {
+        this.socket.off("updateWP")
+    }
 
     // Updates for TileWindows
     public updateDropItemTile(callback) {

@@ -235,6 +235,12 @@ export class HeroWindow extends Window {
             self.refreshText();
         })
 
+        this.gameinstance.updateWP( (hk: string, wpDelta: number) => {
+            if (hk != self.windowhero) return;
+            self.will += wpDelta;
+            self.refreshText();
+        })
+
         // TODO WELL: Listen for well use (WP inc) and farmer pickups/drops
 
         //todo account for falcon
@@ -343,7 +349,7 @@ export class HeroWindow extends Window {
 
     private refreshText() {
         this.goldtext.setText('Gold: ' + this.gold)
-        // this.willtext.setText('Willpower: ' + this.will)
+        this.willtext.setText('Willpower: ' + this.will)
         this.farmtext.setText('Farmers: ' + this.farmers)
     }
 

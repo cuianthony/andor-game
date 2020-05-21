@@ -612,25 +612,26 @@ export function game(socket, model: Game, io) {
       socket.emit("updateGameLog", "You cannot use a well after you have ended your day.");
       return;
     }
-    if (hero !== undefined) {
-      let wpInc = hero.useWell();
-      if (wpInc != -1) { // success
-        // pass back the determined amount of wp to add to the hero
-        console.log("Server: Well use success,", hero.getKind(), wpInc); //may need to convert to string
-        // Update the hero that used the well
-        callback(wpInc);
-        // Update the other heroes
-        socket.broadcast.emit("updateWell", hero.getRegion().getID(), wpInc);
-        // TODO WELL: update hero windows
+    if (hero == undefined) return;
+    
+    let wpInc = hero.useWell();
+    if (wpInc != -1) { // success
+      // pass back the determined amount of wp to add to the hero
+      console.log("Server: Well use success,", hero.getKind(), wpInc); //may need to convert to string
+      // Update the hero that used the well
+      callback(wpInc);
+      // Update the other heroes
+      socket.broadcast.emit("updateWell", hero.getRegion().getID());
+      // TODO WELL: update hero windows
+      io.of("/" + model.getName()).emit('updateWP', hero.getKind(), wpInc);
 
-        // Update game log
-        var msg = `The ${hero.getKind()} drank from a well.`
-        socket.emit("updateGameLog", msg);
-        socket.broadcast.emit("updateGameLog", msg);
-        // End turn
-        if (model.getCurrPlayersTurn() == hero.getKind()) {
-          freeActionEndTurn(hero);
-        }
+      // Update game log
+      var msg = `The ${hero.getKind()} drank from a well.`
+      socket.emit("updateGameLog", msg);
+      socket.broadcast.emit("updateGameLog", msg);
+      // End turn
+      if (model.getCurrPlayersTurn() == hero.getKind()) {
+        freeActionEndTurn(hero);
       }
     }
   });

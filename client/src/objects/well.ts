@@ -21,16 +21,13 @@ export class Well extends Phaser.GameObjects.Image {
 
         this.on("pointerdown", function (pointer) {
             // Client requests use of the well from the server
-            self.gameController.useWell(function (wpInc: number) {
+            self.gameController.useWell( () => {
                 self.used = true;
                 self.setTint(0x404040);
-                console.log("Well used, increment own wp by ", wpInc);
-                // Note that we don't keep track of wp state on client side
-                // self.tile.hero.setwillPower(wpInc);
             });
         }, this);
 
-        this.gameController.updateWell(function (tileID: number, wpInc: number) {
+        this.gameController.updateWell(function (tileID: number) {
             // Only update if this is the well that was interacted with
             if (tileID != self.tile.getID()) {
                 console.log("No interaction on well", self.tile.getID());
