@@ -192,7 +192,7 @@ export class CollabWindow extends Window {
                 self.overlayRef.toggleInteractive(true);
                 
                 self.destroy()
-                self.gameinstance.unsubscribeListeners()
+                self.gameinstance.unsubscribeCollabListeners()
             }
         })
     }

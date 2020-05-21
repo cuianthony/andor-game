@@ -224,6 +224,12 @@ export class HeroWindow extends Window {
             }
         })
 
+        this.gameinstance.updatePickupFarmer( (hk: string) => {
+            if (hk != self.windowhero) return;
+            self.farmers ++;
+            self.refreshText();
+        })
+
         this.gameinstance.killHeroFarmers(() => {
             self.farmers = 0;
             self.refreshText();
@@ -335,11 +341,6 @@ export class HeroWindow extends Window {
         // this.refreshText()
     }
 
-    // public setName(name: string) {
-    //     this.name = name
-    //     this.refreshText()
-    // }
-
     private refreshText() {
         this.goldtext.setText('Gold: ' + this.gold)
         // this.willtext.setText('Willpower: ' + this.will)
@@ -354,6 +355,7 @@ export class HeroWindow extends Window {
         this.gameinstance.disconnectUpdateDropItemHero();
         this.gameinstance.disconnectUpdatePickupItemHero();
         this.gameinstance.disconnectReceiveUseWineskin();
-        this.gameinstance.unsubscribeKillHeroFarmers();
+        this.gameinstance.disconnectKillHeroFarmers();
+        this.gameinstance.disconnectUpdatePickupFarmer();
     }
 }

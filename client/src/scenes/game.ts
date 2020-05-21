@@ -303,9 +303,6 @@ export default class GameScene extends Phaser.Scene {
   private setRegions(tilesData) {
     // Note that regions 73-79 and 83 are unused, but created anyways to preserve direct
     // indexing between regions array and region IDs
-    // var tilesData = require("../utils/xycoords").map;
-    // var treeTile = this.textures.get('tiles').getFrameNames()[12];
-    // console.log('tree texture frame: ', treeTile);
     for (let t of tilesData) {
       let xPos = t.xcoord * scaleFactor + borderWidth;
       let yPos = t.ycoord * scaleFactor + borderWidth;
@@ -324,7 +321,6 @@ export default class GameScene extends Phaser.Scene {
       // shift+click: tile items pickup interface
       // ctrl+click: move the prince TODO: change this key binding, ctrl-click is kinda finicky
       tile.on('pointerdown', function (pointer) {
-        console.log('tile id sanity check', tile.id)
         if (this.shiftKey.isDown) {
           const tileWindowID = `tileWindow${tile.getID()}`;
           // TODO: BASICWINDOW MANAGER FOR DESTROYING WINDOWS

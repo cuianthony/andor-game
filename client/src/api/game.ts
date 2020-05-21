@@ -5,13 +5,11 @@ export class game {
     private name: string;
     private socket;
     private chatlog: any;
-    // private myTurn: boolean;
 
     constructor(name) {
         this.name = name
         this.socket = this.connect(this.name)
         this.chatlog = []
-        // this.myTurn = false;
     }
 
     private connect(name) {
@@ -46,7 +44,7 @@ export class game {
         this.socket.on("killHeroFarmers", callback);
     }
 
-    public unsubscribeKillHeroFarmers() {
+    public disconnectKillHeroFarmers() {
         this.socket.off("killHeroFarmers");
     }
 
@@ -197,6 +195,12 @@ export class game {
     public disconnectUpdatePickupItemHero() {
         this.socket.off("updatePickupItemHero")
     }
+    public updatePickupFarmer(callback) {
+        this.socket.on("updatePickupFarmer", callback)
+    }
+    public disconnectUpdatePickupFarmer() {
+        this.socket.off("udpatePickupFarmer")
+    }
 
     // Updates for TileWindows
     public updateDropItemTile(callback) {
@@ -232,10 +236,7 @@ export class game {
     }
 
     public moveRequest(tileID, callback){
-        // moved turn validation to backend
-        // if(this.myTurn){
-            this.socket.emit('moveRequest', tileID, callback)
-        // }
+        this.socket.emit('moveRequest', tileID, callback)
     }
 
     public updateMoveRequest(callback){
@@ -243,9 +244,7 @@ export class game {
     }
 
     public movePrinceRequest(tileID, callback){
-        // if(this.myTurn){
-            this.socket.emit('movePrinceRequest', tileID, callback)
-        // }
+        this.socket.emit('movePrinceRequest', tileID, callback)
     }
 
     public updateMovePrinceRequest(callback){
@@ -268,7 +267,6 @@ export class game {
     public endTurn() {
         // The hero that gets the next turn depends on whether the day is over for all heroes
         this.socket.emit('endTurn');
-        // this.myTurn = false;
     }
 
     public telescopeEndTurn() {
@@ -278,27 +276,6 @@ export class game {
     public updatePassTurn(callback) {
         this.socket.on("updatePassTurn", callback);
     }
-
-    // **** DEPRECATED 04/20/20: removed turn logic from frontend ***
-    // public getTurn() {
-    //     return this.myTurn
-    // }
-
-    // public endTurnOnEndDay() {
-    //     this.myTurn = false;
-    // }
-    
-    // public yourTurn(){
-    //     var self = this
-    //     this.socket.on("yourTurn", function() {
-    //         self.myTurn = true
-    //     })
-    // }
-
-    // public setMyTurn(b:boolean){
-    //     this.myTurn = b;
-    // }
-    /////////////////////////////
 
     public removeListener(object){
         console.log('removing ', object)
@@ -369,16 +346,14 @@ export class game {
     public endCollabListener(callback){
         this.socket.on('receiveEndCollab',callback)
     }
-    public unsubscribeListeners() {
+    public unsubscribeCollabListeners() {
         //must be called once youre done using the collab decision listeners.
         this.socket.off('receiveIncResource')
         this.socket.off('receiveDecResource')
         this.socket.off('receiveAccept')
         //this.socket.off('receiveRemoveAccept) this is not implemented yet
         this.socket.off('receiveEndCollab')
-
     }
-
 
     ///
     //tell server you entered game
@@ -698,6 +673,7 @@ export class game {
         this.socket.on("removeHerb", callback);
     }
     ///////////////////////////
+
     /*
     *   Event Cards
     */
