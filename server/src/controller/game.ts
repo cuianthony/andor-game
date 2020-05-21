@@ -257,8 +257,7 @@ export function game(socket, model: Game, io) {
 
       if (canPass) { // TODO ACUI: also need to check if they fought this turn
         msg = `The ${hero.getKind()} passed their turn.`;
-        socket.emit("updatePassTurn", hero.getKind());
-        socket.broadcast.emit("updatePassTurn", hero.getKind());
+        io.of("/" + model.getName()).emit("updatePassTurn", hero.getKind());
       } else {
         msg = 'You are unable to pass your turn due to lack of hours/will.';
         socket.emit("updateGameLog", msg);
@@ -274,8 +273,6 @@ export function game(socket, model: Game, io) {
 
     // Emitting with broadcast.to to the caller doesn't seem to work. Below is a workaround
     if (model.getCurrPlayersTurn() == nextPlayer) {
-      // Deprecated: removed turn logic from frontend
-      // socket.emit("yourTurn");
       return;
     }
 
@@ -288,8 +285,7 @@ export function game(socket, model: Game, io) {
 
     // Update game log
     msg += ` It is now the ${nextPlayer}'s turn.`
-    socket.emit("updateGameLog", msg);
-    socket.broadcast.emit("updateGameLog", msg);
+    io.of("/" + model.getName()).emit('updateGameLog', msg);
   })
 
   socket.on("pickupFarmer", function (tileID: number, callback) {
@@ -309,7 +305,6 @@ export function game(socket, model: Game, io) {
             }
           }
         })
-        // socket.emit("updatePickupFarmer", hero.getKind());
         io.of("/" + model.getName()).emit("updatePickupFarmer", hero.getKind())
         callback();
       }
@@ -341,8 +336,7 @@ export function game(socket, model: Game, io) {
     let numKilled = model.killFarmersOnTile(tileID);
     for (let i = 0; i < numKilled; i++) {
       console.log("killed farmer on tile", tileID);
-      socket.emit("destroyFarmer", tileID);
-      socket.broadcast.emit("destroyFarmer", tileID);
+      io.of("/" + model.getName()).emit("destroyFarmer", tileID);
     }
     if (numKilled > 0) {
       let msg = `The farmers on region ${tileID} were killed by a monster.`
@@ -353,9 +347,8 @@ export function game(socket, model: Game, io) {
   function killFarmersOfHeroes(tileID: number, hero: Hero | null) {
     let heroes: HeroKind[] = model.killFarmersOfHeroes(tileID, hero);
     heroes.forEach(hk => {
-      console.log("killed farmers of", hk);
-      socket.emit("killHeroFarmers", hk);
-      socket.broadcast.emit("killHeroFarmers", hk);
+      // console.log("killed farmers of", hk);
+      io.of("/" + model.getName()).emit("killHeroFarmers", hk);
       let msg = `The farmers being guided by the ${hk} were killed by a monster.`
       io.of("/" + model.getName()).emit('updateGameLog', msg);
     })
@@ -381,8 +374,7 @@ export function game(socket, model: Game, io) {
     // First advance of narrator to space A
     let narratorPos = model.getNarrator().advance();
     // console.log('server emits runestonePos', runestonePos)
-    socket.emit("updateNarrator", narratorPos, runestonePos)
-    socket.broadcast.emit("updateNarrator", narratorPos, runestonePos)
+    io.of("/" + model.getName()).emit("updateNarrator", narratorPos, runestonePos)
   })
 
   // TODO: FOR TESTING ONLY, REMOVE AFTER
@@ -403,8 +395,7 @@ export function game(socket, model: Game, io) {
         // Check for killing farmers on new monster spawn tiles
         killFarmersOnTile(m.getTileID());
         killFarmersOfHeroes(m.getTileID(), null);
-        socket.emit("addMonster", m.getType(), m.getTileID(), m.getName());
-        socket.broadcast.emit("addMonster", m.getType(), m.getTileID(), m.getName());
+        io.of("/" + model.getName()).emit("addMonster", m.getType(), m.getTileID(), m.getName());
       }
       if (narratorPos == 2) {
         let msg = `The stronghold has been found on region ${newMonsters[0].getTileID()}.`
@@ -413,8 +404,7 @@ export function game(socket, model: Game, io) {
     }
     // Update shields
     var shieldsRemaining = model.getCastle().getShields();
-    socket.broadcast.emit('updateShields', shieldsRemaining);
-    socket.emit('updateShields', shieldsRemaining);
+    io.of("/" + model.getName()).emit('updateShields', shieldsRemaining);
 
     // Pass back the runestone locations for the runestone narrator event, don't otherwise
     if (narratorPos == runestoneLegendPos) {
@@ -424,27 +414,23 @@ export function game(socket, model: Game, io) {
       runestoneLocs.forEach(stoneObj => {
         Object.entries(stoneObj).forEach(([tileID, stone]) => {
           tileIDs.push(tileID);
-          socket.emit("updateDropItemTile", tileID, stone, "smallItem")
-          socket.broadcast.emit("updateDropItemTile", tileID, stone, "smallItem")
+          io.of("/" + model.getName()).emit("updateDropItemTile", tileID, stone, "smallItem");
         })
       })
       // Emit the tile locations of the runestones to all clients
-      socket.emit("updateNarrator", narratorPos, -1, tileIDs)
-      socket.broadcast.emit("updateNarrator", narratorPos, -1, tileIDs)
+      io.of("/" + model.getName()).emit("updateNarrator", narratorPos, -1, tileIDs);
       // Update game log
       let msg = `The locations of the rune stones have been discovered: ${tileIDs}`
       io.of("/" + model.getName()).emit('updateGameLog', msg);
     }
     else if (narratorPos === 13) {
-      console.log("narrator controller at N")
+      // console.log("narrator controller at N")
       let win = model.narratorN(); // check win conditions
-      console.log("server game controller win=model.narratorN(): ", win);
-      socket.emit("updateNarrator", narratorPos, -1, [], win);
-      socket.broadcast.emit("updateNarrator", narratorPos, -1, [], win);
+      // console.log("server game controller win=model.narratorN(): ", win);
+      io.of("/" + model.getName()).emit("updateNarrator", narratorPos, -1, [], win);
     }
     else {
-      socket.emit("updateNarrator", narratorPos)
-      socket.broadcast.emit("updateNarrator", narratorPos)
+      io.of("/" + model.getName()).emit("updateNarrator", narratorPos);
     }
   }
 
@@ -454,10 +440,8 @@ export function game(socket, model: Game, io) {
     let { success, usedTelescope } = model.revealRunestone(hero, tileID, stoneName);
     if (success) {
       let realStone = stoneName.slice(0, -2);
-      socket.emit("updatePickupItemTile", tileID, stoneName, "smallItem")
-      socket.broadcast.emit("updatePickupItemTile", tileID, stoneName, "smallItem")
-      socket.emit("updateDropItemTile", tileID, realStone, "smallItem")
-      socket.broadcast.emit("updateDropItemTile", tileID, realStone, "smallItem")
+      io.of("/" + model.getName()).emit("updatePickupItemTile", tileID, stoneName, "smallItem")
+      io.of("/" + model.getName()).emit("updateDropItemTile", tileID, realStone, "smallItem")
       if (usedTelescope && model.getCurrPlayersTurn() == hero.getKind()) {
         freeActionEndTurn(hero);
       }
@@ -511,8 +495,7 @@ export function game(socket, model: Game, io) {
         skin = "skin"
       }
       var msg = `The ${hero.getKind()} bought one ${item}${skin} from a merchant.`
-      socket.emit("updateGameLog", msg);
-      socket.broadcast.emit("updateGameLog", msg);
+      io.of("/" + model.getName()).emit('updateGameLog', msg);
       // End turn
       if (model.getCurrPlayersTurn() == hero.getKind()) {
         freeActionEndTurn(hero);
@@ -572,17 +555,13 @@ export function game(socket, model: Game, io) {
     success = model.getWitch()?.purchaseBrew(hero);
     if (success) {
       // Tell active hero windows to update with new brew and reduced gold
-      socket.emit("updatePickupItemHero", hero.getKind(), "brew", "smallItem");
-      socket.broadcast.emit("updatePickupItemHero", hero.getKind(), "brew", "smallItem");
-      socket.broadcast.emit("updateDropGold", hero.getKind(), model.getWitch()?.getBrewPrice());
-      socket.emit("updateDropGold", hero.getKind(), model.getWitch()?.getBrewPrice());
+      io.of("/" + model.getName()).emit("updatePickupItemHero", hero.getKind(), "brew", "smallItem");
+      io.of("/" + model.getName()).emit("updateDropGold", hero.getKind(), model.getWitch()?.getBrewPrice());
       // Tell witch window to update with new numBrews
-      socket.emit("updateNumBrews", model.getWitch()?.getNumBrews());
-      socket.broadcast.emit("updateNumBrews", model.getWitch()?.getNumBrews());
+      io.of("/" + model.getName()).emit("updateNumBrews", model.getWitch()?.getNumBrews());
       // Update game log
       var msg = `The ${hero.getKind()} bought a brew from the witch.`
-      socket.emit("updateGameLog", msg);
-      socket.broadcast.emit("updateGameLog", msg);
+      io.of("/" + model.getName()).emit('updateGameLog', msg);
       // End turn
       if (model.getCurrPlayersTurn() == hero.getKind()) {
         freeActionEndTurn(hero);
@@ -627,8 +606,7 @@ export function game(socket, model: Game, io) {
 
       // Update game log
       var msg = `The ${hero.getKind()} drank from a well.`
-      socket.emit("updateGameLog", msg);
-      socket.broadcast.emit("updateGameLog", msg);
+      io.of("/" + model.getName()).emit('updateGameLog', msg);
       // End turn
       if (model.getCurrPlayersTurn() == hero.getKind()) {
         freeActionEndTurn(hero);
@@ -662,8 +640,7 @@ export function game(socket, model: Game, io) {
     model.setCurrPlayersTurn(nextPlayer)
     // Update game log
     var msg = `The ${hero.getKind()} ended their turn. It is now the ${nextPlayer}'s turn.`
-    socket.emit("updateGameLog", msg);
-    socket.broadcast.emit("updateGameLog", msg);
+    io.of("/" + model.getName()).emit('updateGameLog', msg);
   }
 
   // make this callable from end turn as well
@@ -694,36 +671,29 @@ export function game(socket, model: Game, io) {
       } else if (fogType === Fog.Wineskin) {
         if (createSuccess) {
           // Player was given the wineskin
-          socket.broadcast.emit("updatePickupItemHero", hero.getKind(), SmallItem.Wineskin, "smallItem");
-          socket.emit("updatePickupItemHero", hero.getKind(), SmallItem.Wineskin, "smallItem");
+          io.of("/" + model.getName()).emit("updatePickupItemHero", hero.getKind(), SmallItem.Wineskin, "smallItem");
         } else {
           // Wineskin was placed on the tile
-          socket.broadcast.emit("updateDropItemTile", hero.getRegion().getID(), SmallItem.Wineskin, "smallItem");
-          socket.emit("updateDropItemTile", hero.getRegion().getID(), SmallItem.Wineskin, "smallItem");
+          io.of("/" + model.getName()).emit("updateDropItemTile", hero.getRegion().getID(), SmallItem.Wineskin, "smallItem");
         }
       } else if (fogType == Fog.WitchFog) {
         if (createSuccess) {
           // Player was given the brew
-          socket.broadcast.emit("updatePickupItemHero", hero.getKind(), SmallItem.Brew, "smallItem");
-          socket.emit("updatePickupItemHero", hero.getKind(), SmallItem.Brew, "smallItem");
+          io.of("/" + model.getName()).emit("updatePickupItemHero", hero.getKind(), SmallItem.Brew, "smallItem");
         } else {
           // Brew was placed on the tile
-          socket.broadcast.emit("updateDropItemTile", hero.getRegion().getID(), SmallItem.Brew, "smallItem");
-          socket.emit("updateDropItemTile", hero.getRegion().getID(), SmallItem.Brew, "smallItem");
+          io.of("/" + model.getName()).emit("updateDropItemTile", hero.getRegion().getID(), SmallItem.Brew, "smallItem");
         }
         // Add Gor carrying the herb
         let m = model.addMonster(MonsterKind.Gor, newTile!, "gor_herb")
         if (m != null) {
-          socket.emit("addMonster", m.getType(), m.getTileID(), m.getName());
-          socket.broadcast.emit("addMonster", m.getType(), m.getTileID(), m.getName());
+          io.of("/" + model.getName()).emit("addMonster", m.getType(), m.getTileID(), m.getName());
         }
         // Inform clients of position of herb
-        socket.broadcast.emit("revealHerb", newTile);
-        socket.emit("revealHerb", newTile);
+        io.of("/" + model.getName()).emit("revealHerb", newTile);
         model.setHerbPos(newTile);
         // Inform clients of position of witch
-        socket.broadcast.emit("revealWitch", tile);
-        socket.emit("revealWitch", tile);
+        io.of("/" + model.getName()).emit("revealWitch", tile);
         let msg = `The Gor carrying the medicinal herb has appeared on region ${newTile}.`
         io.of("/" + model.getName()).emit('updateGameLog', msg);
       } else if (fogType === Fog.EventCard) {
@@ -1145,9 +1115,7 @@ export function game(socket, model: Game, io) {
         }
       }
 
-      // callback(tile);
-      socket.emit("destroyFog", tile);
-      socket.broadcast.emit("destroyFog", tile);
+      io.of("/" + model.getName()).emit("destroyFog", tile);
 
       // End turn
       if (model.getCurrPlayersTurn() == hero.getKind()) {
@@ -1161,8 +1129,7 @@ export function game(socket, model: Game, io) {
 
     // Update shields
     var shieldsRemaining = model.getCastle().getShields();
-    socket.broadcast.emit('updateShields', shieldsRemaining);
-    socket.emit('updateShields', shieldsRemaining);
+    io.of("/" + model.getName()).emit('updateShields', shieldsRemaining);
   }
 
   // Send amount of gold on tileID back to client
@@ -1181,11 +1148,9 @@ export function game(socket, model: Game, io) {
     }
     if (success_dropGold) {
       // Tell any active TileWindows of all clients to update
-      socket.broadcast.emit("updateDropGoldTile", hero.getRegion().getID(), hero.getRegion().getGold());
-      socket.emit("updateDropGoldTile", hero.getRegion().getID(), hero.getRegion().getGold());
+      io.of("/" + model.getName()).emit("updateDropGoldTile", hero.getRegion().getID(), hero.getRegion().getGold());
       // Tell any active HeroWindows of all clients to update
-      socket.broadcast.emit("updateDropGold", hero.getKind(), -1);
-      socket.emit("updateDropGold", hero.getKind(), -1);
+      io.of("/" + model.getName()).emit("updateDropGold", hero.getKind(), -1);
     }
   });
 
@@ -1203,11 +1168,9 @@ export function game(socket, model: Game, io) {
 
     if (success_pickupGold) {
       // Tell any active TileWindows of all clients to update
-      socket.broadcast.emit("updatePickupGoldTile", id, hero.getRegion().getGold());
-      socket.emit("updatePickupGoldTile", id, hero.getRegion().getGold());
+      io.of("/" + model.getName()).emit("updatePickupGoldTile", id, hero.getRegion().getGold());
       // Tell any active HeroWindows of all clients to update
-      socket.broadcast.emit("updatePickupGold", hero.getKind(), 1);
-      socket.emit("updatePickupGold", hero.getKind(), 1);
+      io.of("/" + model.getName()).emit("updatePickupGold", hero.getKind(), 1);
     }
   });
 
@@ -1241,11 +1204,9 @@ export function game(socket, model: Game, io) {
     }
     if (successStatus) {
       // Tell any active TileWindows of all clients to update
-      socket.broadcast.emit("updatePickupItemTile", hero.getRegion().getID(), itemName, itemType);
-      socket.emit("updatePickupItemTile", hero.getRegion().getID(), itemName, itemType);
+      io.of("/" + model.getName()).emit("updatePickupItemTile", hero.getRegion().getID(), itemName, itemType);
       // Tell any active HeroWindows of all clients to update
-      socket.broadcast.emit("updatePickupItemHero", hero.getKind(), itemName, itemType);
-      socket.emit("updatePickupItemHero", hero.getKind(), itemName, itemType);
+      io.of("/" + model.getName()).emit("updatePickupItemHero", hero.getKind(), itemName, itemType);
     }
   })
 
@@ -1276,11 +1237,9 @@ export function game(socket, model: Game, io) {
 
     if (successStatus) {
       // Tell any active TileWindows of all clients to update
-      socket.broadcast.emit("updateDropItemTile", hero.getRegion().getID(), name, itemType);
-      socket.emit("updateDropItemTile", hero.getRegion().getID(), name, itemType);
+      io.of("/" + model.getName()).emit("updateDropItemTile", hero.getRegion().getID(), name, itemType);
       // Tell any active HeroWindows of all clients to update
-      socket.broadcast.emit("updateDropItemHero", hero.getKind(), name, itemType);
-      socket.emit("updateDropItemHero", hero.getKind(), name, itemType);
+      io.of("/" + model.getName()).emit("updateDropItemHero", hero.getKind(), name, itemType);
     }
   })
 
@@ -1797,11 +1756,7 @@ export function game(socket, model: Game, io) {
   socket.on('sendAccept', function (heroKind) {
     io.of("/" + model.getName()).emit('receiveAccept', heroKind);
   })
-  // socket.on('collabDecisionAccept', function () {
-  //   model.numAccepts += 1;
-  //   // Tell the client that accepted to update their status
-  //   socket.emit('sendDecisionAccepted', model.numAccepts)
-  // }
+  
   /*
   * BATTLING
   */
@@ -1820,25 +1775,22 @@ export function game(socket, model: Game, io) {
     let monsterregion = model.getRegions()[monstertile!]
     monsterregion.setMonster(null)
     model.deleteMonster(monstername)
-    // console.log(convMonsters);
     socket.broadcast.emit('sendKilledMonsters', monstername);
     //socket.emit('sendKilledMonsters', monstername);
+
     // If the monster was carrying the herb, the herb is dropped on the tile
     if (monstername == "gor_herb") {
       monsterregion.addItem("herb");
-      socket.emit("updateDropItemTile", monstertile, "herb", "smallItem");
-      socket.broadcast.emit("updateDropItemTile", monstertile, "herb", "smallItem");
+      io.of("/" + model.getName()).emit("updateDropItemTile", monstertile, "herb", "smallItem");
       // remove the herb image from GameScene
-      socket.emit("removeHerb");
-      socket.broadcast.emit("removeHerb");
+      io.of("/" + model.getName()).emit("removeHerb");
       model.setHerbPos(-1);
     }
     if (monstername == "fortress") {
       // Immediately advance narrator to N and evaluate end of game conditions
       let win = model.narratorN();
-      console.log("server game controller win=model.narratorN(): ", win);
-      socket.emit("updateNarrator", 13,  -1, [], win);
-      socket.broadcast.emit("updateNarrator", 13,  -1, [], win);
+      // console.log("server game controller win=model.narratorN(): ", win);
+      io.of("/" + model.getName()).emit("updateNarrator", 13,  -1, [], win);
     }
     advanceNarrator();
   })
@@ -2103,8 +2055,7 @@ export function game(socket, model: Game, io) {
       firstEndDay = true;
     }
     console.log("tell client to reset hour tracker for", resetHoursHk)
-    socket.emit("sendResetHours", resetHoursHk, firstEndDay);
-    socket.broadcast.emit("sendResetHours", resetHoursHk, firstEndDay);
+    io.of("/" + model.getName()).emit("sendResetHours", resetHoursHk, firstEndDay);
 
     // If they were the last hero to end the day, trigger all actions and pass turn to
     // the hero who ended the day first
@@ -2558,16 +2509,12 @@ export function game(socket, model: Game, io) {
     // is a workaround for emitting yourTurn back to the caller without using broadcast.to
     if (model.getCurrPlayersTurn() == nextPlayer) {
       console.log("Currplayer is only one left and keeps turn");
-      // Deprecated: removed turn logic from frontend
-      // socket.emit("yourTurn");
       return;
     }
 
     // Inform client that gets the next turn
     model.setCurrPlayersTurn(nextPlayer);
     console.log("Emitting yourTurn to ", nextPlayer, "with id", model.getConnIdFromHk(nextPlayer));
-    // Deprecated: removed turn logic from frontend
-    // socket.broadcast.to(`/${model.getName()}#${model.getConnIdFromHk(nextPlayer)}`).emit("yourTurn");
 
     hero.setHasMovedThisTurn(false);
     // Update game log
@@ -2576,8 +2523,7 @@ export function game(socket, model: Game, io) {
       msg += '\n\tA new day begins.'
     }
     msg += ` It is now the ${nextPlayer}'s turn.`
-    socket.emit("updateGameLog", msg);
-    socket.broadcast.emit("updateGameLog", msg);
+    io.of("/" + model.getName()).emit('updateGameLog', msg);
   })
 
   socket.on('moveMonstersEndDay', function () {
@@ -2603,8 +2549,7 @@ export function game(socket, model: Game, io) {
     
     // Evaluate end of game state - currently only handles end of game due to loss of shields
     if (model.getEndOfGameState()) {
-      socket.emit('endGame');
-      socket.broadcast.emit('endGame');
+      io.of("/" + model.getName()).emit('endGame');
     }
   })
 
