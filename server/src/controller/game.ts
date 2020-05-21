@@ -44,6 +44,9 @@ export function game(socket, model: Game, io) {
     data['games'][gameName] = game;
     // console.log(data);
     fs.writeFileSync("db.json", JSON.stringify(data, null, 1));
+    
+    let msg = "Game saved."
+    io.of("/" + model.getName()).emit('updateGameLog', msg);
   })
 
   socket.on("getGameData", function (callback) {

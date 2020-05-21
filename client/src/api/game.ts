@@ -199,7 +199,7 @@ export class game {
         this.socket.on("updatePickupFarmer", callback)
     }
     public disconnectUpdatePickupFarmer() {
-        this.socket.off("udpatePickupFarmer")
+        this.socket.off("updatePickupFarmer")
     }
     public updateWP(callback) {
         this.socket.on("updateWP", callback)

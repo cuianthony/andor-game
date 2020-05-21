@@ -20,12 +20,11 @@ export class Hero {
     private hasFoughtThisTurn: boolean = false; // Used for checking turn passing
 
     //items
-    private wineskin: boolean;
     private largeItem: LargeItem;
     private helm: boolean;
     private smallItems: SmallItem[];
 
-    constructor({ timeOfDay, wineskin, largeItem, helm, smallItems, hk, rank, region, farmers, will, strength, gold, dice, freeMoves, hasMovedThisTurn, hasFoughtThisTurn, movePrinceCtr}) {
+    constructor({ timeOfDay, largeItem, helm, smallItems, hk, rank, region, farmers, will, strength, gold, dice, freeMoves, hasMovedThisTurn, hasFoughtThisTurn, movePrinceCtr}) {
         this.hk = hk;
         this.rank = rank;
         this.gold = gold;
@@ -33,12 +32,16 @@ export class Hero {
         this.will = will;
         this.dice = dice;
         this.timeOfDay = timeOfDay;
-        this.wineskin = wineskin;
         this.largeItem = largeItem;
         this.smallItems = smallItems;
         this.helm = helm;
         this.region = region;
-        this.farmers = farmers;
+        // Not sure how best to do this, see issue 22
+        // this.farmers = farmers;
+        this.farmers = new Array();
+        for (let f of farmers) {
+            this.farmers.push(new Farmer(f.tileID));
+        }
         this.freeMoves = freeMoves;
         this.hasMovedThisTurn = hasMovedThisTurn;
         this.hasFoughtThisTurn = hasFoughtThisTurn;
@@ -127,15 +130,6 @@ export class Hero {
     public updateGold(goldDelta: number) {
         this.gold += goldDelta;
     }
-
-    // TODO: actual wineskin implementation instead of boolean flag
-    // public getWineskin() {
-    //     return this.wineskin;
-    // }
-
-    // public setWineskin(hasWineskin) {
-    //     this.wineskin = hasWineskin;
-    // }
 
     public setTimeOfDay(time) {
         this.timeOfDay = time;

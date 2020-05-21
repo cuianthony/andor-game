@@ -14,7 +14,6 @@ import {
     Narrator,
     Witch
 } from "."
-import { LargeItem } from './LargeItem';
 import { SmallItem } from './SmallItem';
 
 import {
@@ -95,65 +94,15 @@ export class Game {
         this.initialCollabDone = false;
         this.runestoneCardPos = -1;
         this.playersInGame = 0
-        // this.narrator = new Narrator(this, 0)
     }
 
-    /*public initialize(
-        currPlayersTurn?,
-        regions?,
-        farmers?,
-        monsters?,
-        fogs?,
-        heros?,        
-        eventDeck?,
-        activeEvents?,        
-        nextDayFirstHero?,
-        activeHeros?,
-        castle?,
-        monstersInCastle?,
-        endOfGameState?,
-        prince?,
-        narrator?
-    ) {
-        currPlayersTurn = currPlayersTurn || HeroKind.None;
-        regions = regions || dRegions;
-        farmers = farmers || dFarmers;
-        monsters = monsters || dMonsters;
-        fogs = fogs || dFogs();
-        heros = heros || [];
-        eventDeck = eventDeck || dEventDeck();
-        activeEvents = activeEvents || [];
-        nextDayFirstHero = nextDayFirstHero || HeroKind.None;
-        activeHeros = activeHeros || [];
-        castle = castle || dCastle(this.numOfDesiredPlayers);
-        monstersInCastle = monstersInCastle || [];
-        endOfGameState = endOfGameState || false;
-        prince = prince || null; // prince does not exist until legend card C2
-        narrator = narrator || dNarrator;
-
-
-        this.currPlayersTurn = currPlayersTurn;
-        this.nextDayFirstHero = nextDayFirstHero;
-        this.setRegions(regions);
-        // this.setHeros(heros);
-        this.setFarmers(farmers);
-        this.castle = new RietburgCastle(castle.numDefenseShields, castle.numDefenseShieldsUsed);
-        this.setMonsters(monsters);
-        this.setFogs(fogs);
-        this.setEventDeck(eventDeck);
-        this.setActiveEvents(activeEvents);
-        this.setActiveHeros(activeHeros);
-        this.monstersInCastle = monstersInCastle;
-        this.endOfGame = endOfGameState;
-        this.narrator = new Narrator(narrator.legendPosition);
-    }*/
     public initialize({
         currPlayersTurn = HeroKind.None,
         regions = dRegions,
+        heros = dHeros,
         farmers = dFarmers,
         monsters = dMonsters,
         fogs = dFogs(),
-        heros = dHeros,
         eventDeck = dEventDeck(),
         activeEvents = [],
         nextDayFirstHero = HeroKind.None,
@@ -204,7 +153,6 @@ export class Game {
                 strength: heroData.strength,
                 dice: heroData.dice,
                 timeOfDay: heroData.timeOfDay,
-                wineskin: heroData.wineskin,
                 largeItem: heroData.largeItem,
                 smallItems: heroData.smallItems,
                 helm: heroData.helm,
@@ -255,8 +203,8 @@ export class Game {
     }
 
     // endDayAll: boolean. True if nextPlayer is being called by the last hero to end their day,
-    //  in this case we pass the next turn to the day's earliest ending player (nextDayFirstHero).
-    //  False otherwise, in this case we pass the next turn based on increasing hero rank.
+    // in this case we pass the next turn to the day's earliest ending player (nextDayFirstHero).
+    // False otherwise, in this case we pass the next turn based on increasing hero rank.
     // Returns HeroKind of the next player
     public nextPlayer(endDayAll: boolean): HeroKind {
 
@@ -448,49 +396,6 @@ export class Game {
     * @param id is player socket ID
     * @param heroType
     */
-   /* public bindHero(id: string, heroType: HeroKind): boolean {
-        // Herokind already been taken
-        let heroTaken = false;
-        this.heroList.forEach((hero, key) => {
-            if (hero.getKind() === heroType) {
-                heroTaken = true;
-            }
-        })
-        if (heroTaken) return false; // failed to bind hero
-
-        if (heroType === HeroKind.Dwarf) {
-            this.heroList.set(id, new Hero(heroType, this.regions[7]));
-            //REMOVE before merging to master, used for item testing
-            let dwarf = this.heroList.get(id)
-            // dwarf?.pickUpLargeItem(dwarf.getRegion().getID(), LargeItem.Bow)
-            dwarf?.pickUpSmallItem(dwarf.getRegion().getID(), SmallItem.Telescope)
-            
-            let dwarf = this.heroList.get(id)
-            //dwarf?.pickUpLargeItem(dwarf.getRegion().getID(), LargeItem.DamagedShield)
-            // dwarf?.pickUpSmallItem(dwarf.getRegion().getID(), SmallItem.Telescope)
-            // dwarf?.pickUpSmallItem(dwarf.getRegion().getID(), SmallItem.Wineskin)
-            // dwarf?.pickUpHelm(dwarf.getRegion().getID());
-        }
-        else if (heroType === HeroKind.Archer) {
-            this.heroList.set(id, new Hero(heroType, this.regions[25]));
-            //REMOVE before merging to master, used for item testing
-            // let archer = this.heroList.get(id)
-            // archer?.pickUpSmallItem(archer.getRegion().getID(), SmallItem.Telescope)
-            let archer = this.heroList.get(id)
-            //archer?.pickUpSmallItem(archer.getRegion().getID(), SmallItem.GreenRunestone)
-        }
-        else if (heroType === HeroKind.Mage) {
-            this.heroList.set(id, new Hero(heroType, this.regions[34]));
-        }
-        else if (heroType === HeroKind.Warrior) {
-            this.heroList.set(id, new Hero(heroType, this.regions[14]));
-        }
-
-        this.activeHeros.push(heroType);
-        this.availableHeros = this.availableHeros.filter(h => h != heroType);
-        return true;
-
-    }*/
     public bindHero(id: string, heroType: HeroKind): boolean {
         // Herokind already been taken
         let heroTaken = false;
@@ -883,7 +788,6 @@ export class Game {
         this.regions[farmObj.getTileID()].addFarmer(farmObj);
 
         // Add more monsters
-        // TODO ACUI: ADD BACK MONSTERS
         monster = this.addMonster(MonsterKind.Gor, 27, 'gor9');
         if (monster != null) {
             monsterList.push(monster);

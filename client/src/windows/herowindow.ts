@@ -363,5 +363,6 @@ export class HeroWindow extends Window {
         this.gameinstance.disconnectReceiveUseWineskin();
         this.gameinstance.disconnectKillHeroFarmers();
         this.gameinstance.disconnectUpdatePickupFarmer();
+        this.gameinstance.disconnectUpdateWP();
     }
 }
