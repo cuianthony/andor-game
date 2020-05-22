@@ -484,6 +484,7 @@ export default class GameScene extends Phaser.Scene {
         });
         // this.scene.pause()
         this.toggleInteractive(false);
+        this.overlay.toggleInteractive(false);
       }
     }, this)
   }
@@ -856,9 +857,12 @@ export default class GameScene extends Phaser.Scene {
     };
 
     WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
-    // Freeze main game while collab window is active
-    // this.scene.pause();
+    // Disable interactivity on game during start-of-game phase
     this.toggleInteractive(false);
+    // Note that there's issues with trying to toggle interactivity of the overlay,
+    // because certain GameObjects of the overlay may have not been instantiated yet.
+    // Instead, overlay elements are initialized as non-interactive, and toggled on
+    // after-the-fact.
   }
 
   // Creating the hour tracker

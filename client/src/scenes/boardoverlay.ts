@@ -1,6 +1,5 @@
 import { Chat } from '../windows/chatwindow';
 import { HeroWindow } from '../windows/herowindow';
-import { Window } from '../windows/window'
 import { WindowManager } from "../utils/WindowManager";
 import { game } from '../api/game';
 import { Tile } from '../objects/tile';
@@ -17,9 +16,9 @@ export default class BoardOverlay extends Phaser.Scene {
     private parent: Phaser.GameObjects.Zone
     private heroButtons: Map<string, Phaser.GameObjects.Image> = new Map();
     private gameinstance: game;
+    private saveButton: Phaser.GameObjects.Image;
     private endTurnButton: Phaser.GameObjects.Image;
     private chatButton: Phaser.GameObjects.Image;
-    private endturntext;
     private clientheroobject;
     private herb;
     private initialCollabDone;
@@ -101,14 +100,11 @@ export default class BoardOverlay extends Phaser.Scene {
             this.scene.wake('Options')
         }, this);
 
-
-         // save btn
-         var savebtn = this.add.image(920, 25, 'saveicon').setInteractive({useHandCursor: true}).setScale(0.25);
-         savebtn.on('pointerdown', (pointer) => {
-             console.log("manual saving")
-             this.gameinstance.save()
-         }, this);
-
+        // save btn
+        this.saveButton = this.add.image(920, 25, 'saveicon').setScale(0.25);
+        this.saveButton.on('pointerdown', () => {
+            this.gameinstance.save()
+        }, this);
 
         // chat window
         this.chatButton = this.add.image(775, 565, 'chaticon').setScale(0.3)
@@ -225,7 +221,6 @@ export default class BoardOverlay extends Phaser.Scene {
         //     this.gameinstance.advanceNarrator();
         // }, this)
 
-
         this.gameinstance.getHeros((heros) => {
             heros.forEach(type => {
                 if (type === "mage") {
@@ -240,7 +235,7 @@ export default class BoardOverlay extends Phaser.Scene {
             });
 
             // DEBUG TODO: remove this
-            this.toggleInteractive(true);
+            // this.toggleInteractive(true);
             //
 
             if (this.initialCollabDone) {
@@ -460,12 +455,14 @@ export default class BoardOverlay extends Phaser.Scene {
 
     public toggleInteractive(interactive: boolean) {
         if (interactive) {
+            this.saveButton.setInteractive({useHandCursor: true});
             this.endTurnButton.setInteractive({useHandCursor: true});
             this.endDayButton.setInteractive({useHandCursor: true});
             this.heroButtons.forEach(function (button) {
                 button.setInteractive({useHandCursor: true});
             })
         } else {
+            this.saveButton.setInteractive();
             this.endTurnButton.disableInteractive();
             this.endDayButton.disableInteractive();
             this.heroButtons.forEach(function (button) {
