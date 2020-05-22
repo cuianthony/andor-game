@@ -6,4 +6,3 @@ export * from './merchantwindow';
 export * from './tradewindow';
 export * from './shieldwindow';
 export * from './continuefightwindow';
-export * from './eventwindow';

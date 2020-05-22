@@ -5,11 +5,11 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, MerchantWindow, DeathWindow, Fight, EventWindow,
+  CollabWindow, MerchantWindow, DeathWindow, Fight,
   BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow
 } from "../windows/windows";
 import {
-  TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow
+  TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
 } from '../basicwindows/basicwindows';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,

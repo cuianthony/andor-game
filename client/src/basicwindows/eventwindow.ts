@@ -1,4 +1,4 @@
-import { BasicWindow } from "../basicwindows/basicwindow";
+import { BasicWindow } from "./basicwindow";
 import { BasicWindowManager } from "../utils/BasicWindowManager";
 
 export class EventWindow extends BasicWindow {
