@@ -1006,4 +1006,6 @@ export class Fight extends Window {
       }
     });
   }
+
+  public disconnectListeners() {} // TODO: this is more complex than other windows
 }

@@ -21,4 +21,5 @@ export class DeathWindow extends Window {
         })
     }
 
+    public disconnectListeners() {}
 }

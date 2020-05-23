@@ -334,8 +334,12 @@ export class TradeWindow extends Window {
     }
 
     private closeWindow() {
-        this.gameinstance.unsubscribeTradeListeners()
+        this.disconnectListeners();
         this.gameinstance.tradeDone()
         this.scene.remove(this.windowname)
+    }
+
+    public disconnectListeners() {
+        this.gameinstance.unsubscribeTradeListeners();
     }
 }

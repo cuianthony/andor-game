@@ -192,7 +192,7 @@ export class CollabWindow extends Window {
                 self.overlayRef.toggleInteractive(true);
                 
                 self.destroy()
-                self.gameinstance.unsubscribeCollabListeners()
+                self.disconnectListeners();
             }
         })
     }
@@ -553,9 +553,9 @@ export class CollabWindow extends Window {
         this.hasAccepted = false;
     }
 
-    // TODO: COLLAB
     public disconnectListeners() {
         //MUST be called before deleting the window, or else it will bug when opened subsequently!
         //turn off any socket.on(...) that you add here!
+        this.gameinstance.unsubscribeCollabListeners()
     }
 }

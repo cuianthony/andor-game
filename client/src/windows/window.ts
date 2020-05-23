@@ -23,6 +23,8 @@ export abstract class Window extends Phaser.Scene {
     }
 
     protected abstract initialize(): void;
+
+    abstract disconnectListeners(): void;
     
     public destroy() : void {
         this.parent.destroy()

@@ -50,7 +50,6 @@ export class Chat extends Window {
         });
 
         function update(msg) {
-
             console.log(msg)
             self.gameinstance.appendToChatLog(msg)
             var paragraph = document.createElement('p');
@@ -61,7 +60,6 @@ export class Chat extends Window {
             catch {
                 console.log('error in adding chat info to history')
             }
-
         }
 
         this.gameinstance.getChatLog().forEach(element => {
@@ -69,7 +67,7 @@ export class Chat extends Window {
             p.append(element)
             document.getElementById("history").append(p)
         });
-
     }
 
+    public disconnectListeners() {}
 }

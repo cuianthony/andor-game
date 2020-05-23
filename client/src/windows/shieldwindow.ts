@@ -41,4 +41,5 @@ export class ShieldWindow extends Window {
         })
     }
 
+    public disconnectListeners() {}
 }

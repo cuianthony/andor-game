@@ -31,4 +31,5 @@ export class ContinueFightWindow extends Window {
         })
     }
 
+    public disconnectListeners() {}
 }

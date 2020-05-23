@@ -221,4 +221,7 @@ export class BattleInvWindow extends Window {
         })
     }
 
+    public disconnectListeners() {
+        this.gameinstance.unsubscribeBattleRewardsPopup();
+    }
 }
