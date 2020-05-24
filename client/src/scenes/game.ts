@@ -5,12 +5,14 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, MerchantWindow, DeathWindow, Fight,
-  BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow
+  CollabWindow, DeathWindow, Fight, BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow
 } from "../windows/windows";
 import {
   TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
 } from '../basicwindows/basicwindows';
+import {
+  MerchantWindow
+} from '../containerwindows/containerwindows';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
   reducedWidth, reducedHeight, htX, htY, htShift, mOffset, 
@@ -19,6 +21,7 @@ import {
 } from '../constants'
 import { WindowManager } from '../utils/WindowManager';
 import { BasicWindowManager } from '../utils/BasicWindowManager';
+import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 
 export default class GameScene extends Phaser.Scene {
   private heroes: Hero[];
@@ -541,23 +544,39 @@ export default class GameScene extends Phaser.Scene {
     var self = this;
     newMerchant.on('pointerdown', function (pointer) {
       if (self.hero.tile.id == newMerchant.getTileID()) { // TODO: fix this validation, all heroes should be able to see the merchant
-        if (this.scene.isVisible('merchant')) {
-          var window = WindowManager.get(this, "merchant")
-          window.disconnectListeners() // TODO: check if this call is actually necessary
-          window.destroy();
+        // if (this.scene.isVisible('merchant')) {
+        //   var window = WindowManager.get(this, "merchant")
+        //   window.disconnectListeners() // TODO: check if this call is actually necessary
+        //   window.destroy();
+        // } else {
+        //   WindowManager.createWindow(self, 'merchant', MerchantWindow, 
+            // { 
+            //   controller: self.gameinstance,
+            //   x: reducedWidth / 2 - merchantWindowWidth / 2,
+            //   y: reducedHeight / 2 - merchantWindowHeight / 2,
+            //   w: merchantWindowWidth,
+            //   h: merchantWindowHeight 
+            // }
+        //   );
+        // }
+        // console.log('create merchant window')
+        if (ContainerWindowManager.hasWindow('merchant')) {
+          let window = ContainerWindowManager.removeWindow('merchant');
+          window.disconnectListeners();
+          window.destroyWindow();
         } else {
-          WindowManager.createWindow(self, 'merchant', MerchantWindow, 
+          ContainerWindowManager.createWindow(self, 'merchant', MerchantWindow, 
             { 
               controller: self.gameinstance,
-              x: reducedWidth / 2 - merchantWindowWidth / 2,
-              y: reducedHeight / 2 - merchantWindowHeight / 2,
+              x: reducedWidth / 2 - merchantWindowWidth / 2 + self.getCameraX(),
+              y: reducedHeight / 2 - merchantWindowHeight / 2 + self.getCameraY(),
               w: merchantWindowWidth,
               h: merchantWindowHeight 
             }
           );
         }
       }
-    }, this);
+    });
     this.add.existing(newMerchant);
   }
 

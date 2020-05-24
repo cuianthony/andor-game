@@ -63,20 +63,6 @@ export class EventWindow extends BasicWindow {
         this.okButton.setInteractive({useHandCursor: true}).setDisplaySize(30, 30).setOrigin(0);
         let windowName = `eventWindow${this.id}`;
         this.okButton.on('pointerdown', function (pointer) {
-            // if(this.id == 16){
-            //     BasicWindowManager.removeWindow(windowName);
-            //     this.destroyWindow();
-            // }
-            // else if (this.parentScene.scene.get('collab')) {
-            //     this.parentScene.scene.bringToTop('collab')
-            //     this.parentScene.scene.wake('collab')
-            //     BasicWindowManager.removeWindow(windowName);
-            //     this.destroyWindow();
-            // }
-            // else{
-            //     BasicWindowManager.removeWindow(windowName);
-            //     this.destroyWindow();
-            // }
             if (this.parentScene.scene.get('collab')) {
                 this.parentScene.scene.bringToTop('collab')
                 this.parentScene.scene.wake('collab')

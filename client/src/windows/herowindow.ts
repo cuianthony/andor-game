@@ -60,7 +60,7 @@ export class HeroWindow extends Window {
     protected initialize() { 
         var self = this
         var bg = this.add.image(0, 0, 'scrollbg').setOrigin(0)
-        this.add.sprite(20, 20, 'hero_border').setOrigin(0);
+        this.add.sprite(20, 20, 'hero_border').setOrigin(0); // TODO: why are sprites being used here
         this.add.sprite(24, 24, this.icon).setDisplaySize(72, 72).setOrigin(0);
 
         var buttonStyle = { 
