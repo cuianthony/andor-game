@@ -1,15 +1,20 @@
-import { Window } from "./window";
 import { game } from "../api/game";
+import { BasicWindow } from "./basicwindow";
 
-export class Chat extends Window {
-    private element;
+export class ChatWindow extends BasicWindow {
+    private chatBox;
     private gameinstance: game;
+    private posX: number;
+    private posY: number;
 
-    public constructor(key, data, windowZone: Phaser.GameObjects.Zone) {
-        super(key, {x: data.x, y: data.y, width: data.w, height: data.h}, windowZone);
+    public constructor(parentScene: Phaser.Scene, data) {
+        super(parentScene)
+
         this.gameinstance = data.controller
-
+        this.posX = data.x;
+        this.posY = data.y;
         var self = this;
+
         this.gameinstance.recieve(function update(msg) {
             self.gameinstance.appendToChatLog(msg)
             var paragraph = document.createElement('p');
@@ -21,21 +26,23 @@ export class Chat extends Window {
                 console.log('error in adding chat info to history')
             }
         })
-    }
 
-    public preload() {
-        this.load.html('chatform', './assets/templates/chat.html');
+        this.initialize();
     }
 
     protected initialize() {
-        console.log(this)
         var self = this;
 
-        this.element = this.add.dom(200, 170).createFromCache('chatform');
+        /* DOM element dimensions:
+         * x: set x - 110, 707
+         * y: set y - 130, 410
+         * w: 218
+         * h: 260
+        */
+        this.chatBox = this.parentScene.add.dom(this.posX, this.posY).createFromCache('chatform');
 
-        this.element.addListener('click');
-        this.element.on('click', function (event) {
-            console.log("clicking")
+        this.chatBox.addListener('click');
+        this.chatBox.on('click', function (event) {
             if (event.target.name === 'sendButton') {
                 var inputText = this.getChildByName('nameField');
                 //  Have they entered anything?
@@ -43,13 +50,14 @@ export class Chat extends Window {
                     event.preventDefault();
                     self.gameinstance.send(inputText.value, function (msg) {
                         inputText.value = "";
-                        update(msg)
+                        updateChat(msg)
                     })
                 }
             }
         });
+        this.addElements([ this.chatBox ]);
 
-        function update(msg) {
+        function updateChat(msg) {
             console.log(msg)
             self.gameinstance.appendToChatLog(msg)
             var paragraph = document.createElement('p');

@@ -46,6 +46,8 @@ export default class LobbyScene extends Phaser.Scene {
         this.load.image('optionsicon', './assets/options-menu/haus.png')
         this.load.image('scrollbg', './assets/windowbg.jpg')
         this.load.image('trademenubg', './assets/menubackground.png')
+
+        this.load.html('chatform', './assets/templates/chat.html');
     }
 
     public create() {

@@ -1,8 +1,8 @@
 import { game } from "../api";
-import { WindowManager } from "../utils/WindowManager";
-import { Chat } from '../windows/chatwindow';
+import { ChatWindow } from '../basicwindows/chatwindow';
 import { GameObjects } from "phaser";
 import { reducedWidth } from "../constants";
+import { BasicWindowManager } from "../utils/BasicWindowManager";
 
 export default class ReadyScreenScene extends Phaser.Scene {
     public archer: GameObjects.Image;
@@ -114,10 +114,11 @@ export default class ReadyScreenScene extends Phaser.Scene {
         this.playbutton.on('pointerdown', function (pointer) {
             self.gameController.allPlayersReady((ready) => {
                 if (this.ready && ready) {
-                    if (this.scene.isVisible('chat')) {
-                        var window = WindowManager.get(this, "chat")
-                        window.destroy();
-                    }
+                    if (BasicWindowManager.hasWindow('chat')) {
+                        let window = BasicWindowManager.removeWindow(`chat`);
+                        window.disconnectListeners();
+                        window.destroyWindow();
+                    } 
                     this.gameController.enterGame()
                     this.scene.start('Game', { controller: self.gameController, heroType: self.selection.name });
                 }
@@ -132,18 +133,16 @@ export default class ReadyScreenScene extends Phaser.Scene {
         this.chatButton = this.add.image(775, 540, 'chaticon').setScale(0.3)
         this.chatButton.setInteractive({useHandCursor: true})
         this.chatButton.on('pointerdown', function (pointer) {
-            if (this.scene.isVisible('chat')) {
-                var window = WindowManager.get(this, "chat")
-                window.destroy();
-            }
-            else {
-                WindowManager.createWindow(this, "chat", Chat, 
+            if (BasicWindowManager.hasWindow('chat')) {
+                let window = BasicWindowManager.removeWindow(`chat`);
+                window.disconnectListeners();
+                window.destroyWindow();
+            } else {
+                BasicWindowManager.createWindow(this, "chat", ChatWindow, 
                     { 
                         controller: self.gameController, 
-                        x: 510, 
-                        y: 220, 
-                        w: 350, 
-                        h: 250
+                        x: 707, 
+                        y: 385
                     }
                 )
             }
@@ -158,13 +157,11 @@ export default class ReadyScreenScene extends Phaser.Scene {
                 console.log("Sorry cant find ", hero)
         }); // listener for when other clients select heros
 
-
         //callbacks
         function remListener(hero) {
             console.log(hero)
             self[hero].removeListener('pointerdown')
         }
-
 
         this.gameController.removeObjListener(remListener)
     }
@@ -182,11 +179,8 @@ export default class ReadyScreenScene extends Phaser.Scene {
                     self[item.name].setTint(0x404040)
                 })
             }
-
         });
-
     }
-
 
     public tween() {
         //  Flash the prompt
@@ -198,5 +192,4 @@ export default class ReadyScreenScene extends Phaser.Scene {
             yoyo: true
         });
     }
-
 }

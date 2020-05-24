@@ -1,6 +1,7 @@
-import { Chat } from '../windows/chatwindow';
+import { ChatWindow } from '../basicwindows/chatwindow';
 import { HeroWindow } from '../windows/herowindow';
 import { WindowManager } from "../utils/WindowManager";
+import { BasicWindowManager } from '../utils/BasicWindowManager';
 import { game } from '../api/game';
 import { Tile } from '../objects/tile';
 import { Monster } from '../objects/monster';
@@ -110,11 +111,11 @@ export default class BoardOverlay extends Phaser.Scene {
         this.chatButton = this.add.image(775, 565, 'chaticon').setScale(0.3)
         this.chatButton.setInteractive({useHandCursor: true});
         this.chatButton.on('pointerdown', function (pointer) {
-            if (this.scene.isVisible('chat')) {
-                var window = WindowManager.get(this, "chat")
-                window.destroy();
-            }
-            else {
+            if (BasicWindowManager.hasWindow('chat')) {
+                let window = BasicWindowManager.removeWindow(`chat`);
+                window.disconnectListeners();
+                window.destroyWindow();
+            } else {
                 this.tweens.add({
                     targets: this.chatButton,
                     alpha: 0.3,
@@ -122,13 +123,11 @@ export default class BoardOverlay extends Phaser.Scene {
                     ease: 'Power3',
                     yoyo: true
                 });
-                WindowManager.createWindow(this, "chat", Chat, 
+                BasicWindowManager.createWindow(this, "chat", ChatWindow, 
                     { 
-                        controller: self.gameinstance, 
-                        x: 510, 
-                        y: 245, 
-                        w: 350, 
-                        h: 250
+                        controller: this.gameinstance, 
+                        x: 707, 
+                        y: 410
                     }
                 )
             }
