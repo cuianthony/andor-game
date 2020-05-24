@@ -138,6 +138,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('okay', './assets/ok.png')
     this.load.image("item_border", "../assets/border.png"); // uses hex 4b2504
     this.load.image("hero_border", "../assets/big_border.png");
+    this.load.image('close_button', '../assets/close_button.png')
   }
 
   public create() {
@@ -544,37 +545,18 @@ export default class GameScene extends Phaser.Scene {
     var self = this;
     newMerchant.on('pointerdown', function (pointer) {
       if (self.hero.tile.id == newMerchant.getTileID()) { // TODO: fix this validation, all heroes should be able to see the merchant
-        // if (this.scene.isVisible('merchant')) {
-        //   var window = WindowManager.get(this, "merchant")
-        //   window.disconnectListeners() // TODO: check if this call is actually necessary
-        //   window.destroy();
-        // } else {
-        //   WindowManager.createWindow(self, 'merchant', MerchantWindow, 
-            // { 
-            //   controller: self.gameinstance,
-            //   x: reducedWidth / 2 - merchantWindowWidth / 2,
-            //   y: reducedHeight / 2 - merchantWindowHeight / 2,
-            //   w: merchantWindowWidth,
-            //   h: merchantWindowHeight 
-            // }
-        //   );
-        // }
-        // console.log('create merchant window')
         if (ContainerWindowManager.hasWindow('merchant')) {
-          let window = ContainerWindowManager.removeWindow('merchant');
-          window.disconnectListeners();
-          window.destroyWindow();
-        } else {
-          ContainerWindowManager.createWindow(self, 'merchant', MerchantWindow, 
-            { 
-              controller: self.gameinstance,
-              x: reducedWidth / 2 - merchantWindowWidth / 2 + self.getCameraX(),
-              y: reducedHeight / 2 - merchantWindowHeight / 2 + self.getCameraY(),
-              w: merchantWindowWidth,
-              h: merchantWindowHeight 
-            }
-          );
+          return;
         }
+        ContainerWindowManager.createWindow(self, 'merchant', MerchantWindow, 
+          { 
+            controller: self.gameinstance,
+            x: reducedWidth / 2 - merchantWindowWidth / 2 + self.getCameraX(),
+            y: reducedHeight / 2 - merchantWindowHeight / 2 + self.getCameraY(),
+            w: merchantWindowWidth,
+            h: merchantWindowHeight 
+          }
+        );
       }
     });
     this.add.existing(newMerchant);

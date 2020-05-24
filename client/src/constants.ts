@@ -45,8 +45,8 @@ export const collabHeaderHeight = 75;
 export const collabFooterHeight = 60;
 
 // Merchant window UI
-export const merchantWindowWidth = 400;
-export const merchantWindowHeight = 400;
+export const merchantWindowWidth = 380;
+export const merchantWindowHeight = 370;
 
 // narrator image's X-coord is a constant
 export const narratorXCoord = 9450 * scaleFactor + borderWidth
