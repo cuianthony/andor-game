@@ -5,13 +5,13 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, DeathWindow, Fight, BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow
+  CollabWindow, Fight, BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow
 } from "../windows/windows";
 import {
   TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
 } from '../basicwindows/basicwindows';
 import {
-  MerchantWindow
+  MerchantWindow, DeathWindow
 } from '../containerwindows/containerwindows';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
@@ -1015,12 +1015,20 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.receiveDeathNotice(function () {
-      if (self.scene.isVisible('deathnotice')) {``
-        var window = WindowManager.get(this, "deathnotice")
-        window.disconnectListeners() // TODO: check if this call is actually necessary
-        window.destroy();
+      if (ContainerWindowManager.hasWindow('deathnotice')) {
+        let window = ContainerWindowManager.removeWindow("deathnotice")
+        window.disconnectListeners();
+        window.destroyWindow();
       }
-      WindowManager.createWindow(self, 'deathnotice', DeathWindow, { controller: self.gameinstance });
+      ContainerWindowManager.createWindow(self, 'deathnotice', DeathWindow, 
+        { 
+          controller: self.gameinstance,
+          x: reducedWidth/2 - 400/2 + self.getCameraX(),
+          y: reducedHeight/2 - 250/2 + self.getCameraY(),
+          w: 400,
+          h: 250 
+        }
+      );
     })
     // Listening for shields lost due to monster attack
     this.gameinstance.updateShields(function (shieldsRemaining: number) {

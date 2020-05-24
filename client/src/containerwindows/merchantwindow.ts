@@ -31,7 +31,7 @@ export class MerchantWindow extends ContainerWindow {
 
         let closeButton = this.parentScene.add.image(338-this.w/2, 20-this.h/2, 'close_button').setOrigin(0).setDisplaySize(22, 22);
         closeButton.setInteractive({useHandCursor: true})
-        closeButton.on('pointerdown', function (pointer) {
+        closeButton.on('pointerdown', () => {
             ContainerWindowManager.removeWindow(this.key);
             this.disconnectListeners();
             this.destroyWindow();
