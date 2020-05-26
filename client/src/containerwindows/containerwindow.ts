@@ -40,4 +40,8 @@ export abstract class ContainerWindow {
     protected addElements(elements: Phaser.GameObjects.GameObject[]) {
         this.contents.add(elements);
     }
+
+    protected removeElements(elements: Phaser.GameObjects.GameObject[]) {
+        this.contents.remove(elements);
+    }
 }

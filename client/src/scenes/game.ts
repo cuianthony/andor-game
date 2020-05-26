@@ -5,7 +5,7 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, Fight, BattleInvWindow, TradeWindow, ShieldWindow, ContinueFightWindow
+  CollabWindow, Fight, BattleInviteWindow, TradeWindow, ShieldWindow, ContinueFightWindow
 } from "../windows/windows";
 import {
   TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
@@ -950,14 +950,18 @@ export default class GameScene extends Phaser.Scene {
      * FIGHT LISTENERS
      */
     this.gameinstance.receiveBattleInvite(function (monstertileid) {
-      if (self.scene.isVisible('battleinv')) {
-        var window = WindowManager.get(this, "battleinv")
-        window.disconnectListeners() // TODO: check if this call is actually necessary
-        window.destroy();
+      if (ContainerWindowManager.hasWindow('battleinv')) {
+        let window = ContainerWindowManager.removeWindow("battleinv")
+        window.disconnectListeners();
+        window.destroyWindow();
       }
-      WindowManager.createWindow(self, 'battleinv', BattleInvWindow,
+      ContainerWindowManager.createWindow(self, 'battleinv', BattleInviteWindow,
         {
           controller: self.gameinstance,
+          x: reducedWidth/2 - 400/2 + self.getCameraX(),
+          y: reducedHeight/2 - 250/2 + self.getCameraY(),
+          w: 400,
+          h: 250, 
           hero: self.hero,
           gamescene: self,
           monstertileid: monstertileid,
