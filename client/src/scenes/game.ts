@@ -5,7 +5,7 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, Fight, BattleInviteWindow, TradeWindow, ShieldWindow, ContinueFightWindow
+  CollabWindow, FightWindow, BattleInviteWindow, TradeWindow, ShieldWindow, ContinueFightWindow
 } from "../windows/windows";
 import {
   TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
@@ -479,8 +479,12 @@ export default class GameScene extends Phaser.Scene {
         catch {
           princetile = -69
         }
-        WindowManager.createWindow(this, monster.name, Fight, {
+        WindowManager.createWindow(this, monster.name, FightWindow, {
           controller: this.gameinstance,
+          x: 10, 
+          y: 10, 
+          w: 500, 
+          h: 380,
           hero: this.hero, monster: monster, heroes: this.heroes,
           overlayRef: this.overlay,
           gameSceneRef: this,
@@ -1006,7 +1010,7 @@ export default class GameScene extends Phaser.Scene {
         catch {
           princetile = -69
         }
-        WindowManager.createWindow(self, monster.name, Fight, {
+        WindowManager.createWindow(self, monster.name, FightWindow, {
           controller: self.gameinstance,
           hero: self.hero, monster: monster, heroes: self.heroes,
           overlayRef: self.overlay,

@@ -465,7 +465,7 @@ export function game(socket, model: Game, io) {
 
     if (hero !== undefined) {
       switch (item) {
-        case "strength":
+        case "Strength":
           success = hero.buyStrength();
           break;
         case "helm":

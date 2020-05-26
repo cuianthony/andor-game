@@ -14,7 +14,7 @@ import {
 } from "../constants";
 // import { HeroKind } from "../objects";
 
-export class Fight extends Window {
+export class FightWindow extends Window {
   //  Class to display a fight window through which you can see mosnter stats and engage in a fight.
   //  The one starting the fight through this window can send invites to other allies in range.
   //  This player will also be the controller for resource distribution upon victory.
@@ -78,13 +78,8 @@ export class Fight extends Window {
   private hour = -1
   private hourtext
 
-  public constructor(
-    key,
-    data,
-    windowData = { x: 10, y: 10, width: 500, height: 380 }, 
-    windowZone: Phaser.GameObjects.Zone
-  ) {
-    super(key, windowData, windowZone);
+  public constructor(key, data, windowZone: Phaser.GameObjects.Zone) {
+    super(key, { x: data.x, y: data.y, width: data.w, height: data.h }, windowZone);
     this.windowname = key; // TODO: just use key property inherited from window instead
     this.gameinstance = data.controller;
     this.monstertexture = data.monster.texture;
@@ -638,7 +633,7 @@ export class Fight extends Window {
       fontSize: "30px",
       color: "#4944A4",
     };
-    this.exitbutton = this.add.text(300, 10, "X", style).setInteractive();
+    this.exitbutton = this.add.text(300, 10, "X", style).setInteractive({useHandCursor: true});
     this.exitbutton.on("pointerdown", function (pointer) {
       if (self.firstfight == true) {
         //close without ending turn
