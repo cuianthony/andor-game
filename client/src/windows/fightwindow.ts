@@ -174,6 +174,7 @@ export class FightWindow extends Window {
 
     //click the fight text to enter the fight.
     this.fighttext.on("pointerdown", function (pointer) {
+      console.log('fighttext pointerdown')
       self.yourroll.setText("Your roll:")
       self.inviteresponses = 0;
       var haveyourolled = false;
@@ -362,6 +363,7 @@ export class FightWindow extends Window {
               confirmbutton.destroy();
               self.gameinstance.unsubscribeAlliedRollListener();
               self.gameinstance.unsubscribeShieldListeners();
+              self.gameinstance.unsubscribeReceiveBattleInviteResponse();
               var alliedattacksum: number = 0;
               rollbutton.destroy();
               self.exitbutton.visible = true;
@@ -635,6 +637,9 @@ export class FightWindow extends Window {
     };
     this.exitbutton = this.add.text(300, 10, "X", style).setInteractive({useHandCursor: true});
     this.exitbutton.on("pointerdown", function (pointer) {
+      self.gameinstance.unsubscribeAlliedRollListener();
+      self.gameinstance.unsubscribeShieldListeners();
+      self.gameinstance.unsubscribeReceiveBattleInviteResponse();
       if (self.firstfight == true) {
         //close without ending turn
         self.overlayRef.toggleInteractive(true);
@@ -645,6 +650,7 @@ export class FightWindow extends Window {
           console.log("its fine");
         }
         self.scene.remove(this.windowname);
+
       } else if (self.alliedheros.length == 0) {
         console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         self.endTurnStuff();

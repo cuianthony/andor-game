@@ -364,6 +364,7 @@ export class game {
     ///
     //tell server you entered game
     public enterGame(){
+        console.log('client send enterGame')
         this.socket.emit('enterGame')
     }
 
@@ -464,13 +465,20 @@ export class game {
 
     public sendBattleInviteResponse(response, herokind) {
         //todo: have to clear this listener after use?
+        console.log('client sendBattleInviteResponse')
         this.socket.emit('sendBattleInviteResponse', response, herokind)
     }
 
     public receiveBattleInviteResponse(callback) {
+        console.log('receiveBattleInviteResponse')
         this.socket.on('recieveBattleInviteResponse', callback)
     }
     
+    public unsubscribeReceiveBattleInviteResponse() {
+        console.log('unsubscribe receiveBattleInviteResponse')
+        this.socket.off('recieveBattleInviteResponse')
+    }
+
     public sendCollabApproveToBattleAllies(windowname, involvedHeros, res) {
         this.socket.emit('battleCollabApprove', windowname, involvedHeros, res)
     }

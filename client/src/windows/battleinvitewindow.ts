@@ -47,13 +47,13 @@ export class BattleInviteWindow extends ContainerWindow {
     }
 
     protected initialize() {
-        var bg = this.parentScene.add.image(0, 0, 'scrollbg').setOrigin(0.5)
+        var bg = this.parentScene.add.image(0-this.w/2, 0-this.h/2, 'scrollbg').setOrigin(0).setDisplaySize(this.w, this.h);
         bg.tint = 0xff0000
 
-        var headertext = this.parentScene.add.text(50-this.w/2, 10-this.h/2, 'Do you want to join the battle?')
-        var yesbutton = this.parentScene.add.text(50-this.w/2, 25-this.h/2, 'YES').setInteractive()
-        var nobutton = this.parentScene.add.text(50-this.w/2, 40-this.h/2, 'NO').setInteractive()
-        this.addElements([ headertext, yesbutton, nobutton ]);
+        var headertext = this.parentScene.add.text(10-this.w/2, 10-this.h/2, 'Do you want to join\nthe battle?').setOrigin(0);
+        var yesbutton = this.parentScene.add.text(10-this.w/2, 50-this.h/2, 'YES').setInteractive({useHandCursor: true}).setOrigin(0);
+        var nobutton = this.parentScene.add.text(50-this.w/2, 50-this.h/2, 'NO').setInteractive({useHandCursor: true}).setOrigin(0);
+        this.addElements([ bg, headertext, yesbutton, nobutton ]);
 
         var self = this
 
@@ -62,13 +62,16 @@ export class BattleInviteWindow extends ContainerWindow {
             self.gameinstance.updateHourTracker(self.herokind)
             self.gameinstance.sendBattleInviteResponse('yes', self.herokind)
 
+            bg.setDisplaySize(self.w+120, self.h+20);
+            headertext.setPosition(10-this.w/2, 10-this.h/2)
             self.removeElements([ yesbutton, nobutton ]);
             yesbutton.destroy()
             nobutton.destroy()
 
             headertext.setText('In battle.')
-            self.rolltext = self.parentScene.add.text(50-this.w/2, 25-this.h/2, 'Your roll: ' + self.roll + ' Your str: ' + self.str)
+            self.rolltext = self.parentScene.add.text(10-self.w/2, 25-self.h/2, 'Your roll: ' + self.roll + ' Your str: ' + self.str)
             self.addElements([ self.rolltext ]);
+            // console.log(self.rolltext)
             //determine if we are a non-archer hero using the bow from adjacent space
             var bow = false 
             if (self.herokind != 'archer' && self.hero.tile.id != self.monstertileid) {
@@ -82,10 +85,10 @@ export class BattleInviteWindow extends ContainerWindow {
                 if (self.herokind == 'archer' || bow) {
                     var count = 0
                     self.roll = data.rolls[count]
-                    self.abilitytext = self.parentScene.add.text(50-this.w/2, 40-this.h/2, 'You may reroll ' + (data.rolls.length-1-count) + ' more times.')
+                    self.abilitytext = self.parentScene.add.text(50-self.w/2, 40-self.h/2, 'You may reroll ' + (data.rolls.length-1-count) + ' more times.')
                     self.rolltext.setText('Your roll: ' + self.roll + ' Your str: ' + self.str)
                     if (count < data.rolls.length - 1) {
-                        self.abilitybutton = self.parentScene.add.text(50-this.w/2, 55-this.h/2, 'Click to use ability.').setInteractive()
+                        self.abilitybutton = self.parentScene.add.text(50-self.w/2, 55-self.h/2, 'Click to use ability.').setInteractive({useHandCursor: true})
                         self.abilitybutton.on('pointerdown', function(pointer) {
                             count++
                             self.abilitytext.setText('You may reroll ' + (data.rolls.length-1-count) + ' more times.')
@@ -104,9 +107,9 @@ export class BattleInviteWindow extends ContainerWindow {
                     self.roll = data.roll
                     //handle mage ability
                     if (self.hero.getKind() == 'mage') {
-                        self.abilitytext = self.parentScene.add.text(50-this.w/2, 40-this.h/2, 'You may flip the die to: ' + (7-data.roll))
+                        self.abilitytext = self.parentScene.add.text(50-self.w/2, 40-self.h/2, 'You may flip the die to: ' + (7-data.roll))
                         var oppositeside = 7 - data.roll
-                        self.abilitybutton = self.parentScene.add.text(50-this.w/2, 55-this.h/2, 'Click to use ability.').setInteractive()
+                        self.abilitybutton = self.parentScene.add.text(50-self.w/2, 55-self.h/2, 'Click to use ability.').setInteractive({useHandCursor: true})
                         self.abilitybutton.on('pointerdown', function(pointer){
                             self.abilitytext.setText('Mage ability used.')
                             self.abilitybutton.disableInteractive()
@@ -127,7 +130,7 @@ export class BattleInviteWindow extends ContainerWindow {
                 //handle brew here:
                 self.gameinstance.getHeroItems(self.hero.getKind(), function(itemdict) {
                     if (itemdict['smallItems'].includes('half_brew') || itemdict['smallItems'].includes('brew')) {
-                        self.brewtext = self.parentScene.add.text(260-this.w/2, 190-this.h/2, 'Click to use\n witch\'s brew.').setInteractive();
+                        self.brewtext = self.parentScene.add.text(260-self.w/2, 190-self.h/2, 'Click to use\n witch\'s brew.').setInteractive({useHandCursor: true});
                         self.addElements([ self.brewtext ]);
                         self.brewtext.on('pointerdown', function(pointer) {
                             var doubled_roll = self.roll * 2
@@ -153,9 +156,10 @@ export class BattleInviteWindow extends ContainerWindow {
                     }
                 })
                 
-                self.confirmbutton = self.parentScene.add.text(50-this.w/2, 70-this.h/2 ,'Click to confirm your attack.').setInteractive()
+                self.confirmbutton = self.parentScene.add.text(50-self.w/2, 70-self.h/2 ,'Click to confirm your attack.').setInteractive({useHandCursor: true})
                 self.addElements([ self.confirmbutton ]);
                 self.confirmbutton.on('pointerdown', function(pointer) {
+                    console.log('client send confirm')
                     //send the roll to battle host and destroy the window.
                     self.gameinstance.confirmroll(self.herokind, self.roll, self.str)
                     //maybe display results first?
@@ -188,9 +192,9 @@ export class BattleInviteWindow extends ContainerWindow {
                           WindowManager.createWindow(self.gameSceneRef, windowname, CollabWindow, collabWindowData);
                     })
                     // Close battleinv window
-                    ContainerWindowManager.removeWindow(this.key);
-                    this.disconnectListeners();
-                    this.destroyWindow();
+                    ContainerWindowManager.removeWindow(self.key);
+                    self.disconnectListeners();
+                    self.destroyWindow();
                 })   
             })
         })
@@ -198,9 +202,9 @@ export class BattleInviteWindow extends ContainerWindow {
         nobutton.on('pointerdown', function(pointer) {
             self.gameinstance.sendBattleInviteResponse('no', self.herokind)
             // Close battleinv window
-            ContainerWindowManager.removeWindow(this.key);
-            this.disconnectListeners();
-            this.destroyWindow();
+            ContainerWindowManager.removeWindow(self.key);
+            self.disconnectListeners();
+            self.destroyWindow();
         })
 
     }
