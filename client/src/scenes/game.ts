@@ -1022,7 +1022,7 @@ export default class GameScene extends Phaser.Scene {
           h: 380,
           hero: self.hero, monster: monster, heroes: self.heroes,
           overlayRef: self.overlay,
-          gameSceneRef: this,
+          gameSceneRef: self,
           princePos: princetile
         });
         // self.scene.pause()

@@ -671,7 +671,8 @@ export class FightWindow extends Window {
     } catch {
       console.log("its fine");
     }
-    this.scene.remove(this.windowname);
+    this.scene.remove(this.windowname);// TODO FIX THIS, cannot read property remove of null
+    // Above error is because the window is already remove at line 988
     this.gameinstance.endTurn();
   }
 
@@ -931,13 +932,10 @@ export class FightWindow extends Window {
     text.on("pointerdown", function (pointer) {
       self.overlayRef.toggleInteractive(true);
       // self.scene.resume("Game");
-      self.gameSceneRef.toggleInteractive(true);
+      console.log(self.gameSceneRef)
+      self.gameSceneRef.toggleInteractive(true); // TODO: not a function?
       self.scene.remove(self.windowname);
       self.gameinstance.endTurn()
-      // Deprecated: removed turn logic from frontend
-      // if (self.gameinstance.getTurn()) {
-      //     self.gameinstance.endTurn();
-      // }
     });
   }
 
@@ -983,9 +981,6 @@ export class FightWindow extends Window {
           self.monstername
         );
         self.overlayRef.toggleInteractive(true);
-        // Deprecated: removed turn logic from frontend
-        // self.gameinstance.endTurnOnEndDay()
-        // self.scene.resume("Game");
         self.gameSceneRef.toggleInteractive(true);
         self.scene.remove(this.windowname);
         // self.gameinstance.endTurnOnEndDay()
@@ -999,6 +994,8 @@ export class FightWindow extends Window {
         //do nothing?
       }
       console.log(self.continueresponsecnt, self.alliedheros.length);
+
+      // TODO: I don't really understand this block
       if (self.continueresponsecnt == self.alliedheros.length) {
         console.log("option quatro");
         //this means everyone said no to continue fight, so close window and end turn as normal with resetting monster stats.

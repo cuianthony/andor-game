@@ -99,7 +99,8 @@ export class BattleInviteWindow extends ContainerWindow {
                                 self.abilitybutton.destroy()
                             }
                         }) 
-                    }                
+                    }    
+                    self.addElements([ self.abilitytext, self.abilitybutton ]);            
                 }
                 else {
                     //handle non archer heros
@@ -116,6 +117,7 @@ export class BattleInviteWindow extends ContainerWindow {
                             self.roll = oppositeside
                             self.rolltext.setText('Your roll: ' + oppositeside + 'Your str:' + data.strength)
                         })
+                        self.addElements([ self.abilitytext, self.abilitybutton ]);
                     }
                     else {
                         self.gameinstance.getHeroItems(self.hero.getKind(), function(itemdict) {
@@ -126,7 +128,6 @@ export class BattleInviteWindow extends ContainerWindow {
                         })
                     }
                 }
-                self.addElements([ self.abilitytext, self.abilitybutton ]);
                 //handle brew here:
                 self.gameinstance.getHeroItems(self.hero.getKind(), function(itemdict) {
                     if (itemdict['smallItems'].includes('half_brew') || itemdict['smallItems'].includes('brew')) {
