@@ -38,26 +38,10 @@ export abstract class ContainerWindow {
     }
 
     protected addElements(elements: Phaser.GameObjects.GameObject[]) {
-        // console.log('addElements', elements);
         this.contents.add(elements);
-        // this.refreshWindow();
     }
 
     protected removeElements(elements: Phaser.GameObjects.GameObject[]) {
         this.contents.remove(elements, true);
-    }
-
-    protected refreshWindow() {
-        this.contents.removeAllListeners();
-        let newContainer = this.parentScene.add.container(this.contents.x+this.w/2, this.contents.y+this.h/2, this.contents.getAll());
-        newContainer.setSize(this.w, this.h);
-        newContainer.setInteractive();
-        this.contents = newContainer;
-
-        this.parentScene.input.setDraggable(this.contents);
-        this.parentScene.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-        });
     }
 }

@@ -174,7 +174,6 @@ export class FightWindow extends Window {
 
     //click the fight text to enter the fight.
     this.fighttext.on("pointerdown", function (pointer) {
-      console.log('fighttext pointerdown')
       self.yourroll.setText("Your roll:")
       self.inviteresponses = 0;
       var haveyourolled = false;
@@ -931,9 +930,7 @@ export class FightWindow extends Window {
     var text = this.add.text(70, 150, "Click to accept.").setInteractive();
     text.on("pointerdown", function (pointer) {
       self.overlayRef.toggleInteractive(true);
-      // self.scene.resume("Game");
-      console.log(self.gameSceneRef)
-      self.gameSceneRef.toggleInteractive(true); // TODO: not a function?
+      self.gameSceneRef.toggleInteractive(true);
       self.scene.remove(self.windowname);
       self.gameinstance.endTurn()
     });
@@ -964,7 +961,6 @@ export class FightWindow extends Window {
     var self = this;
     //use self.firstfight to determine if this is necessary.
     for (let ally of this.alliedheros) {
-      console.log(ally);
       this.gameinstance.continueFightRequest(ally);
     }
     //we have to wait until a) someone agrees to continue the fight or

@@ -71,7 +71,6 @@ export class BattleInviteWindow extends ContainerWindow {
             headertext.setText('In battle.')
             self.rolltext = self.parentScene.add.text(10-self.w/2, 25-self.h/2, 'Your roll: ' + self.roll + ' Your str: ' + self.str)
             self.addElements([ self.rolltext ]);
-            // console.log(self.rolltext)
             //determine if we are a non-archer hero using the bow from adjacent space
             var bow = false 
             if (self.herokind != 'archer' && self.hero.tile.id != self.monstertileid) {
@@ -160,7 +159,6 @@ export class BattleInviteWindow extends ContainerWindow {
                 self.confirmbutton = self.parentScene.add.text(50-self.w/2, 70-self.h/2 ,'Click to confirm your attack.').setInteractive({useHandCursor: true})
                 self.addElements([ self.confirmbutton ]);
                 self.confirmbutton.on('pointerdown', function(pointer) {
-                    console.log('client send confirm')
                     //send the roll to battle host and destroy the window.
                     self.gameinstance.confirmroll(self.herokind, self.roll, self.str)
                     //maybe display results first?
