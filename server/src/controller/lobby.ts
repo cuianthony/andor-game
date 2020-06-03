@@ -10,6 +10,7 @@ export function lobby(socket, model: Lobby, io) {
     g.initialize({});
     model.createGame(g);
 
+    // Socket namespace for the game separate from the lobby namespace and other games
     var gamensp = io.of("/" + name)
     gamensp.on("connection", function (socket) {
       game(socket, g, io)
@@ -18,6 +19,7 @@ export function lobby(socket, model: Lobby, io) {
   })
 
   socket.on("loadGame", function (name, callback) {
+    console.log('socket', socket.conn.id, 'sending loadGame to server')
     var fs = require('fs');
     const tempData = fs.readFileSync('db.json')
     const data = JSON.parse(tempData);
@@ -86,7 +88,7 @@ export function lobby(socket, model: Lobby, io) {
 
   socket.on("newPlayer", function () {
     let id = model.connectNewPlayer(socket.conn.id);
-    console.log("Connected ", id);
+    console.log("Connected", id);
   });
 
   socket.on("joinGame", function (gameName, callback) {

@@ -471,6 +471,10 @@ export class game {
         this.socket.on('recieveBattleInviteResponse', callback)
     }
     
+    public unsubscribeReceiveBattleInviteResponse() {
+        this.socket.off('recieveBattleInviteResponse')
+    }
+
     public sendCollabApproveToBattleAllies(windowname, involvedHeros, res) {
         this.socket.emit('battleCollabApprove', windowname, involvedHeros, res)
     }

@@ -21,7 +21,7 @@ export class MerchantWindow extends ContainerWindow {
     }
 
     protected initialize() { 
-        this.elements.push(this.parentScene.add.image(0-this.w/2, 0-this.h/2, 'scrollbg').setOrigin(0).setDisplaySize(this.w, this.h))
+        this.elements.push(this.parentScene.add.image(0-this.w/2, 0-this.h/2, 'scrollbg').setOrigin(0).setDisplaySize(this.w, this.h));
         this.elements.push(this.parentScene.add.image(20-this.w/2, 20-this.h/2, 'hero_border').setOrigin(0));
         this.elements.push(this.parentScene.add.image(24-this.w/2, 24-this.h/2, 'merchant-trade').setDisplaySize(72, 72).setOrigin(0));
 

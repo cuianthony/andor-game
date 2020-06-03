@@ -2,6 +2,8 @@ import { game } from '../api/game';
 import { ContainerWindow } from "./containerwindow";
 import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 
+// Note: this is only used for *allied* deaths. The death of the hero leading the fight is handled
+// in FightWindow
 export class DeathWindow extends ContainerWindow {
     private gameinstance: game;
 

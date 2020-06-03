@@ -962,10 +962,10 @@ export default class GameScene extends Phaser.Scene {
       ContainerWindowManager.createWindow(self, 'battleinv', BattleInviteWindow,
         {
           controller: self.gameinstance,
-          x: reducedWidth/2 - 400/2 + self.getCameraX(),
-          y: reducedHeight/2 - 250/2 + self.getCameraY(),
-          w: 400,
-          h: 250, 
+          x: reducedWidth/2 - 205/2 + self.getCameraX(),
+          y: reducedHeight/2 - 80/2 + self.getCameraY(),
+          w: 205,
+          h: 80, 
           hero: self.hero,
           gamescene: self,
           monstertileid: monstertileid,
@@ -983,6 +983,10 @@ export default class GameScene extends Phaser.Scene {
       WindowManager.createWindow(self, 'continuefightprompt', ContinueFightWindow,
         {
           controller: self.gameinstance,
+          x: 350, 
+          y: 30, 
+          w: 400, 
+          h: 250,
           hero: self.hero,
           gamescene: self,
           overlayRef: self.overlay
@@ -1012,9 +1016,13 @@ export default class GameScene extends Phaser.Scene {
         }
         WindowManager.createWindow(self, monster.name, FightWindow, {
           controller: self.gameinstance,
+          x: 10, 
+          y: 10, 
+          w: 500, 
+          h: 380,
           hero: self.hero, monster: monster, heroes: self.heroes,
           overlayRef: self.overlay,
-          gameSceneRef: this,
+          gameSceneRef: self,
           princePos: princetile
         });
         // self.scene.pause()

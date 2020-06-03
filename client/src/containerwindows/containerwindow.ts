@@ -42,6 +42,6 @@ export abstract class ContainerWindow {
     }
 
     protected removeElements(elements: Phaser.GameObjects.GameObject[]) {
-        this.contents.remove(elements);
+        this.contents.remove(elements, true);
     }
 }

@@ -64,11 +64,12 @@ export function game(socket, model: Game, io) {
     model.gameStartHeroPosition += 1;
     callback(tempModel)
   })
+
   socket.on('enterGame', function(){
     model.updatePlayersInGame(1)
-    console.log("received enterGame. now ", model.getPlayersInGame(), " in game")
-    
+    console.log("received enterGame. now ", model.getPlayersInGame(), " in game")  
   })
+  
   socket.on("moveRequest", function (id, callback) {
     id = +id // turning Id from string to number
     var heroID = socket.conn.id
