@@ -12,6 +12,7 @@ import { HeroKind } from '../objects/HeroKind';
 // UI plugin
 import { ScrollablePanel, RoundRectangle, FixWidthSizer } 
     from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 
 export default class BoardOverlay extends Phaser.Scene {
     private parent: Phaser.GameObjects.Zone
@@ -293,13 +294,14 @@ export default class BoardOverlay extends Phaser.Scene {
         this.heroButtons.get(type).on('pointerdown', (pointer) => {
             this.gameinstance.getHeroAttributes(type, (herodata) => {
                 const cardID = `${type}Card`;
-                if (this.scene.isVisible(cardID)) {
-                    var heroWindow = WindowManager.get(this, cardID)
-                    heroWindow.disconnectListeners() // TODO: check if this call is actually necessary
-                    heroWindow.destroy();
-                } else {
-                    WindowManager.createWindow(this, cardID, HeroWindow,
-                        {
+                if (ContainerWindowManager.hasWindow(cardID)) {
+                    let window = ContainerWindowManager.removeWindow(cardID)
+                    window.disconnectListeners();
+                    window.destroyWindow();
+                }
+                else { 
+                    ContainerWindowManager.createWindow(self, cardID, HeroWindow, 
+                        { 
                             controller: this.gameinstance,
                             icon: `${type}male`,
                             clienthero: this.hk,
