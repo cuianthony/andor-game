@@ -5,13 +5,13 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, FightWindow, BattleInviteWindow, TradeWindow, ShieldWindow, ContinueFightWindow
+  CollabWindow, FightWindow, TradeWindow, ShieldWindow
 } from "../windows/windows";
 import {
   TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
 } from '../basicwindows/basicwindows';
 import {
-  MerchantWindow, DeathWindow
+  MerchantWindow, BattleInviteWindow, DeathWindow, ContinueFightWindow
 } from '../containerwindows/containerwindows';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
@@ -975,18 +975,18 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.gameinstance.continueFightPrompt(function () {
-      if (self.scene.isVisible('continuefightprompt')) {
-        var window = WindowManager.get(this, "continuefightprompt")
-        window.disconnectListeners() // TODO: check if this call is actually necessary
-        window.destroy();
+      if (ContainerWindowManager.hasWindow('continuefightprompt')) {
+        let window = ContainerWindowManager.removeWindow("continuefightprompt")
+        window.disconnectListeners();
+        window.destroyWindow();
       }
-      WindowManager.createWindow(self, 'continuefightprompt', ContinueFightWindow,
+      ContainerWindowManager.createWindow(self, 'continuefightprompt', ContinueFightWindow,
         {
           controller: self.gameinstance,
-          x: 350, 
-          y: 30, 
-          w: 400, 
-          h: 250,
+          x: reducedWidth/2 - 375/2 + self.getCameraX(),
+          y: reducedHeight/2 - 110/2 + self.getCameraY(), 
+          w: 375, 
+          h: 110,
           hero: self.hero,
           gamescene: self,
           overlayRef: self.overlay
@@ -1038,11 +1038,10 @@ export default class GameScene extends Phaser.Scene {
       }
       ContainerWindowManager.createWindow(self, 'deathnotice', DeathWindow, 
         { 
-          controller: self.gameinstance,
-          x: reducedWidth/2 - 400/2 + self.getCameraX(),
-          y: reducedHeight/2 - 250/2 + self.getCameraY(),
-          w: 400,
-          h: 250 
+          x: reducedWidth/2 - 375/2 + self.getCameraX(),
+          y: reducedHeight/2 - 110/2 + self.getCameraY(), 
+          w: 375, 
+          h: 110,
         }
       );
     })

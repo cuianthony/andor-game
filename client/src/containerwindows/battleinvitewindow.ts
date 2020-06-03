@@ -1,10 +1,10 @@
 import { game } from '../api/game';
 import { WindowManager } from "../utils/WindowManager";
-import { CollabWindow } from './collabwindow';
+import { CollabWindow } from '../windows/collabwindow';
 import { collabColWidth, collabHeaderHeight, collabRowHeight, collabFooterHeight, reducedWidth, reducedHeight } from "../constants";
 import GameScene from "../scenes/game";
 import BoardOverlay from "../scenes/boardoverlay";
-import { ContainerWindow } from "../containerwindows/containerwindow";
+import { ContainerWindow } from "./containerwindow";
 import { ContainerWindowManager } from "../utils/ContainerWindowManager";
 
 export class BattleInviteWindow extends ContainerWindow {
