@@ -32,4 +32,7 @@ export class Lobby {
         return this.games;
     }
 
+    public getGame(name: string) {
+        return this.games.get(name);
+    }
 }

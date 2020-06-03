@@ -24,38 +24,51 @@ export function lobby(socket, model: Lobby, io) {
     if (data.games && name in data.games) {
       const gameData = data.games[name];
 
-      // create game
-      let g = new Game(name, gameData.numOfDesiredPlayers, gameData.difficulty);
-      model.createGame(g);
+      // create game if it hasn't been loaded already by someone else
+      if (!model.getAvailableGames().has(name)) {
+        console.log('server create new game model for', name)
+        let g = new Game(name, gameData.numOfDesiredPlayers, gameData.difficulty);
+        model.createGame(g);
+
+        g.initialize({
+          currPlayersTurn: gameData.currPlayersTurn,
+          regions: JSON.parse(gameData.regions, (key, value) =>
+            key === 'items' ? jsonToMap(value) : value
+          ),
+          heros: JSON.parse(gameData.heros),
+          farmers: JSON.parse(gameData.farmers),
+          monsters: JSON.parse(gameData.monsters),
+          fogs: jsonToMap(gameData.fogs),
+          eventDeck: JSON.parse(gameData.eventDeck),
+          activeEvents: JSON.parse(gameData.activeEvents),
+          nextDayFirstHero: gameData.nextDayFirstHero,
+          activeHeros: JSON.parse(gameData.activeHeros),
+          castle: JSON.parse(gameData.castle),
+          monstersInCastle: JSON.parse(gameData.monstersInCastle),
+          endOfGameState: gameData.endOfGameState,
+          prince: JSON.parse(gameData.prince),
+          witch: JSON.parse(gameData.witch),
+          herb: JSON.parse(gameData.herb),
+          narrator: JSON.parse(gameData.narrator),
+          initialCollabDone: gameData.initialCollabDone,
+          runestoneCardPos: gameData.runestoneCardPos
+        })
+      }
+      
+      let loadedGame = model.getGame(name);
+      if (!loadedGame) {
+        console.log('ERROR: that game does not exist');
+        return;
+      }
+      
       // connect game socket
+      // We should only create one of these controllers per client
       var gamensp = io.of("/" + name)
       gamensp.on("connection", function (socket) {
-        game(socket, g, io)
+        console.log('server create new game controller for', socket.conn.id)
+        game(socket, loadedGame!, io);
+        gamensp.removeAllListeners("connection");
       });
-
-      g.initialize({
-        currPlayersTurn: gameData.currPlayersTurn,
-        regions: JSON.parse(gameData.regions, (key, value) =>
-          key === 'items' ? jsonToMap(value) : value
-        ),
-        heros: JSON.parse(gameData.heros),
-        farmers: JSON.parse(gameData.farmers),
-        monsters: JSON.parse(gameData.monsters),
-        fogs: jsonToMap(gameData.fogs),
-        eventDeck: JSON.parse(gameData.eventDeck),
-        activeEvents: JSON.parse(gameData.activeEvents),
-        nextDayFirstHero: gameData.nextDayFirstHero,
-        activeHeros: JSON.parse(gameData.activeHeros),
-        castle: JSON.parse(gameData.castle),
-        monstersInCastle: JSON.parse(gameData.monstersInCastle),
-        endOfGameState: gameData.endOfGameState,
-        prince: JSON.parse(gameData.prince),
-        witch: JSON.parse(gameData.witch),
-        herb: JSON.parse(gameData.herb),
-        narrator: JSON.parse(gameData.narrator),
-        initialCollabDone: gameData.initialCollabDone,
-        runestoneCardPos: gameData.runestoneCardPos
-      })
       callback();
     }
   })

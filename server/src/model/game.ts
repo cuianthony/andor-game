@@ -404,7 +404,10 @@ export class Game {
                 heroTaken = true;
             }
         })
-        if (heroTaken) return false; // failed to bind hero
+        if (heroTaken) {
+            console.log('bindHero:', heroType, 'taken already')
+            return false;
+         } // failed to bind hero
 
         let hero = this.availableHeros.filter((hero) => hero.hk === heroType) // find hero
         if (hero.length === 1) {
