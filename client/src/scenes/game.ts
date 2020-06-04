@@ -5,7 +5,7 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, FightWindow, TradeWindow
+  CollabWindow, FightWindow
 } from "../windows/windows";
 import {
   TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
@@ -1091,11 +1091,6 @@ export default class GameScene extends Phaser.Scene {
         self.addFarmer(tileid)
       }
     });
-
-    // TRADE
-    this.gameinstance.receiveTradeInvite(function (host, invitee) {
-      WindowManager.createWindow(self, 'tradewindow', TradeWindow, { gameinstance: self.gameinstance, hosthero: host, inviteehero: invitee, parentkey: 'None', clienthero: invitee })
-    })
 
     // Listen for end of game state
     this.gameinstance.receiveEndOfGame(function () {

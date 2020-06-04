@@ -1,5 +1,5 @@
 import { ChatWindow } from '../basicwindows/chatwindow';
-import { HeroWindow } from '../containerwindows/herowindow';
+import { HeroWindow, TradeWindow } from '../containerwindows/containerwindows';
 import { BasicWindowManager } from '../utils/BasicWindowManager';
 import { game } from '../api/game';
 import { Tile } from '../objects/tile';
@@ -149,6 +149,25 @@ export default class BoardOverlay extends Phaser.Scene {
 
         // end day setup
         this.endDaySetup();
+
+
+        // TRADE
+        this.gameinstance.receiveTradeInvite(function (host, invitee) {
+            // WindowManager.createWindow(self, 'tradewindow', TradeWindow, { gameinstance: self.gameinstance, hosthero: host, inviteehero: invitee, parentkey: 'None', clienthero: invitee })
+            ContainerWindowManager.createWindow(self, 'tradewindow', TradeWindow, 
+                {
+                    x: reducedWidth/2 - 624/2, 
+                    y: reducedHeight/2 - 624/2, 
+                    w: 624, 
+                    h: 624, 
+                    gameinstance: self.gameinstance, 
+                    hosthero: host, 
+                    inviteehero: invitee, 
+                    parentkey: 'None', 
+                    clienthero: invitee
+                }
+            )
+        })
 
         // Add rexUI scrollable panel to serve as game log
         var panelBg = new RoundRectangle(this, 0, 0, 2, 2, 5, this.COLOR_PRIMARY);

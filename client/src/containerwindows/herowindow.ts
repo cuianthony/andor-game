@@ -1,8 +1,8 @@
 import { game } from '../api/game';
-import { WindowManager } from "../utils/WindowManager";
-import { TradeWindow } from '../windows/tradewindow';
-import { heroCardInfo } from '../constants';
+import { TradeWindow } from './tradewindow';
+import { heroCardInfo, reducedWidth, reducedHeight } from '../constants';
 import { ContainerWindow } from "./containerwindow";
+import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 
 export class HeroWindow extends ContainerWindow {
     public icon
@@ -267,7 +267,19 @@ export class HeroWindow extends ContainerWindow {
             if (self.clienthero != self.windowhero && (self.windowherotile == self.clientherotile ) || self.clienthero != self.windowhero && dict['largeItem'] == 'falcon') {
                 let tradeButton = self.parentScene.add.text(320-self.w/2, 20-self.h/2, 'TRADE', {color: "#4944A4"}).setInteractive({useHandCursor: true}).on('pointerdown', function(pointer) {
                     self.gameinstance.sendTradeInvite(self.clienthero, self.windowhero)
-                    WindowManager.createWindow(self.parentScene, 'tradewindow', TradeWindow, {gameinstance:self.gameinstance, hosthero:self.clienthero, inviteehero:self.windowhero, parentkey:self.key, clienthero:self.clienthero})
+                    ContainerWindowManager.createWindow(self.parentScene, 'tradewindow', TradeWindow, 
+                        {
+                            x: reducedWidth/2 - 624/2, 
+                            y: reducedHeight/2 - 624/2, 
+                            w: 624, 
+                            h: 624, 
+                            gameinstance: self.gameinstance, 
+                            hosthero: self.clienthero, 
+                            inviteehero: self.windowhero, 
+                            parentkey: self.key, 
+                            clienthero: self.clienthero
+                        }
+                    )
                 }, self)
                 self.addElements([ tradeButton ]);
             }

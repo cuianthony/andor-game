@@ -28,13 +28,8 @@ export class BattleInviteWindow extends ContainerWindow {
     private monstertileid;
     private overlayRef: BoardOverlay;
 
-    private elements: Phaser.GameObjects.GameObject[]
-
     public constructor(parentScene: Phaser.Scene, key: string, data) {
         super(parentScene, key, data);
-        this.elements = [];
-    // public constructor(key: string, data, windowData = { x: 350, y: 30, width: 400, height: 250 }, windowZone: Phaser.GameObjects.Zone) {
-    //     super(key, windowData, windowZone);
         this.gameinstance = data.controller
         this.windowname = key
         this.herokind = data.hero.getKind()

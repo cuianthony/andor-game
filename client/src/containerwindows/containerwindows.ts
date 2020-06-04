@@ -4,3 +4,4 @@ export * from './battleinvitewindow';
 export * from './continuefightwindow';
 export * from './herowindow';
 export * from './shieldwindow';
+export * from './tradewindow';

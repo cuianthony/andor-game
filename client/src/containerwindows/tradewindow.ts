@@ -1,7 +1,8 @@
-import { Window } from "./window";
 import { game } from '../api/game';
+import { ContainerWindow } from "./containerwindow";
+import { ContainerWindowManager } from "../utils/ContainerWindowManager";
 
-export class TradeWindow extends Window {
+export class TradeWindow extends ContainerWindow {
     private parentkey: String
     private gameinstance: game
     private windowname
@@ -29,8 +30,10 @@ export class TradeWindow extends Window {
     private yourconfirmtext_pointer
     private confirmed: boolean = false
 
-    public constructor(key: string, data, windowData = { x: 350, y: 30, width: 624, height: 624 }, windowZone: Phaser.GameObjects.Zone) {
-        super(key, windowData, windowZone);
+    // public constructor(key: string, data, windowData = { x: 350, y: 30, width: 624, height: 624 }, windowZone: Phaser.GameObjects.Zone) {
+    //     super(key, windowData, windowZone);
+    public constructor(parentScene: Phaser.Scene, key: string, data) {
+        super(parentScene, key, data);
         this.gameinstance = data.gameinstance
         this.windowname = key
         this.parentkey = data.parentkey
@@ -39,18 +42,22 @@ export class TradeWindow extends Window {
         this.inviteehero = data.inviteehero
         this.clienthero = data.clienthero
         this.your_offers_ptr = (this.clienthero == this.hosthero) ? this.host_offers : this.invitee_offers
+
+        this.initialize();
     }
 
     protected initialize() {
         var self = this
-        var bg = this.add.image(312, 312, 'trademenubg')
+        var bg = this.parentScene.add.image(0-this.w/2, 0-this.h/2, 'trademenubg').setOrigin(0).setDisplaySize(this.w, this.h);
+        this.addElements([ bg ]);
         this.addTexts()
 
         //set up left hand side (host) item icons
         var offsetcount = 0
         this.gameinstance.getHeroItems(this.hosthero, function(itemdict) {
             if (itemdict['helm'] != 'false') {
-                let helm = self.add.sprite(self.HOST_ITEM_X, self.HELM_Y, 'helm').setInteractive()
+                let helm = self.parentScene.add.sprite(self.HOST_ITEM_X - self.w/2, self.HELM_Y - self.h/2, 'helm').setInteractive()
+                self.addElements([ helm ]);
                 if (self.clienthero == self.hosthero) {
                     self.addOnClick(helm,self.clienthero,'helm',offsetcount)
                     offsetcount++
@@ -60,7 +67,8 @@ export class TradeWindow extends Window {
                 }
             }
             if (itemdict['largeItem'] != 'empty') {
-                let largeitem = self.add.sprite(self.HOST_ITEM_X, self.LARGE_Y, itemdict['largeItem']).setInteractive()
+                let largeitem = self.parentScene.add.sprite(self.HOST_ITEM_X - self.w/2, self.LARGE_Y - self.h/2, itemdict['largeItem']).setInteractive()
+                self.addElements([ largeitem ]);
                 if (self.clienthero == self.hosthero) {
                     self.addOnClick(largeitem,self.clienthero,'largeItem',offsetcount)
                     offsetcount++
@@ -71,7 +79,8 @@ export class TradeWindow extends Window {
             }
             if (itemdict['smallItems'].length > 0) {
                 for (let i = 0; i < itemdict['smallItems'].length; i++) {
-                    let smallitem = self.add.sprite(self.HOST_ITEM_X, self.SMALL_Y[i], itemdict['smallItems'][i]).setInteractive()
+                    let smallitem = self.parentScene.add.sprite(self.HOST_ITEM_X - self.w/2, self.SMALL_Y[i] - self.h/2, itemdict['smallItems'][i]).setInteractive()
+                    self.addElements([ smallitem ]);
                     if (self.clienthero == self.hosthero) {
                         self.addOnClick(smallitem,self.clienthero,'smallItems', offsetcount)
                         offsetcount++
@@ -81,8 +90,9 @@ export class TradeWindow extends Window {
                     }
                 }
             }
-            var host_gold = self.add.text(self.HOST_ITEM_X - 20, self.GOLD_Y, 'Gold: ' + itemdict['gold'],{color: "#4944A4"}).setInteractive()
-            var host_offer_gold = self.add.text(self.HOST_ITEM_X - 20 + self.OFFER_OFFSET, self.GOLD_Y,'').setInteractive()
+            var host_gold = self.parentScene.add.text(self.HOST_ITEM_X - 20 - self.w/2, self.GOLD_Y - self.h/2, 'Gold: ' + itemdict['gold'],{color: "#4944A4"}).setInteractive()
+            var host_offer_gold = self.parentScene.add.text(self.HOST_ITEM_X - 20 + self.OFFER_OFFSET - self.w/2, self.GOLD_Y - self.h/2,'').setInteractive()
+            self.addElements([ host_gold, host_offer_gold ])
             var hostgoldcnt = itemdict['gold']
             var hostoffergoldcnt = 0
             if (self.clienthero == self.hosthero) {
@@ -114,7 +124,8 @@ export class TradeWindow extends Window {
         //set up right hand side (invitee) item icons
         this.gameinstance.getHeroItems(this.inviteehero, function(itemdict) {
             if (itemdict['helm'] != 'false') {
-                let helm = self.add.sprite(self.INVITEE_ITEM_X, self.HELM_Y, 'helm').setInteractive()
+                let helm = self.parentScene.add.sprite(self.INVITEE_ITEM_X - self.w/2, self.HELM_Y - self.h/2, 'helm').setInteractive()
+                self.addElements([ helm ]);
                 if (self.clienthero == self.inviteehero) {
                     self.addOnClick(helm,self.inviteehero,'helm', offsetcount)
                     offsetcount++
@@ -124,7 +135,8 @@ export class TradeWindow extends Window {
                 }
             }
             if (itemdict['largeItem'] != 'empty') {
-                let largeitem = self.add.sprite(self.INVITEE_ITEM_X, self.LARGE_Y, itemdict['largeItem']).setInteractive()
+                let largeitem = self.parentScene.add.sprite(self.INVITEE_ITEM_X - self.w/2, self.LARGE_Y - self.h/2, itemdict['largeItem']).setInteractive()
+                self.addElements([ largeitem ]);
                 if (self.clienthero == self.inviteehero) {
                     self.addOnClick(largeitem,self.inviteehero,'largeItem', offsetcount)
                     offsetcount++
@@ -135,7 +147,8 @@ export class TradeWindow extends Window {
             }
             if (itemdict['smallItems'].length > 0) {
                 for (let i = 0; i < itemdict['smallItems'].length; i++) {
-                    let smallitem = self.add.sprite(self.INVITEE_ITEM_X, self.SMALL_Y[i], itemdict['smallItems'][i]).setInteractive()
+                    let smallitem = self.parentScene.add.sprite(self.INVITEE_ITEM_X - self.w/2, self.SMALL_Y[i] - self.h/2, itemdict['smallItems'][i]).setInteractive()
+                    self.addElements([ smallitem ]);
                     if (self.clienthero == self.inviteehero) {
                         self.addOnClick(smallitem,self.inviteehero,'smallItems', offsetcount)
                         offsetcount++
@@ -145,8 +158,9 @@ export class TradeWindow extends Window {
                     }
                 }
             }
-            var inv_gold = self.add.text(self.INVITEE_ITEM_X - 20, self.GOLD_Y, 'Gold: ' + itemdict['gold'], {color: "#4944A4"}).setInteractive()
-            var inv_offer_gold = self.add.text(self.INVITEE_ITEM_X - 20 - self.OFFER_OFFSET, self.GOLD_Y,'').setInteractive()
+            var inv_gold = self.parentScene.add.text(self.INVITEE_ITEM_X - 20 - self.w/2, self.GOLD_Y - self.h/2, 'Gold: ' + itemdict['gold'], {color: "#4944A4"}).setInteractive()
+            var inv_offer_gold = self.parentScene.add.text(self.INVITEE_ITEM_X - 20 - self.OFFER_OFFSET - self.w/2, self.GOLD_Y - self.h/2,'').setInteractive()
+            self.addElements([ inv_gold, inv_offer_gold ])
             var invgoldcnt = itemdict['gold']
             var invoffergoldcnt = 0
             if (self.clienthero == self.inviteehero) {
@@ -193,8 +207,9 @@ export class TradeWindow extends Window {
             }
         })
 
-        this.hostconfirmtext = this.add.text(this.HOST_ITEM_X - 20, this.GOLD_Y + 20, 'UNCONFIRMED', {color:"#BC2B2B"})
-        this.inviteeconfirmtext = this.add.text(this.INVITEE_ITEM_X - 45, this.GOLD_Y + 20, 'UNCONFIRMED', {color:"#BC2B2B"})
+        this.hostconfirmtext = this.parentScene.add.text(this.HOST_ITEM_X - 20 - this.w/2, this.GOLD_Y + 20 - this.h/2, 'UNCONFIRMED', {color:"#BC2B2B"})
+        this.inviteeconfirmtext = this.parentScene.add.text(this.INVITEE_ITEM_X - 45 - this.w/2, this.GOLD_Y + 20 - this.h/2, 'UNCONFIRMED', {color:"#BC2B2B"})
+        this.addElements([ this.hostconfirmtext, this.inviteeconfirmtext ])
         this.yourconfirmtext_pointer = (this.clienthero == this.hosthero) ? this.hostconfirmtext : this.inviteeconfirmtext
         this.yourconfirmtext_pointer.setInteractive()
         this.yourconfirmtext_pointer.on('pointerdown', function(pointer){
@@ -239,10 +254,11 @@ export class TradeWindow extends Window {
             //no else its the first window to confirm that will execute the trade for both heros
         }) 
 
-        this.add.text(this.INVITEE_ITEM_X / 2 + this.HOST_ITEM_X,this.GOLD_Y + 20, 'EXIT', {color:"#BC2B2B"})
+        let exit = this.parentScene.add.text(this.INVITEE_ITEM_X / 2 + this.HOST_ITEM_X - this.w/2, this.GOLD_Y + 20 - this.h/2, 'EXIT', {color:"#BC2B2B"})
         .setInteractive().on('pointerdown', function(pointer) {
             self.closeWindow()
         })
+        this.addElements([ exit ])
 
         this.gameinstance.endTradeListener(function() {
             self.closeWindow()
@@ -266,7 +282,7 @@ export class TradeWindow extends Window {
                 var itemname = icon.texture.key
 
                 if (hero == self.hosthero ) {
-                    if (icon.x == self.HOST_ITEM_X) {
+                    if (icon.x == self.HOST_ITEM_X - self.w/2) {
                         icon.x = icon.x + self.OFFER_OFFSET
                         if (itemtype == 'smallItems') {
                             self.host_offers['smallItems'].push(itemname)
@@ -276,7 +292,7 @@ export class TradeWindow extends Window {
                         }
                     }
                     else {
-                        icon.x = self.HOST_ITEM_X
+                        icon.x = self.HOST_ITEM_X - self.w/2
                         if (itemtype == 'smallItems') {
                             const index = self.host_offers['smallItems'].indexOf(itemname);
                             if (index > -1) {
@@ -291,7 +307,7 @@ export class TradeWindow extends Window {
                 }
 
                 else {
-                    if (icon.x == self.INVITEE_ITEM_X) {
+                    if (icon.x == self.INVITEE_ITEM_X - self.w/2) {
                         icon.x = icon.x - self.OFFER_OFFSET
                         if (itemtype == 'smallItems') {
                             self.invitee_offers['smallItems'].push(itemname)
@@ -301,7 +317,7 @@ export class TradeWindow extends Window {
                         }
                     }
                     else {
-                        icon.x = self.INVITEE_ITEM_X
+                        icon.x = self.INVITEE_ITEM_X - self.w/2
                         if (itemtype == 'smallItems') {
                             const index = self.invitee_offers['smallItems'].indexOf(itemname);
                             if (index > -1) {
@@ -318,13 +334,12 @@ export class TradeWindow extends Window {
         })
     }
 
-
-
     private addTexts() {
-        this.add.text(this.HOST_ITEM_X - 15, this.HEADERTEXT_Y, 'Host items:', {color: "#4944A4"})
-        this.add.text(this.HOST_ITEM_X + this.OFFER_OFFSET - 15, this.HEADERTEXT_Y, 'Host offers:',{color: "#4944A4"})
-        this.add.text(this.INVITEE_ITEM_X - this.OFFER_OFFSET -100, this.HEADERTEXT_Y, 'Invitee offers:', {color: "#4944A4"})
-        this.add.text(this.INVITEE_ITEM_X - 70, this.HEADERTEXT_Y, 'Invitee items:',{color: "#4944A4"})
+        let t1 = this.parentScene.add.text(this.HOST_ITEM_X - 15 - this.w/2, this.HEADERTEXT_Y - this.h/2, 'Host items:', {color: "#4944A4"})
+        let t2 = this.parentScene.add.text(this.HOST_ITEM_X + this.OFFER_OFFSET - 15 - this.w/2, this.HEADERTEXT_Y - this.h/2, 'Host offers:',{color: "#4944A4"})
+        let t3 = this.parentScene.add.text(this.INVITEE_ITEM_X - this.OFFER_OFFSET -100 - this.w/2, this.HEADERTEXT_Y - this.h/2, 'Invitee offers:', {color: "#4944A4"})
+        let t4 = this.parentScene.add.text(this.INVITEE_ITEM_X - 70 - this.w/2, this.HEADERTEXT_Y - this.h/2, 'Invitee items:',{color: "#4944A4"})
+        this.addElements([ t1, t2, t3, t4 ]);
     }
 
     private unconfirm() {
@@ -334,9 +349,10 @@ export class TradeWindow extends Window {
     }
 
     private closeWindow() {
-        this.disconnectListeners();
         this.gameinstance.tradeDone()
-        this.scene.remove(this.windowname)
+        ContainerWindowManager.removeWindow(this.key)
+        this.disconnectListeners();
+        this.destroyWindow();
     }
 
     public disconnectListeners() {
