@@ -1,6 +1,5 @@
 import { ChatWindow } from '../basicwindows/chatwindow';
-import { HeroWindow } from '../windows/herowindow';
-import { WindowManager } from "../utils/WindowManager";
+import { HeroWindow } from '../containerwindows/herowindow';
 import { BasicWindowManager } from '../utils/BasicWindowManager';
 import { game } from '../api/game';
 import { Tile } from '../objects/tile';

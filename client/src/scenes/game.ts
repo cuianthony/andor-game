@@ -5,13 +5,13 @@ import { Merchant } from '../objects/merchant';
 import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
 import {
-  CollabWindow, FightWindow, TradeWindow, ShieldWindow
+  CollabWindow, FightWindow, TradeWindow
 } from "../windows/windows";
 import {
   TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
 } from '../basicwindows/basicwindows';
 import {
-  MerchantWindow, BattleInviteWindow, DeathWindow, ContinueFightWindow
+  MerchantWindow, BattleInviteWindow, DeathWindow, ContinueFightWindow, ShieldWindow
 } from '../containerwindows/containerwindows';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
@@ -1056,13 +1056,24 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
-    this.gameinstance.receiveShieldPrompt(function (damaged_shield, potentialdamage) {
-      WindowManager.createWindow(self, 'shieldprompt', ShieldWindow, { controller: self.gameinstance, hero: self.hero, potentialdamage: potentialdamage, damaged: damaged_shield });
+    this.gameinstance.receiveShieldPrompt(function (damagedShield, potentialdamage) {
+      ContainerWindowManager.createWindow(self, 'shieldprompt', ShieldWindow, 
+        { 
+          x: reducedWidth/2 - 400/2 + self.getCameraX() + 300,
+          y: reducedHeight/2 - 250/2 + self.getCameraY(), 
+          w: 400, 
+          h: 250,
+          controller: self.gameinstance, 
+          hero: self.hero, 
+          potentialDamage: potentialdamage, 
+          damagedShield: damagedShield
+        }
+      );
     })
 
     // FARMERS
     this.gameinstance.destroyFarmer(function (tileid) {
-      console.log("Entered destroyfarmer listener")
+      // console.log("Entered destroyfarmer listener")
       let pickedFarmer: Farmer = self.tiles[tileid].popFarmer();
       self.farmersOnBoard.splice(self.farmersOnBoard.indexOf(pickedFarmer), 1);
       pickedFarmer.destroy()

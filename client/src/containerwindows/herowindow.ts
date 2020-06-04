@@ -1,8 +1,8 @@
 import { game } from '../api/game';
 import { WindowManager } from "../utils/WindowManager";
-import { TradeWindow } from './tradewindow';
+import { TradeWindow } from '../windows/tradewindow';
 import { heroCardInfo } from '../constants';
-import { ContainerWindow } from "../containerwindows/containerwindow";
+import { ContainerWindow } from "./containerwindow";
 
 export class HeroWindow extends ContainerWindow {
     public icon
