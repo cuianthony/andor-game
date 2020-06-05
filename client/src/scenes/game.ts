@@ -1,40 +1,32 @@
-import { Farmer, Hero, HourTracker, Monster, HeroKind, BrokenWell, Well, Tile, Narrator, EventCard } from '../objects';
+import { 
+  Farmer, Hero, HourTracker, Monster, HeroKind, BrokenWell, Well, Tile, 
+  Narrator, EventCard, Prince, Merchant, RietburgCastle
+} from '../objects';
+import { CollabWindow, FightWindow } from "../windows/windows";
+import { TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow } from '../basicwindows/basicwindows';
+import { MerchantWindow, BattleInviteWindow, DeathWindow, ContinueFightWindow, ShieldWindow } from '../containerwindows/containerwindows';
+import { WindowManager } from '../utils/WindowManager';
+import { BasicWindowManager } from '../utils/BasicWindowManager';
+import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 import { game } from '../api';
-import { Prince } from '../objects/Prince';
-import { Merchant } from '../objects/merchant';
-import { RietburgCastle } from './rietburgcastle';
 import BoardOverlay from './boardoverlay';
-import {
-  CollabWindow, FightWindow
-} from "../windows/windows";
-import {
-  TileWindow, WitchWindow, CoastalMerchantWindow, StoryWindow, EventWindow
-} from '../basicwindows/basicwindows';
-import {
-  MerchantWindow, BattleInviteWindow, DeathWindow, ContinueFightWindow, ShieldWindow
-} from '../containerwindows/containerwindows';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
   reducedWidth, reducedHeight, htX, htY, htShift, mOffset, 
   collabColWidth, collabRowHeight, collabFooterHeight, collabHeaderHeight,
   storyCardWidths, storyCardHeights, merchantWindowWidth, merchantWindowHeight
 } from '../constants'
-import { WindowManager } from '../utils/WindowManager';
-import { BasicWindowManager } from '../utils/BasicWindowManager';
-import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 
 export default class GameScene extends Phaser.Scene {
   private heroes: Hero[];
   private hero: Hero;
-  // private startingHeroRank: number;
   private ownHeroType: HeroKind;
 
   private tiles: Tile[];
-  // Note acui: was having trouble using wells map with number typed keys, so converting to strings
   private wells: Map<string, Well>;
   private farmersOnBoard: Farmer[];
   private hourTracker: HourTracker;
-  private gameinstance: game;
+  private gameController: game;
   private monsters: Monster[];
   private monsterNameMap: Map<string, Monster>;
   private castle: RietburgCastle;
@@ -48,17 +40,12 @@ export default class GameScene extends Phaser.Scene {
   private narrator: Narrator;
   private gameStartHeroPosition: number;
   private event: EventCard
-  private activeEvents: Array<EventCard>
-  private mockText;
   private eventBeingDisplayed
   private cameraKeys;
   private cameraScrollSpeed = 15;
   private minZoom = 0.4;
   private maxZoom = 1;
   private zoomAmount = 0.01;
-
-  private sceneplugin;
-  private turntext;
 
   private overlay: BoardOverlay;
   private shiftKey;
@@ -80,9 +67,8 @@ export default class GameScene extends Phaser.Scene {
   }
 
   public init(data) {
-    this.gameinstance = data.controller;
+    this.gameController = data.controller;
     let type = data.heroType;
-    console.log("GameScene created, client hero type: ", type);
     this.ownHeroType = type;
   }
 
@@ -136,28 +122,21 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("gold", "../assets/fog-tokens/gold.png")
 
     this.load.image('okay', './assets/ok.png')
-    this.load.image("item_border", "../assets/border.png"); // uses hex 4b2504
+    this.load.image("item_border", "../assets/border.png"); // Colour: hex 4b2504
     this.load.image("hero_border", "../assets/big_border.png");
     this.load.image('close_button', '../assets/close_button.png')
   }
 
   public create() {
-    var self = this;
-
     this.cameraSetup();
     this.shiftKey = this.input.keyboard.addKey('shift');
     this.ctrlKey = this.input.keyboard.addKey('CTRL');
-    this.sceneplugin = this.scene
 
     // Centred gameboard with border
-    this.add.image(fullWidth / 2, fullHeight / 2, 'gameboard')
-      .setDisplaySize(expandedWidth, expandedHeight);
+    this.add.image(fullWidth / 2, fullHeight / 2, 'gameboard').setDisplaySize(expandedWidth, expandedHeight);
 
-    this.gameinstance.getGameData((data) => {
-      // console.log("GAME DATA IS:::::::::::::\n", data)
-
+    this.gameController.getGameData((data) => {
       this.setRegions(data.regions);
-      // console.log("FOGS ARE::****", data.fogs)
       this.addFog(data.fogs);
       this.addShieldsToRietburg(data.castle.numDefenseShields - data.castle.numDefenseShieldsUsed);
 
@@ -177,24 +156,19 @@ export default class GameScene extends Phaser.Scene {
 
       if (data.prince) {
         this.addPrince(data.prince.tile.id);
-      } else {
-        console.log('no prince saved')
       }
 
       if (data.witch) {
         this.addWitch(data.witch.tileID);
-      } else {
-        console.log('no witch saved')
       }
 
       this.setUpListeners();
 
       // Add overlay to game
       const overlayData = {
-        gameinstance: this.gameinstance,
+        gameinstance: this.gameController,
         tiles: this.tiles,
         monsterMap: this.monsterNameMap,
-        // gameTweens: self.tweens, not sure if this needs to be passed
         hourTracker: this.hourTracker,
         wells: this.wells,
         hk: this.ownHeroType,
@@ -217,7 +191,6 @@ export default class GameScene extends Phaser.Scene {
         // DEBUG TODO: uncomment
         this.startingCollabDecisionSetup();
       } else {
-        // this.scene.resume();
         this.toggleInteractive(true);
       }
 
@@ -227,7 +200,6 @@ export default class GameScene extends Phaser.Scene {
 
       // DEBUG TODO: uncomment addNarrator
       this.addNarrator(data.runestoneCardPos);
-      //
 
       // Listen for all updates triggered by narrator advancing
       this.receiveNarratorEvents();
@@ -249,24 +221,12 @@ export default class GameScene extends Phaser.Scene {
     //     this.toggleInteractive(true);
     // }, this)
 
-    // Auto-saving, disabled now so save your games manually
+    ///////////// AUTO-SAVE ////////////////////
     // setInterval(() => {
     //   console.log("********* SAVING GAME");
     //   this.gameinstance.save();
     // }, 10000);
     // this.addMerchants();
-
-    //Event Card adding at start of game
-    //this.gameinstance.newEvent()
-    //this.addEventCard("YOOOOOOOOOO")
-    // this.gameinstance.addMonster((type, tile, id) => {
-    //   this.addMonster(tile, type, id);
-    // })
-    // this.gameinstance.newEventListener((event: EventCard) => {
-    //   this.applyEvent(event)
-    // })
-
-
   }
 
   private cameraSetup() {
@@ -338,7 +298,7 @@ export default class GameScene extends Phaser.Scene {
               let items = tileItems;
               BasicWindowManager.createWindow(self, tileWindowID, TileWindow,
                 {
-                  controller: self.gameinstance,
+                  controller: self.gameController,
                   x: tile.x + 20,
                   y: tile.y + 20,
                   w: 670, // default to total number of unique items that could populate
@@ -350,15 +310,15 @@ export default class GameScene extends Phaser.Scene {
             })
           }
         } else if (this.ctrlKey.isDown) {  //to move prince, hold ctrl key
-          self.gameinstance.movePrinceRequest(tile.id, updateMovePrinceRequest)
+          self.gameController.movePrinceRequest(tile.id, updateMovePrinceRequest)
         } else {
-          self.gameinstance.moveRequest(tile.id, updateMoveRequest)
+          self.gameController.moveRequest(tile.id, updateMoveRequest)
         }
       }, this)
     }, this)
 
-    this.gameinstance.updateMoveRequest(updateMoveRequest)
-    this.gameinstance.updateMovePrinceRequest(updateMovePrinceRequest)
+    this.gameController.updateMoveRequest(updateMoveRequest)
+    this.gameController.updateMovePrinceRequest(updateMovePrinceRequest)
 
     function updateMoveRequest(heroKind, tileID) {
       self.heroes.forEach((hero: Hero) => {
@@ -490,7 +450,6 @@ export default class GameScene extends Phaser.Scene {
           gameSceneRef: this,
           princePos: princetile
         });
-        // this.scene.pause()
         this.toggleInteractive(false);
         this.overlay.toggleInteractive(false);
       }
@@ -506,7 +465,7 @@ export default class GameScene extends Phaser.Scene {
 
     var self = this;
     farmerObj.on('pointerdown', () => {
-      self.gameinstance.pickupFarmer(farmerObj.getTileID(), () => {
+      self.gameController.pickupFarmer(farmerObj.getTileID(), () => {
         self.farmersOnBoard.splice(self.farmersOnBoard.indexOf(farmerObj), 1);
         farmerObj.destroy();
       });
@@ -528,14 +487,14 @@ export default class GameScene extends Phaser.Scene {
   private addFunctionalWell(x, y, tileNumber: number, used: boolean) {
     const tile: Tile = this.tiles[tileNumber];
     const newWell = new Well(this, x * scaleFactor + borderWidth,
-      y * scaleFactor + borderWidth, "functional_well", tile, this.gameinstance, used).setDisplaySize(48, 54);
+      y * scaleFactor + borderWidth, "functional_well", tile, this.gameController, used).setDisplaySize(48, 54);
     this.add.existing(newWell);
     this.wells.set("" + newWell.getTileID(), newWell);
   }
   private addBrokenWell(x, y, tileNumber: number) {
     const tile: Tile = this.tiles[tileNumber];
     const newWell = new BrokenWell(this, x * scaleFactor + borderWidth,
-      y * scaleFactor + borderWidth, "broken_well", tile, this.gameinstance).setDisplaySize(48, 54);
+      y * scaleFactor + borderWidth, "broken_well", tile, this.gameController).setDisplaySize(48, 54);
     this.add.existing(newWell);
     //this.wells.set("" + newWell.getTileID(), newWell);
   }
@@ -543,7 +502,7 @@ export default class GameScene extends Phaser.Scene {
   private addMerchant(x, y, tileNumber: number) {
     const tile: Tile = this.tiles[tileNumber];
     const newMerchant = new Merchant(this, x * scaleFactor + borderWidth,
-      y * scaleFactor + borderWidth, "merchant-trade", tile, this.gameinstance).setDisplaySize(35, 35);
+      y * scaleFactor + borderWidth, "merchant-trade", tile, this.gameController).setDisplaySize(35, 35);
     this.merchants.push(newMerchant);
 
     var self = this;
@@ -554,7 +513,7 @@ export default class GameScene extends Phaser.Scene {
         }
         ContainerWindowManager.createWindow(self, 'merchant', MerchantWindow, 
           { 
-            controller: self.gameinstance,
+            controller: self.gameController,
             x: reducedWidth / 2 - merchantWindowWidth / 2 + self.getCameraX(),
             y: reducedHeight / 2 - merchantWindowHeight / 2 + self.getCameraY(),
             w: merchantWindowWidth,
@@ -570,7 +529,7 @@ export default class GameScene extends Phaser.Scene {
   private addNarrator(runestoneCardPos: number) {
     var self = this;
 
-    this.gameinstance.getNarratorPosition(function (pos: number) {
+    this.gameController.getNarratorPosition(function (pos: number) {
       // Trigger start of game instructions/story
       if (pos == -1) {
         BasicWindowManager.createWindow(self, 'story', StoryWindow,
@@ -580,7 +539,7 @@ export default class GameScene extends Phaser.Scene {
             w: 600,
             h: 390,
             id: -1,
-            gameController: self.gameinstance,
+            gameController: self.gameController,
             firstNarrAdvance: (self.gameStartHeroPosition == self.heroes.length)
           }
         );
@@ -590,13 +549,13 @@ export default class GameScene extends Phaser.Scene {
         // because it doesn't happen on a monster kill or end of day
         if (self.gameStartHeroPosition == 1) {
           // console.log('client emits placeRunestoneLegend')
-          self.gameinstance.placeRuneStoneLegend();
+          self.gameController.placeRuneStoneLegend();
         }
       }
 
       // Otherwise we just add the narrator at whatever position the backend has stored
       console.log("creating narrator at position", pos);
-      self.narrator = new Narrator(self, pos, "pawn", self.gameinstance).setScale(0.5);
+      self.narrator = new Narrator(self, pos, "pawn", self.gameController).setScale(0.5);
       self.add.existing(self.narrator);
 
       // Place runestone legend card
@@ -611,7 +570,7 @@ export default class GameScene extends Phaser.Scene {
     var self = this;
 
     // runestonePos is an optional argument that is only passed back for the start of game
-    this.gameinstance.updateNarrator(function (pos: number, runestonePos = -1, stoneLocs = [], win: boolean = false) {
+    this.gameController.updateNarrator(function (pos: number, runestonePos = -1, stoneLocs = [], win: boolean = false) {
       // Switch on the new narrator position
       self.narrator.advance();
       console.log("client received narrator advance", pos, runestonePos, stoneLocs, win)
@@ -694,7 +653,7 @@ export default class GameScene extends Phaser.Scene {
       } else {
         BasicWindowManager.createWindow(self, `witchwindow`, WitchWindow, 
         {
-          controller: self.gameinstance,
+          controller: self.gameController,
           x: self.tiles[tileID].x + 50,
           y: self.tiles[tileID].y + 40,
           w: 105,
@@ -736,8 +695,8 @@ export default class GameScene extends Phaser.Scene {
       this.add.existing(f);
       var self = this
       f.on("pointerdown", (pointer) => {
-        self.gameinstance.getHeroItems(self.hero.getKind(), function (itemdict) {
-          self.gameinstance.getAdjacentTiles(self.hero.tile.id, function (adjtileids) {
+        self.gameController.getHeroItems(self.hero.getKind(), function (itemdict) {
+          self.gameController.getAdjacentTiles(self.hero.tile.id, function (adjtileids) {
             var flag = false
             //why are we using a loop like this instead of .includes()?? good question, includes() was not working for some reason.
             // @Jacek Includes probably wasnt working bceause tile.id is a number but the contents of adjtileids are passed as strings by socket.
@@ -753,10 +712,10 @@ export default class GameScene extends Phaser.Scene {
               // setTimeout(() => {
               //   f.setTint(0x101010);
               // }, 800);
-              self.gameinstance.telescopeEndTurn();
+              self.gameController.telescopeEndTurn();
             }
             else {
-              self.gameinstance.useFog(f.name, tile.id, (tile) => {
+              self.gameController.useFog(f.name, tile.id, (tile) => {
                 console.log(tile, typeof tile)
                 // Reveals the fog for set timeout before removing
                 let f = self.tiles[+tile].getFog();
@@ -772,7 +731,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     // Reveals the fog for set timeout before removing
-    this.gameinstance.destroyFog((tile) => {
+    this.gameController.destroyFog((tile) => {
       let f = this.tiles[+tile].getFog();
       f.clearTint();
       setTimeout(() => {
@@ -843,7 +802,7 @@ export default class GameScene extends Phaser.Scene {
 
     var collabWindowData =
     {
-      controller: self.gameinstance,
+      controller: self.gameController,
       isOwner: true,
       involvedHeroes: self.heroes.map(h => h.getKind()),
       resources: res,
@@ -864,6 +823,7 @@ export default class GameScene extends Phaser.Scene {
     WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
     // Disable interactivity on game during start-of-game phase
     this.toggleInteractive(false);
+    this.overlay.toggleInteractive(false);
     // Note that there's issues with trying to toggle interactivity of the overlay,
     // because certain GameObjects of the overlay may have not been instantiated yet.
     // Instead, overlay elements are initialized as non-interactive, and toggled on
@@ -918,14 +878,14 @@ export default class GameScene extends Phaser.Scene {
     var self = this;
 
     // listener to add monsters for narrator, fogs, and events
-    this.gameinstance.addMonster((type, tile, id) => {
+    this.gameController.addMonster((type, tile, id) => {
       this.addMonster(tile, type, id);
     })
 
     // Listen for turn to be passed to yourself
     // Deprecated: removed turn logic from frontend
     // this.gameinstance.yourTurn()
-    this.gameinstance.updatePassTurn(heroKind => {
+    this.gameController.updatePassTurn(heroKind => {
       self.heroes.forEach((hero: Hero) => {
         if (hero.getKind().toString() === heroKind) {
           hero.hourTracker.incHour(heroKind);
@@ -934,26 +894,26 @@ export default class GameScene extends Phaser.Scene {
     });
 
     // Reveal the witch
-    this.gameinstance.revealWitch(tileID => {
+    this.gameController.revealWitch(tileID => {
       this.createStoryWindow(8);
       self.addWitch(tileID);
     })
 
     // Reveal the herb
-    this.gameinstance.revealHerb(tileID => {
+    this.gameController.revealHerb(tileID => {
       let tile = this.tiles[tileID];
       this.herb = this.add.image(tile.x + mOffset + 20, tile.y, "herb").setDisplaySize(30, 30);
       this.overlay.setHerb(this.herb);
     })
 
-    this.gameinstance.removeHerb(() => {
+    this.gameController.removeHerb(() => {
       this.herb.destroy();
     })
 
     /**
      * FIGHT LISTENERS
      */
-    this.gameinstance.receiveBattleInvite(function (monstertileid) {
+    this.gameController.receiveBattleInvite(function (monstertileid) {
       if (ContainerWindowManager.hasWindow('battleinv')) {
         let window = ContainerWindowManager.removeWindow("battleinv")
         window.disconnectListeners();
@@ -961,7 +921,7 @@ export default class GameScene extends Phaser.Scene {
       }
       ContainerWindowManager.createWindow(self, 'battleinv', BattleInviteWindow,
         {
-          controller: self.gameinstance,
+          controller: self.gameController,
           x: reducedWidth/2 - 205/2 + self.getCameraX(),
           y: reducedHeight/2 - 80/2 + self.getCameraY(),
           w: 205,
@@ -974,7 +934,7 @@ export default class GameScene extends Phaser.Scene {
 
     })
 
-    this.gameinstance.continueFightPrompt(function () {
+    this.gameController.continueFightPrompt(function () {
       if (ContainerWindowManager.hasWindow('continuefightprompt')) {
         let window = ContainerWindowManager.removeWindow("continuefightprompt")
         window.disconnectListeners();
@@ -982,7 +942,7 @@ export default class GameScene extends Phaser.Scene {
       }
       ContainerWindowManager.createWindow(self, 'continuefightprompt', ContinueFightWindow,
         {
-          controller: self.gameinstance,
+          controller: self.gameController,
           x: reducedWidth/2 - 375/2 + self.getCameraX(),
           y: reducedHeight/2 - 110/2 + self.getCameraY(), 
           w: 375, 
@@ -994,12 +954,12 @@ export default class GameScene extends Phaser.Scene {
     })
 
     // TODO: should be able to remove this listener
-    this.gameinstance.forceTurn(function () {
+    this.gameController.forceTurn(function () {
       // Deprecated: removed turn logic from frontend
       // self.gameinstance.setMyTurn(true)
     })
 
-    this.gameinstance.forceFight(function (monstername) {
+    this.gameController.forceFight(function (monstername) {
       var monster = self.monsterNameMap[monstername]
       if (self.scene.isVisible(monster.name)) {
         var window = WindowManager.get(this, monster.name)
@@ -1015,7 +975,7 @@ export default class GameScene extends Phaser.Scene {
           princetile = -69
         }
         WindowManager.createWindow(self, monster.name, FightWindow, {
-          controller: self.gameinstance,
+          controller: self.gameController,
           x: 10, 
           y: 10, 
           w: 500, 
@@ -1025,12 +985,12 @@ export default class GameScene extends Phaser.Scene {
           gameSceneRef: self,
           princePos: princetile
         });
-        // self.scene.pause()
         self.toggleInteractive(false);
+        self.overlay.toggleInteractive(false);
       }
     })
 
-    this.gameinstance.receiveDeathNotice(function () {
+    this.gameController.receiveDeathNotice(function () {
       if (ContainerWindowManager.hasWindow('deathnotice')) {
         let window = ContainerWindowManager.removeWindow("deathnotice")
         window.disconnectListeners();
@@ -1046,7 +1006,7 @@ export default class GameScene extends Phaser.Scene {
       );
     })
     // Listening for shields lost due to monster attack
-    this.gameinstance.updateShields(function (shieldsRemaining: number) {
+    this.gameController.updateShields(function (shieldsRemaining: number) {
       for (let i = 0; i < 6; i++) {
         if (i >= shieldsRemaining) {
           self.castle.shields[i].visible = true;
@@ -1056,14 +1016,14 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
-    this.gameinstance.receiveShieldPrompt(function (damagedShield, potentialdamage) {
+    this.gameController.receiveShieldPrompt(function (damagedShield, potentialdamage) {
       ContainerWindowManager.createWindow(self, 'shieldprompt', ShieldWindow, 
         { 
           x: reducedWidth/2 - 400/2 + self.getCameraX() + 300,
           y: reducedHeight/2 - 250/2 + self.getCameraY(), 
           w: 400, 
           h: 250,
-          controller: self.gameinstance, 
+          controller: self.gameController, 
           hero: self.hero, 
           potentialDamage: potentialdamage, 
           damagedShield: damagedShield
@@ -1072,14 +1032,14 @@ export default class GameScene extends Phaser.Scene {
     })
 
     // FARMERS
-    this.gameinstance.destroyFarmer(function (tileid) {
+    this.gameController.destroyFarmer(function (tileid) {
       // console.log("Entered destroyfarmer listener")
       let pickedFarmer: Farmer = self.tiles[tileid].popFarmer();
       self.farmersOnBoard.splice(self.farmersOnBoard.indexOf(pickedFarmer), 1);
       pickedFarmer.destroy()
     });
 
-    this.gameinstance.addFarmer(function (tileid) {
+    this.gameController.addFarmer(function (tileid) {
       if (tileid === 0) {
         for (var i = 0; i < 6; i++) {
           if (self.castle.shields[i].visible == true) {
@@ -1093,14 +1053,13 @@ export default class GameScene extends Phaser.Scene {
     });
 
     // Listen for end of game state
-    this.gameinstance.receiveEndOfGame(function () {
+    this.gameController.receiveEndOfGame(function () {
       self.createStoryWindow(10);
-      // self.scene.pause(); // TODO: check if story window is added before update loop stops
       self.toggleInteractive(false);
       self.overlay.toggleInteractive(false);
     });
 
-    this.gameinstance.receiveUpdateHeroTracker(function (hero) {
+    this.gameController.receiveUpdateHeroTracker(function (hero) {
       for (let h of self.heroes) {
         if (h.getKind() == hero) {
           h.incrementHour()
@@ -1108,15 +1067,14 @@ export default class GameScene extends Phaser.Scene {
       }
     })
 
-    this.gameinstance.receivePlayerDisconnected((hk) => {
-      console.log("FREEZE GAME ", hk, " DISCONNECTED")
-      // self.scene.pause();
+    this.gameController.receivePlayerDisconnected((hk) => {
+      console.log("FREEZE GAME:", hk, "DISCONNECTED")
       self.toggleInteractive(false);
       self.overlay.toggleInteractive(false);
     })
 
     //Destroying Well
-    this.gameinstance.removeWell(function (tileID){
+    this.gameController.removeWell(function (tileID){
       let well: Well = self.wells.get(tileID)
       well.destroy()
       self.wells.delete(tileID)
@@ -1129,8 +1087,7 @@ export default class GameScene extends Phaser.Scene {
     })
 
     var self = this
-    this.gameinstance.addCoastalTrader(function() {
-      //console.log("entered addCoastalTrader listener")
+    this.gameController.addCoastalTrader(function() {
       self.tempMerchant = self.add.image(self.tiles[9].x + 50, self.tiles[9].y - 5, "merchant-trade");
       self.tempMerchant.setInteractive({useHandCursor: true}).setScale(0.75);
       self.tempMerchant.on('pointerdown', function (pointer) {
@@ -1142,7 +1099,7 @@ export default class GameScene extends Phaser.Scene {
           } else {
             BasicWindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, 
               { 
-                controller: self.gameinstance,
+                controller: self.gameController,
                 x: self.tiles[9].x + 50,
                 y: self.tiles[9].y + 30,
                 w: 150,
@@ -1153,17 +1110,20 @@ export default class GameScene extends Phaser.Scene {
         }
       });
     })
-    this.gameinstance.removeCoastalTrader(function(){
+
+    this.gameController.removeCoastalTrader(function(){
       self.tempMerchant.destroy()
       self.tempMerchant = null
     })
+
     //EVENTS
-    this.gameinstance.newEventListener((event: EventCard) => {
+    this.gameController.newEventListener((event: EventCard) => {
       this.applyEvent(event)
     })
-    this.gameinstance.newCollabListener((eventID, heroes, heroMaxes, eventToBeBlockedID) => {
-      console.log("Received newCollab")
-      console.log(eventID, heroes, heroMaxes, eventToBeBlockedID)
+
+    this.gameController.newCollabListener((eventID, heroes, heroMaxes, eventToBeBlockedID) => {
+      // console.log("Received newCollab")
+      // console.log(eventID, heroes, heroMaxes, eventToBeBlockedID)
       var involved = false
       var involvedHeroKinds = new Array<HeroKind>()
       for (let hero of heroes) {
@@ -1189,7 +1149,6 @@ export default class GameScene extends Phaser.Scene {
             desc = element.desc
           }
         }
-        //console.log(res)
 
         var width = res.size > 1 ? (res.size + 1) * collabColWidth : 3 * collabColWidth; // Not sure if there's a better way of getting size of ts obj
         // Determine height of the window based on number of players involved
@@ -1197,7 +1156,7 @@ export default class GameScene extends Phaser.Scene {
 
         var collabWindowData =
         {
-          controller: self.gameinstance,
+          controller: self.gameController,
           isOwner: true,
           involvedHeroes: involvedHeroKinds,
           resources: res,
@@ -1221,7 +1180,8 @@ export default class GameScene extends Phaser.Scene {
 
         WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
         // Freeze main game while collab window is active
-        // this.scene.pause();
+        this.toggleInteractive(false);
+        this.overlay.toggleInteractive(false);
       }
     })
   }
@@ -1245,7 +1205,7 @@ export default class GameScene extends Phaser.Scene {
         } else {
           BasicWindowManager.createWindow(self, 'temp_merchant', CoastalMerchantWindow, 
             { 
-              controller: self.gameinstance,
+              controller: self.gameController,
               x: self.tiles[9].x + 50,
               y: self.tiles[9].y + 15,
               w: 115,

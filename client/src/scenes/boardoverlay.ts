@@ -1,28 +1,24 @@
 import { ChatWindow } from '../basicwindows/chatwindow';
 import { HeroWindow, TradeWindow } from '../containerwindows/containerwindows';
 import { BasicWindowManager } from '../utils/BasicWindowManager';
+import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 import { game } from '../api/game';
-import { Tile } from '../objects/tile';
-import { Monster } from '../objects/monster';
-import { HourTracker } from '../objects/hourTracker';
-import { Well } from '../objects/well';
+import { Tile, Monster, HourTracker, Well, HeroKind, Hero } from '../objects';
 import { reducedWidth, reducedHeight, mOffset } from '../constants';
-import { HeroKind } from '../objects/HeroKind';
 // UI plugin
 import { ScrollablePanel, RoundRectangle, FixWidthSizer } 
     from 'phaser3-rex-plugins/templates/ui/ui-components.js';
-import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 
 export default class BoardOverlay extends Phaser.Scene {
     private parent: Phaser.GameObjects.Zone
     private heroButtons: Map<string, Phaser.GameObjects.Image> = new Map();
-    private gameinstance: game;
+    private gameController: game;
     private saveButton: Phaser.GameObjects.Image;
     private endTurnButton: Phaser.GameObjects.Image;
     private chatButton: Phaser.GameObjects.Image;
-    private clientheroobject;
+    private clientHeroObject: Hero;
     private herb;
-    private initialCollabDone;
+    private initialCollabDone: boolean;
 
     // End Day
     private endDayButton: Phaser.GameObjects.Image;
@@ -33,10 +29,10 @@ export default class BoardOverlay extends Phaser.Scene {
     private hk: HeroKind;
 
     // Positioning
-    private x = 0;
-    private y = 0;
-    private width = reducedWidth;
-    private height = reducedHeight;
+    private x: number = 0;
+    private y: number = 0;
+    private width: number = reducedWidth;
+    private height: number = reducedHeight;
 
     // Scrollable panel
     private COLOR_PRIMARY = 0xD9B382;
@@ -52,13 +48,13 @@ export default class BoardOverlay extends Phaser.Scene {
         super({
             key: 'BoardOverlay'
         })
-        this.gameinstance = data.gameinstance;
+        this.gameController = data.gameinstance;
         this.tiles = data.tiles;
         this.monsterNameMap = data.monsterMap;
         this.hourTracker = data.hourTracker;
         this.wells = data.wells;
         this.hk = data.hk
-        this.clientheroobject = data.clientheroobject
+        this.clientHeroObject = data.clientheroobject
         this.herb = data.herb;
         this.initialCollabDone = data.initialCollabDone;
         this.content = this.initialCollabDone ? 
@@ -84,7 +80,7 @@ export default class BoardOverlay extends Phaser.Scene {
         this.parent = this.add.zone(this.x, this.y, this.width, this.height).setOrigin(0);
         this.cameras.main.setViewport(this.parent.x, this.parent.y, this.width, this.height);
         
-        // DEBUG TODO: game size debugging
+        // DEBUG TODO: remove game size debugging
         this.posInfo = this.add.text(5, 75, `posX: 0\nposY: 0`);
         this.cameraInfo = this.add.text(5, 115, `cameraX: 0\ncameraY: 0`);
         this.input.on('pointerdown', (pointer) => {
@@ -104,7 +100,7 @@ export default class BoardOverlay extends Phaser.Scene {
         // save btn
         this.saveButton = this.add.image(920, 25, 'saveicon').setScale(0.25);
         this.saveButton.on('pointerdown', () => {
-            this.gameinstance.save()
+            this.gameController.save()
         }, this);
 
         // chat window
@@ -147,20 +143,17 @@ export default class BoardOverlay extends Phaser.Scene {
             });
         }, this)
 
-        // end day setup
         this.endDaySetup();
 
-
         // TRADE
-        this.gameinstance.receiveTradeInvite(function (host, invitee) {
-            // WindowManager.createWindow(self, 'tradewindow', TradeWindow, { gameinstance: self.gameinstance, hosthero: host, inviteehero: invitee, parentkey: 'None', clienthero: invitee })
+        this.gameController.receiveTradeInvite(function (host, invitee) {
             ContainerWindowManager.createWindow(self, 'tradewindow', TradeWindow, 
                 {
                     x: reducedWidth/2 - 624/2, 
                     y: reducedHeight/2 - 624/2, 
                     w: 624, 
                     h: 624, 
-                    gameinstance: self.gameinstance, 
+                    gameinstance: self.gameController, 
                     hosthero: host, 
                     inviteehero: invitee, 
                     parentkey: 'None', 
@@ -169,7 +162,7 @@ export default class BoardOverlay extends Phaser.Scene {
             )
         })
 
-        // Add rexUI scrollable panel to serve as game log
+        // Add rexUI scrollable panel for game log
         var panelBg = new RoundRectangle(this, 0, 0, 2, 2, 5, this.COLOR_PRIMARY);
         var panelChild = new FixWidthSizer(this, {
             space: {
@@ -183,7 +176,6 @@ export default class BoardOverlay extends Phaser.Scene {
         });
         var panelTrack = new RoundRectangle(this, 0, 0, 10, 5, 5, this.COLOR_DARK);
         var panelThumb = new RoundRectangle(this, 0, 0, 0, 0, 8, this.COLOR_LIGHT);
-
         var panelConfig = {
             x: 215,
             y: 545,
@@ -209,26 +201,25 @@ export default class BoardOverlay extends Phaser.Scene {
                 panel: 3,
             }
         }
-
         var panel = new ScrollablePanel(this, panelConfig).layout();
         this.add.existing(panel);
         this.updatePanel(panel, this.content);
 
-        this.gameinstance.getCurrPlayersTurn(function(hk: string) {
+        this.gameController.getCurrPlayersTurn(function(hk: string) {
             self.updateContent(panel, `It is the ${hk}'s turn.`)
         })
       
         // Listen for updates to log from server
-        this.gameinstance.updateGameLog(function(update: string) {
+        this.gameController.updateGameLog(function(update: string) {
             console.log("game log update:", update, "||")
             self.updateContent(panel, update);
         })
 
         // Indicator of the hero you are playing
-        let heroTexture = this.clientheroobject.getKind();
+        let heroTexture = this.clientHeroObject.getKind();
         this.add.image(10, 512, heroTexture).setScale(0.16).setOrigin(0);
 
-        // TODO: REMOVE LATER, FOR TESTING NARRATOR ONLY
+        // TODO DEBUG: Remove, used for narrator testing
         // var advance = this.add.text(400, 560, "ADVANCE NARRATOR", {
         //     fontFamily: '"Roboto Condensed"',
         //     fontSize: "20px",
@@ -239,7 +230,7 @@ export default class BoardOverlay extends Phaser.Scene {
         //     this.gameinstance.advanceNarrator();
         // }, this)
 
-        this.gameinstance.getHeros((heros) => {
+        this.gameController.getHeros((heros) => {
             heros.forEach(type => {
                 if (type === "mage") {
                     this.addHeroCard(type, 445);
@@ -252,7 +243,7 @@ export default class BoardOverlay extends Phaser.Scene {
                 }
             });
 
-            // DEBUG TODO: remove this
+            // DEBUG TODO: remove
             // this.toggleInteractive(true);
             //
 
@@ -310,7 +301,7 @@ export default class BoardOverlay extends Phaser.Scene {
                 break;
         }
         this.heroButtons.get(type).on('pointerdown', (pointer) => {
-            this.gameinstance.getHeroAttributes(type, (herodata) => {
+            this.gameController.getHeroAttributes(type, (herodata) => {
                 const cardID = `${type}Card`;
                 if (ContainerWindowManager.hasWindow(cardID)) {
                     let window = ContainerWindowManager.removeWindow(cardID)
@@ -320,12 +311,12 @@ export default class BoardOverlay extends Phaser.Scene {
                 else { 
                     ContainerWindowManager.createWindow(self, cardID, HeroWindow, 
                         { 
-                            controller: this.gameinstance,
+                            controller: this.gameController,
                             icon: `${type}male`,
                             clienthero: this.hk,
                             windowhero: type,
                             ...herodata,
-                            clientherotile: this.clientheroobject.tile.id,
+                            clientherotile: this.clientHeroObject.tile.id,
                             x: pointer.x,
                             y: pointer.y + 20,
                             w: 400,
@@ -334,28 +325,15 @@ export default class BoardOverlay extends Phaser.Scene {
                     );
                 }
             })
-
         }, this);
     }
 
     private endDaySetup() {
         var self = this;
 
-        var style2 = {
-            fontFamily: '"Roboto Condensed"',
-            fontSize: "20px",
-            backgroundColor: '#f00'
-        }
-
         // end day button
         this.endDayButton = this.add.image(650, 565, 'enddayicon').setScale(0.3)
         this.endDayButton.on('pointerdown', function (pointer) {
-            // Deprecated: removed turn logic from frontend
-            // does nothing if not your turn
-            // if (!self.gameinstance.getTurn()) {
-            //     console.log("cannot end your day when it is not your turn");
-            //     return;
-            // }
             this.tweens.add({
                 targets: this.endDayButton,
                 alpha: 0.3,
@@ -363,43 +341,33 @@ export default class BoardOverlay extends Phaser.Scene {
                 ease: 'Power3',
                 yoyo: true
             });
-            self.gameinstance.endDay(function (all: boolean) {
-                // Update this client's turn state
-                // Deprecated: removed turn logic from frontend
-                // self.gameinstance.endTurnOnEndDay();
-                // the last client to end their day triggers end of day actions for everyone
+            self.gameController.endDay(function (all: boolean) {
                 if (all) {
-                    self.gameinstance.moveMonstersEndDay();
-                    // Reset wells
-                    self.gameinstance.resetWells(replenishWellsClient);
+                    self.gameController.moveMonstersEndDay();
+                    self.gameController.resetWells(replenishWellsClient);
                 }
             });
         }, this);
 
-        // Callbacks
-        // Server handles logic for whose hours are getting reset
-        // self.gameinstance.receiveResetHours(resetHeroHours);
-
-        self.gameinstance.receiveUpdatedMonsters(moveMonstersOnMap);
+        self.gameController.receiveUpdatedMonsters(moveMonstersOnMap);
         function moveMonstersOnMap(updatedMonsters) {
             self.moveMonstersEndDay(updatedMonsters);
         }
 
-        self.gameinstance.receiveKilledMonsters(deleteKilledMonsters);
+        self.gameController.receiveKilledMonsters(deleteKilledMonsters);
         function deleteKilledMonsters(killedMonster) {
             self.removeKilledMonsters(killedMonster)
         }
 
-        self.gameinstance.fillWells(replenishWellsClient);
+        self.gameController.fillWells(replenishWellsClient);
         function replenishWellsClient(replenished: number[]) {
             for (let id of replenished) {
                 self.wells.get("" + id).fillWell();
             }
         }
 
-        self.gameinstance.receiveResetHours(resetHeroHours);
+        self.gameController.receiveResetHours(resetHeroHours);
         function resetHeroHours(resetHoursHk: string, firstEndDay: boolean) {
-            console.log("resetting hourtracker for", resetHoursHk, firstEndDay)
             // Note: we don't keep track of hero hours on client, so only need to update 
             // visual hourTracker
             var hk;
@@ -426,9 +394,9 @@ export default class BoardOverlay extends Phaser.Scene {
             let newTile = this.tiles[newTileID as number];
             this.monsterMoveTween(this.monsterNameMap[mName], newTile, newTile.x, newTile.y);
             if (mName == "gor_herb") {
-                // Move the herb
+                // Move the herb "with" it's carrying monster
                 let tileID = newTileID as number;
-                this.gameinstance.setHerbPos(tileID)
+                this.gameController.setHerbPos(tileID)
                 this.herbMoveTween(this.herb, newTile.x, newTile.y)
             }
         }
@@ -448,7 +416,6 @@ export default class BoardOverlay extends Phaser.Scene {
             y: newY,
             duration: 1000,
             ease: 'Power2',
-            // completeDelay: 1000,
             onComplete: function () { monster.moveToTile(newTile) }
         });
     }
@@ -490,7 +457,7 @@ export default class BoardOverlay extends Phaser.Scene {
         }
     }
 
-    // DEBUG TODO
+    // DEBUG TODO: remove
     public updateCameraPosInfo(xPos, yPos) {
         if (this.cameraInfo)
             this.cameraInfo.setText(`cameraX: ${xPos}\ncameraY: ${yPos}`)

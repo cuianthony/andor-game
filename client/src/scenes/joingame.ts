@@ -2,14 +2,13 @@ import { lobby } from "../api/lobby";
 import { RoundRectangle } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 
 export default class JoinGameScene extends Phaser.Scene {
-
     private lobbyController: lobby;
     private gameNames: string[] = [];
     private gameButtonsMap: Map<string, RoundRectangle> = new Map();
     private gameChoice: string = "";
 
     constructor() {
-        super({key: 'Join'});
+        super({ key: 'Join' });
     }
 
     public preload() {
@@ -23,7 +22,7 @@ export default class JoinGameScene extends Phaser.Scene {
     //create the join screen
     public create() {
         var self = this;
-        var background = this.add.image(500,300,'fantasyhome').setDisplaySize(1000,600)
+        this.add.image(500,300,'fantasyhome').setDisplaySize(1000,600)
         
         var textStyle = {
             fontSize: "25px",
@@ -38,8 +37,7 @@ export default class JoinGameScene extends Phaser.Scene {
             }
         }
 
-        var title = this.add.text(150, 190, 'Choose an existing game to join:', textStyle);
-
+        this.add.text(150, 190, 'Choose an existing game to join:', textStyle);
         let mainColour = 0x4ee44e
         let backColour = 0x333333
         var numTextStyle = {
@@ -55,7 +53,7 @@ export default class JoinGameScene extends Phaser.Scene {
             let currX = 150;
             self.gameNames.forEach( name => {
                 var nameButton = new Phaser.GameObjects.Text(self, currX, currY, name, numTextStyle).setOrigin(0);
-                nameButton.setInteractive().on('pointerdown', () => {
+                nameButton.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
                     // toggle function
                     toggleChoice(name)
                 })
@@ -66,6 +64,10 @@ export default class JoinGameScene extends Phaser.Scene {
                 gamePanelBg.visible = false;
                 self.add.existing(gamePanelBg);
                 var gamePanel = new RoundRectangle(self, centreX, centreY, textWidth+24, 46, 10, backColour).setOrigin(0.5);
+                gamePanel.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
+                    // toggle function
+                    toggleChoice(name)
+                })
                 self.add.existing(gamePanel);
                 self.add.existing(nameButton);
                 self.gameButtonsMap.set(name, gamePanelBg);
@@ -96,16 +98,10 @@ export default class JoinGameScene extends Phaser.Scene {
             }
         })
 
-        //go back
-        var gobackbtn = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
-        gobackbtn.on('pointerdown', function (pointer) {
+        var backButton = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
+        backButton.on('pointerdown', function (pointer) {
             this.scene.start('Lobby');
         }, this);
-    }
-
-    //transition into Ready scene.
-    public changescene() {
-        this.scene.start('Ready')
     }
 
     public update() {

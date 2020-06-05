@@ -7,4 +7,7 @@ export * from './well';
 export * from "./tile";
 export * from "./EventCard"
 export * from "./narrator";
-export * from "./brokenWell"
+export * from "./brokenWell";
+export * from "./prince";
+export * from "./merchant";
+export * from "./rietburgcastle";

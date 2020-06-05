@@ -71,7 +71,9 @@ export function lobby(socket, model: Lobby, io) {
         game(socket, loadedGame!, io);
         gamensp.removeAllListeners("connection");
       });
-      callback();
+      callback(true);
+    } else {
+      callback(false);
     }
   })
 

@@ -6,7 +6,8 @@ import { reducedWidth, reducedHeight } from "../constants";
 
 export default class CreateGameScene extends Phaser.Scene {
     private lobbyController: lobby;
-    private numPlayers: number = 1; //DEBUG TODO: change this default back to 2
+     //DEBUG TODO: change this default back to 2
+    private numPlayers: number = 1;
     // private numPlayers: number = 2;
 
     constructor() {
@@ -22,7 +23,7 @@ export default class CreateGameScene extends Phaser.Scene {
     }
 
     public create() {
-        var background = this.add.image(500, 300, 'desert').setDisplaySize(1000, 600)
+        this.add.image(500, 300, 'desert').setDisplaySize(1000, 600)
         var textStyle = {
             fontSize: "20px",
             color: '#ff0',
@@ -36,9 +37,8 @@ export default class CreateGameScene extends Phaser.Scene {
             }
         }
 
-        var title = this.add.text(reducedWidth/2, reducedHeight/2-130, 'Choose a name for your game:', textStyle).setOrigin(0.5);
-
-        // Rex plugin edittext
+        this.add.text(reducedWidth/2, reducedHeight/2-130, 'Choose a name for your game:', textStyle).setOrigin(0.5);
+        // Rex plugin edittext for name input
         var nameErrorBg = new RoundRectangle(this, reducedWidth/2, reducedHeight/2-80, 410, 70, 2, 0xff0000);
         this.add.existing(nameErrorBg);
         nameErrorBg.alpha = 0;
@@ -57,8 +57,7 @@ export default class CreateGameScene extends Phaser.Scene {
             editNameText.open();
         })
 
-        var subtitle = this.add.text(reducedWidth/2, reducedHeight/2+10, 'Choose the number of players:', textStyle).setOrigin(0.5);
-
+        this.add.text(reducedWidth/2, reducedHeight/2+10, 'Choose the number of players:', textStyle).setOrigin(0.5);
         var panel3bg = new RoundRectangle(this, reducedWidth/2, reducedHeight/2+60, 66, 66, 10, 0xffff00);
         var panel2bg = new RoundRectangle(this, reducedWidth/2-85, reducedHeight/2+60, 66, 66, 10, 0xffff00);
         var panel4bg = new RoundRectangle(this, reducedWidth/2+85, reducedHeight/2+60, 66, 66, 10, 0xffff00);
@@ -73,13 +72,13 @@ export default class CreateGameScene extends Phaser.Scene {
         this.add.existing(panel2);
         this.add.existing(panel3);
         this.add.existing(panel4);
-        panel2.setInteractive().on('pointerdown', () => {
+        panel2.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
             buttonToggle(2);
         })
-        panel3.setInteractive().on('pointerdown', () => {
+        panel3.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
             buttonToggle(3);
         })
-        panel4.setInteractive().on('pointerdown', () => {
+        panel4.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
             buttonToggle(4);
         })
 
@@ -90,13 +89,13 @@ export default class CreateGameScene extends Phaser.Scene {
         var button3 = this.add.text(reducedWidth/2, reducedHeight/2+60, '3', numTextStyle).setOrigin(0.5);
         var button2 = this.add.text(reducedWidth/2-85, reducedHeight/2+60, '2', numTextStyle).setOrigin(0.5);
         var button4 = this.add.text(reducedWidth/2+85, reducedHeight/2+60, '4', numTextStyle).setOrigin(0.5);
-        button2.setInteractive().on('pointerdown', () => {
+        button2.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
             buttonToggle(2);
         })
-        button3.setInteractive().on('pointerdown', () => {
+        button3.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
             buttonToggle(3);
         })
-        button4.setInteractive().on('pointerdown', () => {
+        button4.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
             buttonToggle(4);
         })
         var self = this;
@@ -138,7 +137,7 @@ export default class CreateGameScene extends Phaser.Scene {
                 });
                 return;
             };
-            console.log('Creating new game:', gameName, this.numPlayers);
+            // console.log('Creating new game:', gameName, this.numPlayers);
             self.lobbyController.createGame(gameName, self.numPlayers, "Easy");
 
             self.scene.sleep('Create');
@@ -147,7 +146,7 @@ export default class CreateGameScene extends Phaser.Scene {
 
         var self = this;
         var gobackbtn = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
-        gobackbtn.on('pointerdown', function (pointer) {
+        gobackbtn.on('pointerdown', () => {
             this.scene.start('Lobby');
         }, this);
     }

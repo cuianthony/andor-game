@@ -2,10 +2,8 @@ import { lobby } from "../api";
 import { reducedWidth, reducedHeight } from '../constants'
 
 export default class LobbyScene extends Phaser.Scene {
-    private welcomeText;
     private gameText;
     private optionsIcon;
-    private scaleRatio = window.devicePixelRatio / 3;
     private lobbyController;
 
     constructor() {
@@ -16,9 +14,7 @@ export default class LobbyScene extends Phaser.Scene {
         this.lobbyController = new lobby();
     }
 
-    public init(data) {
-
-    }
+    public init() { }
 
     public preload() {
         // Load all game assets in first scene
@@ -51,29 +47,19 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     public create() {
-        // Scale the game size to the original screen size of pre-game-entry
-        // scenes (lobby, load, join, etc). This has the effect of keeping desired
-        // behaviour of Phaser Game autoscaling, while keeping the actual game size
-        // larger.
-        // this.scale.setGameSize(reducedWidth, reducedHeight);
-
+        this.add.image(0, 0, 'main').setOrigin(0).setDisplaySize(reducedWidth, reducedHeight);
         this.makeMenuButtons()
 
-        // DEBUG TODO: game size debugging
-        var info = this.add.text(5, 5, `xpos: 0\nypos: 0`);
-        this.input.on('pointerdown', (pointer) => {
-            info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)
-        });
+        // DEBUG TODO: remove, for game size debugging
+        // var info = this.add.text(5, 5, `xpos: 0\nypos: 0`);
+        // this.input.on('pointerdown', (pointer) => {
+        //     info.setText(`xpos: ${pointer.x}\nypos: ${pointer.y}`)
+        // });
 
         this.lobbyController.addNewPlayerToLobby()
     }
 
     private makeMenuButtons() {
-        // load background
-        // var bg = this.add.image(500, 300, 'main').setDisplaySize(1000, 600)
-        var bg = this.add.image(0, 0, 'main').setOrigin(0).setDisplaySize(reducedWidth, reducedHeight)
-
-        // menuText for menu text
         var menuText = {
             fontFamily: "Roboto Condensed",
             fontSize: "40px",
@@ -87,46 +73,38 @@ export default class LobbyScene extends Phaser.Scene {
         }
 
         var self = this;
-        // NEW BUTTON
+        // New game
         this.gameText = this.add.text(500, 300, "New", menuText).setOrigin(0.5)
         this.gameText.setShadow(0, 0, 'black', 10);
         this.gameText.setInteractive({useHandCursor: true});
-        this.gameText.on('pointerdown', function (pointer) {
+        this.gameText.on('pointerdown', () => {
             this.scene.start('Create', { controller: self.lobbyController });
         }, this);
 
-        // JOIN BUTTON
+        // Join game
         this.gameText = this.add.text(500, 400, "Join", menuText).setOrigin(0.5)
         this.gameText.setShadow(0, 0, 'black', 10);
         this.gameText.setInteractive({useHandCursor: true});
-        this.gameText.on('pointerdown', function (pointer) {
+        this.gameText.on('pointerdown', () => {
             this.scene.start('Join', { controller: self.lobbyController });
         }, this);
 
-        // LOAD BUTTON
+        // Load game
         this.gameText = this.add.text(500, 500, "Load", menuText).setOrigin(0.5)
         this.gameText.setShadow(0, 0, 'black', 10);
         this.gameText.setInteractive({useHandCursor: true});
-        this.gameText.on('pointerdown', function (pointer) {
+        this.gameText.on('pointerdown', () => {
             this.scene.start('Load', { controller: self.lobbyController });
         }, this);
 
         // HEROS' DWELLING
         this.optionsIcon = this.add.image(900, 80, 'optionsicon').setInteractive({useHandCursor: true}).setScale(0.3);
         this.add.text(900, 133, "heroes' dwelling", housetText).setOrigin(0.5)
-        this.optionsIcon.on('pointerdown', function (pointer) {
+        this.optionsIcon.on('pointerdown', () => {
             this.scene.bringToTop('Options')
             this.scene.wake('Options')
         }, this);
     }
 
-    public update() {
-
-    }
-
-    // Currently unused
-    static setCameraViewport(currScene) {
-        var camera = currScene.cameras.main;
-        camera.setViewport(0, 0, 1000, 600);
-    }
+    public update() { }
 }

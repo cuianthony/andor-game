@@ -3,15 +3,16 @@ import BBCodeText from 'phaser3-rex-plugins/plugins/bbcodetext.js';
 import { RoundRectangle } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { reducedWidth, reducedHeight } from "../constants";
 import { lobby } from '../api/lobby';
+
 export default class LoadGameScene extends Phaser.Scene {
-    private controller: lobby;
+    private lobbyController: lobby;
     
     constructor() {
         super({ key: 'Load' });
     }
 
     public init(data) {
-        this.controller = data.controller;
+        this.lobbyController = data.controller;
     }
 
     public preload() {
@@ -21,7 +22,7 @@ export default class LoadGameScene extends Phaser.Scene {
     public create() {
         var self = this;
 
-        var background = this.add.image(500, 300, 'mountains').setDisplaySize(1000, 600)
+        this.add.image(500, 300, 'mountains').setDisplaySize(1000, 600)
         var textStyle = {
             fontSize: "20px",
             color: '#00DBFF',
@@ -35,9 +36,8 @@ export default class LoadGameScene extends Phaser.Scene {
             }
         }
 
-        var title = this.add.text(reducedWidth/2, reducedHeight/2-75, 'Enter the name of the game to load:', textStyle).setOrigin(0.5);
-
-        // Rex plugin edittext
+        this.add.text(reducedWidth/2, reducedHeight/2-75, 'Enter the name of the game to load:', textStyle).setOrigin(0.5);
+        // Rex plugin edittext for name input
         var nameErrorBg = new RoundRectangle(this, reducedWidth/2, reducedHeight/2-15, 410, 70, 2, 0xff0000);
         this.add.existing(nameErrorBg);
         nameErrorBg.alpha = 0;
@@ -60,27 +60,28 @@ export default class LoadGameScene extends Phaser.Scene {
         this.add.existing(submitButton);
         submitButton.setInteractive({useHandCursor: true}).on('pointerdown', () => {
             let gameName = nameText.text;
-            if (gameName == '') { // name cannot be empty string
-                nameText.setText('Invalid');
-                self.tweens.add({
-                    targets: nameErrorBg,
-                    alpha: 1,
-                    duration: 300,
-                    ease: 'Power3',
-                    yoyo: true
-                });
-                return;
-            };
-            self.controller.loadGame(gameName, () => {
-                console.log('Loading game:', gameName);
-
-                self.scene.sleep('Load');
-                self.scene.start('Ready', {name: gameName});
+            self.lobbyController.loadGame(gameName, (success: boolean) => {
+                if (success) {
+                    console.log('Loading game:', gameName);
+    
+                    self.scene.sleep('Load');
+                    self.scene.start('Ready', {name: gameName});
+                } else {
+                    nameText.setText('Game not found');
+                    self.tweens.add({
+                        targets: nameErrorBg,
+                        alpha: 1,
+                        duration: 500,
+                        ease: 'Power3',
+                        yoyo: true
+                    });
+                    return;
+                }
             })
         })
 
-        var gobackbtn = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
-        gobackbtn.on('pointerdown', function (pointer) {
+        var backButton = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
+        backButton.on('pointerdown', () => {
             this.scene.start('Lobby');
         }, this);
     }
