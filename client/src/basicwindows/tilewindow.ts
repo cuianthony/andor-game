@@ -212,7 +212,7 @@ export class TileWindow extends BasicWindow {
 
     // this is ugly for now
     private getItemTypeFromName(itemName: string) : string {
-        let largeItems = ["falcon", "shield", "bow"]
+        let largeItems = ["falcon", "shield", "damaged_shield", "bow"]
         if (largeItems.includes(itemName)) {
             return "largeItem";
         } else if (itemName == "helm") {

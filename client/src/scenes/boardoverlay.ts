@@ -121,7 +121,7 @@ export default class BoardOverlay extends Phaser.Scene {
                 });
                 BasicWindowManager.createWindow(this, "chat", ChatWindow, 
                     { 
-                        controller: this.gameinstance, 
+                        controller: this.gameController, 
                         x: 707, 
                         y: 410
                     }
@@ -132,7 +132,7 @@ export default class BoardOverlay extends Phaser.Scene {
         // end turn button
         this.endTurnButton = this.add.image(900, 565, 'endturnicon').setScale(0.3)
         this.endTurnButton.on('pointerdown', function (pointer) {
-            this.gameinstance.endTurn();
+            this.gameController.endTurn();
             // Todo: Tween will trigger whether or not it is your turn, not sure if we want to change that
             this.tweens.add({
                 targets: this.endTurnButton,

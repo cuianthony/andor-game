@@ -2587,7 +2587,6 @@ export function game(socket, model: Game, io) {
   socket.on('getHeroItems', function (herokind, callback) {
     var thehero: Hero
     model.getHeros().forEach((hero, key) => {
-      console.log(hero.getKind())
       if (hero.getKind() == herokind) {
         thehero = hero
       }
@@ -2599,7 +2598,7 @@ export function game(socket, model: Game, io) {
   socket.on('consumeItem', function (item) {
     var heroID = socket.conn.id
     let hero = model.getHero(heroID);
-    console.log('consuming item!!!!!!!!!!', hero.getKind(), item)
+    // console.log('consuming item!!!!!!!!!!', hero.getKind(), item)
     hero.consumeItem(item)
   })
 

@@ -294,7 +294,7 @@ export default class GameScene extends Phaser.Scene {
             window.destroyWindow();
           } else {
             // width of tile window depends on number of items on it
-            this.gameinstance.getTileItems(tile.id, function (tileItems) {
+            this.gameController.getTileItems(tile.id, function (tileItems) {
               let items = tileItems;
               BasicWindowManager.createWindow(self, tileWindowID, TileWindow,
                 {
@@ -440,7 +440,7 @@ export default class GameScene extends Phaser.Scene {
           princetile = -69
         }
         WindowManager.createWindow(this, monster.name, FightWindow, {
-          controller: this.gameinstance,
+          controller: this.gameController,
           x: 10, 
           y: 10, 
           w: 500, 
