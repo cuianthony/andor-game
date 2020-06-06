@@ -27,7 +27,7 @@ export default class GameScene extends Phaser.Scene {
   private farmersOnBoard: Farmer[];
   private hourTracker: HourTracker;
   private gameController: game;
-  private monsters: Monster[];
+  // private monsters: Monster[];
   private monsterNameMap: Map<string, Monster>;
   private castle: RietburgCastle;
   private prince: Prince;
@@ -58,7 +58,7 @@ export default class GameScene extends Phaser.Scene {
     this.wells = new Map();
     this.farmersOnBoard = new Array<Farmer>();
     this.ownHeroType = HeroKind.Dwarf;
-    this.monsters = new Array<Monster>();
+    // this.monsters = new Array<Monster>();
     this.monsterNameMap = new Map();
     this.castle = new RietburgCastle();
     this.eventBeingDisplayed = false
@@ -423,7 +423,7 @@ export default class GameScene extends Phaser.Scene {
     const tile: Tile = this.tiles[monsterTile];
 
     let monster: Monster = new Monster(this, tile, type, id).setInteractive({useHandCursor: true}).setScale(.5);
-    this.monsters.push(monster);
+    // this.monsters.push(monster);
     this.monsterNameMap[monster.name] = monster;
     this.add.existing(monster);
     monster.on('pointerdown', function (pointer) {
@@ -439,6 +439,7 @@ export default class GameScene extends Phaser.Scene {
         catch {
           princetile = -69
         }
+        console.log('monster map', this.monsterNameMap)
         WindowManager.createWindow(this, monster.name, FightWindow, {
           controller: this.gameController,
           x: 10, 
@@ -882,6 +883,21 @@ export default class GameScene extends Phaser.Scene {
       this.addMonster(tile, type, id);
     })
 
+    this.gameController.receiveKilledMonsters(deleteKilledMonsters);
+    function deleteKilledMonsters(killedMonster) {
+        removeKilledMonsters(killedMonster)
+    }
+
+    function removeKilledMonsters(m) {
+        let monster = self.monsterNameMap[m]
+        // console.log('remove', m, 'from monster name map')
+        // TODO: I have no idea why this delete call isn't working
+        console.log('remove', m, 'from monster name map', self.monsterNameMap.delete(`${m}`))
+        monster.tile.monster = null
+        monster.destroy()
+        // this.monsterNameMap[m] = null
+    }
+
     // Listen for turn to be passed to yourself
     // Deprecated: removed turn logic from frontend
     // this.gameinstance.yourTurn()
@@ -1225,7 +1241,8 @@ export default class GameScene extends Phaser.Scene {
     for (let merchant of this.merchants) {
       merchant.toggleInteractive(flag);
     }
-    for (let monster of this.monsters) {
+    console.log('gameScene toggle monsters:', this.monsterNameMap)
+    for (let monster of Array.from(this.monsterNameMap.values())) {
       monster.toggleInteractive(flag);
     }
     for (let well of Array.from(this.wells.values())) {

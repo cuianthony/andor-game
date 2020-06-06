@@ -187,7 +187,8 @@ export class BattleInviteWindow extends ContainerWindow {
                     })
                     // Close battleinv window
                     ContainerWindowManager.removeWindow(self.key);
-                    self.disconnectListeners();
+                    // Note we shouldn't disconnect here because we want to keep listening for victory rewards
+                    // self.disconnectListeners();
                     self.destroyWindow();
                 })   
             })

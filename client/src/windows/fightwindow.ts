@@ -914,6 +914,7 @@ export class FightWindow extends Window {
     );
 
     //deleting the monster.
+    console.log('tell other clients to kill monster')
     this.gameinstance.killMonster(self.monstername);
   }
 

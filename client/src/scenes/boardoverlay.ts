@@ -354,11 +354,6 @@ export default class BoardOverlay extends Phaser.Scene {
             self.moveMonstersEndDay(updatedMonsters);
         }
 
-        self.gameController.receiveKilledMonsters(deleteKilledMonsters);
-        function deleteKilledMonsters(killedMonster) {
-            self.removeKilledMonsters(killedMonster)
-        }
-
         self.gameController.fillWells(replenishWellsClient);
         function replenishWellsClient(replenished: number[]) {
             for (let id of replenished) {
@@ -400,13 +395,6 @@ export default class BoardOverlay extends Phaser.Scene {
                 this.herbMoveTween(this.herb, newTile.x, newTile.y)
             }
         }
-    }
-
-    private removeKilledMonsters(m) {
-        let monster = this.monsterNameMap[m]
-        monster.tile.monster = null
-        monster.destroy()
-        this.monsterNameMap[m] = null
     }
 
     public monsterMoveTween(monster: Monster, newTile: Tile, newX, newY) {
