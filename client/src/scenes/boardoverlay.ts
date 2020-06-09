@@ -97,14 +97,26 @@ export default class BoardOverlay extends Phaser.Scene {
             this.scene.wake('Options')
         }, this);
 
-        // save btn
-        this.saveButton = this.add.image(920, 25, 'saveicon').setScale(0.25);
-        this.saveButton.on('pointerdown', () => {
-            this.gameController.save()
-        }, this);
+        // end turn button
+        // this.endTurnButton = this.add.image(900, 565, 'endturnicon').setScale(0.3)
+        this.endTurnButton = this.add.image(435, 540, 'endturnicon').setOrigin(0).setScale(0.3)
+        this.endTurnButton.on('pointerdown', function (pointer) {
+            this.gameController.endTurn();
+            // Todo: Tween will trigger whether or not it is your turn, not sure if we want to change that
+            this.tweens.add({
+                targets: this.endTurnButton,
+                alpha: 0.3,
+                duration: 350,
+                ease: 'Power3',
+                yoyo: true
+            });
+        }, this)
+
+        this.endDaySetup();
 
         // chat window
-        this.chatButton = this.add.image(775, 565, 'chaticon').setScale(0.3)
+        let xPos = this.endDayButton.x + this.endDayButton.displayWidth + 10;
+        this.chatButton = this.add.image(xPos, 540, 'chaticon').setOrigin(0).setScale(0.3)
         this.chatButton.setInteractive({useHandCursor: true});
         this.chatButton.on('pointerdown', function (pointer) {
             if (BasicWindowManager.hasWindow('chat')) {
@@ -122,28 +134,19 @@ export default class BoardOverlay extends Phaser.Scene {
                 BasicWindowManager.createWindow(this, "chat", ChatWindow, 
                     { 
                         controller: this.gameController, 
-                        x: 707, 
+                        x: 720, 
                         y: 410
                     }
                 )
             }
         }, this);
 
-        // end turn button
-        this.endTurnButton = this.add.image(900, 565, 'endturnicon').setScale(0.3)
-        this.endTurnButton.on('pointerdown', function (pointer) {
-            this.gameController.endTurn();
-            // Todo: Tween will trigger whether or not it is your turn, not sure if we want to change that
-            this.tweens.add({
-                targets: this.endTurnButton,
-                alpha: 0.3,
-                duration: 350,
-                ease: 'Power3',
-                yoyo: true
-            });
-        }, this)
-
-        this.endDaySetup();
+        // save btn
+        xPos = this.chatButton.x + this.chatButton.displayWidth + 10;
+        this.saveButton = this.add.image(xPos, 540, 'saveicon').setOrigin(0).setScale(0.3);
+        this.saveButton.on('pointerdown', () => {
+            this.gameController.save()
+        }, this);
 
         // TRADE
         this.gameController.receiveTradeInvite(function (host, invitee) {
@@ -332,7 +335,8 @@ export default class BoardOverlay extends Phaser.Scene {
         var self = this;
 
         // end day button
-        this.endDayButton = this.add.image(650, 565, 'enddayicon').setScale(0.3)
+        let xPos = this.endTurnButton.x + this.endTurnButton.displayWidth + 10;
+        this.endDayButton = this.add.image(xPos, 540, 'enddayicon').setOrigin(0).setScale(0.3)
         this.endDayButton.on('pointerdown', function (pointer) {
             this.tweens.add({
                 targets: this.endDayButton,

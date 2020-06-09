@@ -824,7 +824,7 @@ export default class GameScene extends Phaser.Scene {
     WindowManager.createWindow(this, 'collab', CollabWindow, collabWindowData);
     // Disable interactivity on game during start-of-game phase
     this.toggleInteractive(false);
-    this.overlay.toggleInteractive(false);
+    // this.overlay.toggleInteractive(false);
     // Note that there's issues with trying to toggle interactivity of the overlay,
     // because certain GameObjects of the overlay may have not been instantiated yet.
     // Instead, overlay elements are initialized as non-interactive, and toggled on
