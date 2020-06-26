@@ -187,7 +187,7 @@ export class Game {
     //     this.currPlayersTurn = this.heroList[ID].getKind();
     // }
     public updatePlayersInGame(i){
-        this.playersInGame +=i
+        this.playersInGame += i
     }
     public getPlayersInGame(){
         return this.playersInGame
@@ -505,6 +505,7 @@ export class Game {
         }
     }*/
     public removePlayer(id: string): boolean {
+        this.playersInGame--;
         this.players.forEach((player) => {
             if (player.getID() === id) {
                 this.players.delete(player);

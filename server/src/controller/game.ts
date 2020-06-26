@@ -1,10 +1,10 @@
-import { Game, HeroKind, Region, Hero, Monster, Fog, MonsterKind, Farmer, enumPositionOfNarrator } from '../model';
+import { Game, HeroKind, Region, Hero, Monster, Fog, MonsterKind, Farmer, enumPositionOfNarrator, Lobby } from '../model';
 import { SmallItem } from '../model/SmallItem';
 import { LargeItem } from '../model/LargeItem';
 
 import { mapToJson } from "../utils/helpers";
 
-export function game(socket, model: Game, io) {
+export function game(socket, model: Game, io, lobbyModel: Lobby) {
 
   socket.on("save", function () {
     var fs = require('fs');
@@ -65,9 +65,37 @@ export function game(socket, model: Game, io) {
     callback(tempModel)
   })
 
-  socket.on('enterGame', function(){
+  socket.on('enterGame', function() {
     model.updatePlayersInGame(1)
     console.log("received enterGame. now ", model.getPlayersInGame(), " in game")  
+  })
+
+  // socket.on('leaveGame', function(){
+  //   // Called so that leaving player can unbind their game scene keys
+  //   socket.emit('receiveLeaveGame');
+  // })
+
+  socket.on('returnToLobby', function() {
+    let gameName = model.getName();
+    console.log('server returnToLobby', gameName)
+
+    let hk = model.getHero(socket.conn.id).getKind();
+    socket.broadcast.emit('receivePlayerLeft', hk);
+    // Called so that leaving player can unbind their game scene keys
+    socket.emit('receiveLeaveGame');
+    
+    model.updatePlayersInGame(-1);
+    const namespace = io.of("/" + gameName);
+    const connectedSockets = Object.keys(namespace.connected);
+    console.log(connectedSockets)
+    connectedSockets.forEach(socketId => {
+      console.log('disconnect socket', socketId, 'from namespace', gameName)
+      namespace.connected[socketId].disconnect();
+    })
+    namespace.removeAllListeners();
+    delete io.nsps[gameName];
+
+    lobbyModel.removeGame(gameName);
   })
   
   socket.on("moveRequest", function (id, callback) {

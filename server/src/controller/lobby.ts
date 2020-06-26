@@ -13,7 +13,8 @@ export function lobby(socket, model: Lobby, io) {
     // Socket namespace for the game separate from the lobby namespace and other games
     var gamensp = io.of("/" + name)
     gamensp.on("connection", function (socket) {
-      game(socket, g, io)
+      console.log('server creategame new game controller for', socket.conn.id)
+      game(socket, g, io, model)
     });
 
   })
@@ -67,8 +68,8 @@ export function lobby(socket, model: Lobby, io) {
       // We should only create one of these controllers per client
       var gamensp = io.of("/" + name)
       gamensp.on("connection", function (socket) {
-        console.log('server create new game controller for', socket.conn.id)
-        game(socket, loadedGame!, io);
+        console.log('server loadgame new game controller for', socket.conn.id)
+        game(socket, loadedGame!, io, model);
         gamensp.removeAllListeners("connection");
       });
       callback(true);
@@ -108,7 +109,4 @@ export function lobby(socket, model: Lobby, io) {
     model.disconnectPlayer(id)
     console.log(id, " disconnected in lobby!!!!")
   });
-
-
-
 }

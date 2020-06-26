@@ -27,7 +27,7 @@ export default class GameScene extends Phaser.Scene {
   private farmersOnBoard: Farmer[];
   private hourTracker: HourTracker;
   private gameController: game;
-  // private monsters: Monster[];
+
   private monsterNameMap: Map<string, Monster>;
   private castle: RietburgCastle;
   private prince: Prince;
@@ -53,17 +53,6 @@ export default class GameScene extends Phaser.Scene {
 
   constructor() {
     super({ key: 'Game' });
-    this.heroes = Array<Hero>();
-    this.tiles = Array<Tile>();
-    this.wells = new Map();
-    this.farmersOnBoard = new Array<Farmer>();
-    this.ownHeroType = HeroKind.Dwarf;
-    // this.monsters = new Array<Monster>();
-    this.monsterNameMap = new Map();
-    this.castle = new RietburgCastle();
-    this.eventBeingDisplayed = false
-    this.fogs = [];
-    this.merchants = [];
   }
 
   public init(data) {
@@ -128,11 +117,21 @@ export default class GameScene extends Phaser.Scene {
   }
 
   public create() {
+    this.heroes = Array<Hero>();
+    this.tiles = Array<Tile>();
+    this.wells = new Map();
+    this.farmersOnBoard = new Array<Farmer>();
+    this.monsterNameMap = new Map();
+    this.castle = new RietburgCastle();
+    this.eventBeingDisplayed = false
+    this.fogs = [];
+    this.merchants = [];
+
     this.cameraSetup();
     this.shiftKey = this.input.keyboard.addKey('shift');
     this.ctrlKey = this.input.keyboard.addKey('CTRL');
 
-    // Centred gameboard with border
+    // Centered gameboard with border
     this.add.image(fullWidth / 2, fullHeight / 2, 'gameboard').setDisplaySize(expandedWidth, expandedHeight);
 
     this.gameController.getGameData((data) => {
@@ -478,8 +477,8 @@ export default class GameScene extends Phaser.Scene {
     const tile: Tile = this.tiles[tileNumber]
     let hero: Hero = new Hero(this, tile, texture, type, hour).setDisplaySize(40, 40);
     this.heroes.push(hero);
-    // tile.hero = hero;
     this.add.existing(hero);
+
     if (this.ownHeroType === type) {
       this.hero = hero;
     }
@@ -1200,6 +1199,33 @@ export default class GameScene extends Phaser.Scene {
         this.overlay.toggleInteractive(false);
       }
     })
+
+    this.gameController.receivePlayerLeft((hk) => {
+      this.toggleInteractive(false);
+      this.overlay.toggleInteractive(false);
+      console.log(hk, 'left the game')
+    })
+
+    this.gameController.receiveLeaveGame(() => {
+      this.removeInputKeys();
+      this.scene.remove('BoardOverlay');
+      this.scene.start('Lobby');
+    })
+  }
+
+  // TODO: incomplete
+  private removeInputKeys() {
+    console.log('shutdown keyboard input')
+    // this.input.keyboard.removeKey('w', true);
+    // this.input.keyboard.removeKey('a', true);
+    // this.input.keyboard.removeKey('s', true);
+    // this.input.keyboard.removeKey('d', true);
+    // this.input.keyboard.removeKey('q', true);
+    // this.input.keyboard.removeKey('e', true);
+    // this.input.keyboard.removeKey('shift', true);
+    // this.input.keyboard.removeKey('ctrl', true);
+    // this.input.keyboard.removeAllListeners();
+    this.input.keyboard.shutdown();
   }
 
   private addHerbToScene(tileID) {
@@ -1270,6 +1296,7 @@ export default class GameScene extends Phaser.Scene {
 
     // Scroll updates
     if (this.cameraKeys["up"].isDown) {
+      console.log('game scene update loop catch')
       camera.scrollY -= this.cameraScrollSpeed;
     } else if (this.cameraKeys["down"].isDown) {
       camera.scrollY += this.cameraScrollSpeed;
@@ -1283,7 +1310,8 @@ export default class GameScene extends Phaser.Scene {
 
     // DEBUG TODO: REMOVE
     if (this.overlay)
-      this.overlay.updateCameraPosInfo(camera.scrollX, camera.scrollY)
+      // TODO: this requires some fixing
+      // this.overlay.updateCameraPosInfo(camera.scrollX, camera.scrollY)
 
     // Zoom updates
     if (this.cameraKeys["zoomIn"].isDown && camera.zoom < this.maxZoom) {

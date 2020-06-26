@@ -697,6 +697,14 @@ export class game {
         this.socket.on("receivePlayerDisconnected", callback)
     }
 
+    public receivePlayerLeft(callback){
+        this.socket.on("receivePlayerLeft", callback)
+    }
+
+    public receiveLeaveGame(callback){
+        this.socket.on("receiveLeaveGame", callback)
+    }
+
     /*
     *   END OF GAME
     */
@@ -704,9 +712,17 @@ export class game {
         this.socket.on('endGame', callback);
     }
 
-    public save(){
+    public save() {
         this.socket.emit("save");
     }
+
+    public returnToLobby() {
+        this.socket.emit("returnToLobby");
+    }
+
+    // public leaveGame() {
+    //     this.socket.emit('leaveGame');
+    // }
 
     // GAME LOG
     public updateGameLog(callback) {

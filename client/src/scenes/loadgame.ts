@@ -22,6 +22,9 @@ export default class LoadGameScene extends Phaser.Scene {
     public create() {
         var self = this;
 
+        // TODO: part of ongoing fix, not working
+        this.input.keyboard.resetKeys();
+
         this.add.image(500, 300, 'mountains').setDisplaySize(1000, 600)
         var textStyle = {
             fontSize: "20px",

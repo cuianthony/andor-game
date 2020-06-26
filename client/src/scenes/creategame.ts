@@ -58,16 +58,16 @@ export default class CreateGameScene extends Phaser.Scene {
         })
 
         this.add.text(reducedWidth/2, reducedHeight/2+10, 'Choose the number of players:', textStyle).setOrigin(0.5);
-        var panel3bg = new RoundRectangle(this, reducedWidth/2, reducedHeight/2+60, 66, 66, 10, 0xffff00);
         var panel2bg = new RoundRectangle(this, reducedWidth/2-85, reducedHeight/2+60, 66, 66, 10, 0xffff00);
+        var panel3bg = new RoundRectangle(this, reducedWidth/2, reducedHeight/2+60, 66, 66, 10, 0xffff00);
         var panel4bg = new RoundRectangle(this, reducedWidth/2+85, reducedHeight/2+60, 66, 66, 10, 0xffff00);
         panel3bg.visible = false;
         panel4bg.visible = false;
         this.add.existing(panel2bg);
         this.add.existing(panel3bg);
         this.add.existing(panel4bg);
-        var panel3 = new RoundRectangle(this, reducedWidth/2, reducedHeight/2+60, 60, 60, 10, 0x333333);
         var panel2 = new RoundRectangle(this, reducedWidth/2-85, reducedHeight/2+60, 60, 60, 10, 0x333333);
+        var panel3 = new RoundRectangle(this, reducedWidth/2, reducedHeight/2+60, 60, 60, 10, 0x333333);
         var panel4 = new RoundRectangle(this, reducedWidth/2+85, reducedHeight/2+60, 60, 60, 10, 0x333333);
         this.add.existing(panel2);
         this.add.existing(panel3);
@@ -86,8 +86,8 @@ export default class CreateGameScene extends Phaser.Scene {
             color: 'yellow',
             fontSize: '30px'
         }
-        var button3 = this.add.text(reducedWidth/2, reducedHeight/2+60, '3', numTextStyle).setOrigin(0.5);
         var button2 = this.add.text(reducedWidth/2-85, reducedHeight/2+60, '2', numTextStyle).setOrigin(0.5);
+        var button3 = this.add.text(reducedWidth/2, reducedHeight/2+60, '3', numTextStyle).setOrigin(0.5);
         var button4 = this.add.text(reducedWidth/2+85, reducedHeight/2+60, '4', numTextStyle).setOrigin(0.5);
         button2.setInteractive({ useHandCursor: true }).on('pointerdown', () => {
             buttonToggle(2);

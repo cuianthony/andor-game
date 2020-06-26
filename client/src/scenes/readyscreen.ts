@@ -98,8 +98,8 @@ export default class ReadyScreenScene extends Phaser.Scene {
         // back button
         var backButton = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
         backButton.on('pointerdown', () => {
+            this.ready = false;
             this.scene.start('Lobby');
-
         }, this);
 
         var self = this;
@@ -114,6 +114,7 @@ export default class ReadyScreenScene extends Phaser.Scene {
                         window.disconnectListeners();
                         window.destroyWindow();
                     } 
+                    this.ready = false; // reset ready status
                     this.gameController.enterGame()
                     this.scene.start('Game', { controller: self.gameController, heroType: self.selection.name });
                 }

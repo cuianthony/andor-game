@@ -148,6 +148,17 @@ export default class BoardOverlay extends Phaser.Scene {
             this.gameController.save()
         }, this);
 
+        // TODO DEBUG: remove
+        // xPos = this.chatButton.x + this.chatButton.displayWidth + 10;
+        let lobbyButton = this.add.text(xPos, 500, 'LOBBY', {
+                fontSize: "20px",
+                backgroundColor: '#f00',
+            }).setOrigin(0).setInteractive({ useHandCursor: true });
+        lobbyButton.on('pointerdown', () => {
+            this.gameController.returnToLobby();
+            // this.gameController.leaveGame();
+        }, this);
+
         // TRADE
         this.gameController.receiveTradeInvite(function (host, invitee) {
             ContainerWindowManager.createWindow(self, 'tradewindow', TradeWindow, 

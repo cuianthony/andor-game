@@ -35,4 +35,8 @@ export class Lobby {
     public getGame(name: string) {
         return this.games.get(name);
     }
+
+    public removeGame(name: string) {
+        return this.games.delete(name);
+    }
 }
