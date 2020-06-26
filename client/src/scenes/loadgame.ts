@@ -15,10 +15,6 @@ export default class LoadGameScene extends Phaser.Scene {
         this.lobbyController = data.controller;
     }
 
-    public preload() {
-        this.load.image("submit", "../assets/pregame-components/loadsubmitbutton.png")
-    }
-
     public create() {
         var self = this;
 

@@ -10,10 +10,6 @@ export default class Options extends Phaser.Scene {
     }
 
     public preload() {
-        this.load.image('settings', './assets/options-menu/settings-screen.png');
-        this.load.image('soundon','./assets/options-menu/SongOn.png');
-        this.load.image('soundoff','./assets/options-menu/SongOff.png');
-
         this.load.audio('music', 'assets/options-menu/doxent_-_Arcane.mp3');
     }
 

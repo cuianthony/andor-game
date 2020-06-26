@@ -11,10 +11,6 @@ export default class JoinGameScene extends Phaser.Scene {
         super({ key: 'Join' });
     }
 
-    public preload() {
-        this.load.image("joinsubmit", "../assets/pregame-components/joinsubmitbutton.png")
-    }
-
     public init(data){
         this.lobbyController = data.controller;
     }

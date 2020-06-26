@@ -18,10 +18,6 @@ export default class CreateGameScene extends Phaser.Scene {
         this.lobbyController = data.controller;
     }
 
-    public preload() {
-        this.load.image("createsubmit", "../assets/pregame-components/createsubmitbutton.png")
-    }
-
     public create() {
         this.add.image(500, 300, 'desert').setDisplaySize(1000, 600)
         var textStyle = {

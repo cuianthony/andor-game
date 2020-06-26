@@ -61,20 +61,6 @@ export default class BoardOverlay extends Phaser.Scene {
         `View in game updates here:\n > Game loaded.` : `View in game updates here:\n > The legend begins.`;
     }
 
-    public init() { }
-
-    public preload() {
-        this.load.image('hourbar', './assets/board-major/hours.PNG')
-        this.load.image('endturnicon', './assets/overlay-components/endturn.png')
-        this.load.image('enddayicon', './assets/overlay-components/endday.png')
-        this.load.image('chaticon', './assets/overlay-components/chat.png')
-        this.load.image('archericon', './assets/overlay-components/archerbtn.png')
-        this.load.image('dwarficon', './assets/overlay-components/dwarfbtn.png')
-        this.load.image('mageicon', './assets/overlay-components/magebtn.png')
-        this.load.image('warrioricon', './assets/overlay-components/warriorbtn.png')
-        this.load.image("saveicon", "./assets/overlay-components/save.png")
-    }
-
     public create() {
         // Set the overlay as a top bar on the game
         this.parent = this.add.zone(this.x, this.y, this.width, this.height).setOrigin(0);

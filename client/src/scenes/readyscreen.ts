@@ -26,17 +26,6 @@ export default class ReadyScreenScene extends Phaser.Scene {
         this.gameController = new game(this.name);
     }
 
-    public preload() {
-        this.load.html('readyform', './assets/templates/readyscreen.html')
-        this.load.html('readytable', './assets/templates/readytable.html')
-        this.load.image("archerbanner", "../assets/pregame-components/archerbanner.png");
-        this.load.image("dwarfbanner", "./assets/pregame-components/dwarfbanner.png");
-        this.load.image("warriorbanner", "./assets/pregame-components/warriorbanner.png");
-        this.load.image("magebanner", "./assets/pregame-components/magebanner.png");
-        this.load.image("pointerhand", "./assets/pregame-components/pointerhand.png");
-        this.load.image('chaticon', './assets/pregame-components/chat.png')
-    }
-
     create() {
         const heroSize = {
             x: 160,
