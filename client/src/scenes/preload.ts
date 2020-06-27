@@ -90,9 +90,16 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.html('chatform', './assets/templates/chat.html');
 
         // Options assets
-        this.load.image('settings', './assets/options-menu/settings-screen.png');
-        this.load.image('soundon','./assets/options-menu/SongOn.png');
-        this.load.image('soundoff','./assets/options-menu/SongOff.png');
+        this.load.image('options', './assets/options-menu/options.png');
+        this.load.image('home_off', './assets/options-menu/home_off.png');
+        this.load.image('home_on', './assets/options-menu/home_on.png');
+        this.load.image('info_off', './assets/options-menu/info_off.png');
+        this.load.image('info_on', './assets/options-menu/info_on.png');
+        this.load.image('save_off', './assets/options-menu/save_off.png');
+        this.load.image('save_on', './assets/options-menu/save_on.png');
+        this.load.image('sound_off', './assets/options-menu/sound_off.png');
+        this.load.image('sound_on', './assets/options-menu/sound_on.png');
+        this.load.audio('music', 'assets/options-menu/doxent_-_Arcane.mp3');
 
         // Create game assets
         this.load.image("createsubmit", "../assets/pregame-components/createsubmitbutton.png")

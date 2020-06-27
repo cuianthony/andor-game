@@ -1,64 +1,58 @@
+import { BasicWindow } from "../basicwindows/basicwindow";
+import { game } from "../api/game";
 
-export default class Options extends Phaser.Scene {
-    private musicStarted: boolean;
+export default class Options extends BasicWindow {
+    private posX: number;
+    private posY: number;
+    private w: number;
+    private h: number;
+    private gameController: game
 
-    constructor() {
-        super({
-            key: 'Options',
-            active: true
-        });
+    public constructor(parentScene: Phaser.Scene, data) {
+        super(parentScene);
+        this.posX = data.x;
+        this.posY = data.y;
+        this.w = data.w;
+        this.h = data.h;
+        this.gameController = data.gameController;
+
+        this.initialize();
     }
 
-    public preload() {
-        this.load.audio('music', 'assets/options-menu/doxent_-_Arcane.mp3');
-    }
+    protected initialize() {
+        var bg = this.parentScene.add.image(this.posX, this.posY, 'scrollbg').setDisplaySize(this.w, this.h).setOrigin(0);
 
-    public create() {
-        // Initially sleep the scene
-        this.scene.sleep('Options');
+        if (!this.parentScene.game.sound.get('music'))
+            this.parentScene.game.sound.add('music');
+        let music = this.parentScene.game.sound.get('music');
 
-        let music = this.game.sound.add('music');
-        this.add.image(500, 300, 'settings').setDisplaySize(1000,600);
-        var style1 = {
-            fontFamily: '"Roboto Condensed"',
-            fontSize: "70px",
-            shadow: {
-                offsetX: 5,
-                offsetY: 5,
-                color: '#000',
-                blur: 10,
-                stroke: true,
-                fill: true
-            },
-            color: "#4944A4"
-        };
-        this.add.text(500, 200, "Options", style1).setOrigin(0.5);
+        let title = this.parentScene.add.text(this.posX+this.w/2, this.posX+15, "Options").setOrigin(0.5);
         // Images for toggling sound on and off
-        let soundOn = this.add.image(500, 300, 'soundon').setOrigin(0.5).setInteractive({useHandCursor: true});
-        let soundOff = this.add.image(500, 300, 'soundoff').setOrigin(0.5).setInteractive({useHandCursor: true});
+        let soundOn = this.parentScene.add.image(this.posX+this.w/2-200, this.posX+50, 'sound_on').setOrigin(0.5).setScale(0.2).setInteractive({useHandCursor: true});
+        let soundOff = this.parentScene.add.image(this.posX+this.w/2-200, this.posX+50, 'sound_off').setOrigin(0.5).setScale(0.2).setInteractive({useHandCursor: true});
 
+        if (music.isPlaying) {
+            soundOn.visible = false;
+        } else {
+            soundOff.visible = false;
+        }
+        
         soundOn.on('pointerdown', () => {
-            music.pause();
+            music.stop();
             soundOff.visible = true;
         }, this);
 
         soundOff.on('pointerdown', () => {
-            if (!this.musicStarted) {
-                music.play({
-                    loop: true,
-                    volume: 0.5
-                });
-                this.musicStarted = true;
-            } else { //music started already
-                music.resume();
-            }        
-
+            music.play({
+                loop: true,
+                volume: 0.5
+            });
             soundOff.visible = false;
         }, this);
 
-        let backButton = this.add.text(500, 400, "Back", style1).setOrigin(0.5).setInteractive({useHandCursor: true});
-        backButton.on('pointerdown', () => {
-            this.scene.sleep('Options');
-        }, this);
+        let elements = [ bg, title, soundOn, soundOff ];
+        this.addElements(elements);
     }
+
+    public disconnectListeners() { }
 }

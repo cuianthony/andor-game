@@ -9,6 +9,7 @@ import { reducedWidth, reducedHeight, mOffset } from '../constants';
 import { ScrollablePanel, RoundRectangle, FixWidthSizer } 
     from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { TransitionScene } from './TransitionScene';
+import Options from './options';
 
 export default class BoardOverlay extends TransitionScene {
     private parent: Phaser.GameObjects.Zone
@@ -78,11 +79,24 @@ export default class BoardOverlay extends TransitionScene {
         var self = this;
 
         //Options
-        var optionsIcon = this.add.image(55, 40, 'optionsicon').setInteractive({useHandCursor: true});
-        optionsIcon.setScale(0.2)
+        var optionsIcon = this.add.image(55, 40, 'options').setInteractive({useHandCursor: true});
+        optionsIcon.setScale(0.5)
         optionsIcon.on('pointerdown', function (pointer) {
-            this.scene.bringToTop('Options')
-            this.scene.wake('Options')
+            if (BasicWindowManager.hasWindow('options')) {
+                let window = BasicWindowManager.removeWindow(`options`);
+                window.disconnectListeners();
+                window.destroyWindow();
+            } else {
+                BasicWindowManager.createWindow(this, "options", Options, 
+                    { 
+                        controller: this.gameController, 
+                        x: reducedWidth/2 - 400/2, 
+                        y: reducedHeight/2 - 200/2, 
+                        w: 400, 
+                        h: 200, 
+                    }
+                )
+            }
         }, this);
 
         // end turn button

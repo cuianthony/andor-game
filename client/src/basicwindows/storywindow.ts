@@ -110,6 +110,5 @@ export class StoryWindow extends BasicWindow {
         })
     }
 
-    public disconnectListeners() {
-    }
+    public disconnectListeners() { }
 }

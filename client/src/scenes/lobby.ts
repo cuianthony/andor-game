@@ -72,11 +72,11 @@ export default class LobbyScene extends TransitionScene {
         }, this);
 
         // HEROS' DWELLING
-        this.optionsIcon = this.add.image(900, 80, 'optionsicon').setInteractive({useHandCursor: true}).setScale(0.3);
-        this.add.text(900, 133, "heroes' dwelling", housetText).setOrigin(0.5)
-        this.optionsIcon.on('pointerdown', () => {
-            this.scene.bringToTop('Options')
-            this.scene.wake('Options')
-        }, this);
+        // this.optionsIcon = this.add.image(900, 80, 'optionsicon').setInteractive({useHandCursor: true}).setScale(0.3);
+        // this.add.text(900, 133, "heroes' dwelling", housetText).setOrigin(0.5)
+        // this.optionsIcon.on('pointerdown', () => {
+        //     this.scene.bringToTop('Options')
+        //     this.scene.wake('Options')
+        // }, this);
     }
 }
