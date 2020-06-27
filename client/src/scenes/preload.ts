@@ -177,6 +177,8 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image('mageicon', './assets/overlay-components/magebtn.png')
         this.load.image('warrioricon', './assets/overlay-components/warriorbtn.png')
         this.load.image("saveicon", "./assets/overlay-components/save.png")
+
+        this.load.plugin('rextexteditplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexteditplugin.min.js', true);
     }
 
     public create() {

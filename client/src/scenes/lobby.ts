@@ -1,7 +1,8 @@
 import { lobby } from "../api";
 import { reducedWidth, reducedHeight } from '../constants'
+import { TransitionScene } from "./TransitionScene";
 
-export default class LobbyScene extends Phaser.Scene {
+export default class LobbyScene extends TransitionScene {
     private gameText;
     private optionsIcon;
     private lobbyController;
@@ -12,7 +13,7 @@ export default class LobbyScene extends Phaser.Scene {
     }
 
     public create() {
-        this.cameras.main.fadeIn();
+        super.create();
 
         this.add.image(0, 0, 'main').setOrigin(0).setDisplaySize(reducedWidth, reducedHeight);
         this.makeMenuButtons()
@@ -45,7 +46,9 @@ export default class LobbyScene extends Phaser.Scene {
         this.gameText.setShadow(0, 0, 'black', 10);
         this.gameText.setInteractive({useHandCursor: true});
         this.gameText.on('pointerdown', () => {
-            this.scene.start('Create', { controller: self.lobbyController });
+            super.fadeOut(() => {
+                this.scene.start('Create', { controller: self.lobbyController })
+            });
         }, this);
 
         // Join game
@@ -53,7 +56,9 @@ export default class LobbyScene extends Phaser.Scene {
         this.gameText.setShadow(0, 0, 'black', 10);
         this.gameText.setInteractive({useHandCursor: true});
         this.gameText.on('pointerdown', () => {
-            this.scene.start('Join', { controller: self.lobbyController });
+            super.fadeOut(() => {
+                this.scene.start('Join', { controller: self.lobbyController })
+            });
         }, this);
 
         // Load game
@@ -61,7 +66,9 @@ export default class LobbyScene extends Phaser.Scene {
         this.gameText.setShadow(0, 0, 'black', 10);
         this.gameText.setInteractive({useHandCursor: true});
         this.gameText.on('pointerdown', () => {
-            this.scene.start('Load', { controller: self.lobbyController });
+            super.fadeOut(() => {
+                this.scene.start('Load', { controller: self.lobbyController })
+            });
         }, this);
 
         // HEROS' DWELLING
@@ -72,6 +79,4 @@ export default class LobbyScene extends Phaser.Scene {
             this.scene.wake('Options')
         }, this);
     }
-
-    public update() { }
 }

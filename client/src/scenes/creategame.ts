@@ -3,8 +3,9 @@ import TextEdit from 'phaser3-rex-plugins/plugins/textedit.js';
 import BBCodeText from 'phaser3-rex-plugins/plugins/bbcodetext.js';
 import { RoundRectangle } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { reducedWidth, reducedHeight } from "../constants";
+import { TransitionScene } from "./TransitionScene";
 
-export default class CreateGameScene extends Phaser.Scene {
+export default class CreateGameScene extends TransitionScene {
     private lobbyController: lobby;
      //DEBUG TODO: change this default back to 2
     private numPlayers: number = 1;
@@ -19,6 +20,8 @@ export default class CreateGameScene extends Phaser.Scene {
     }
 
     public create() {
+        super.create();
+
         this.add.image(500, 300, 'desert').setDisplaySize(1000, 600)
         var textStyle = {
             fontSize: "20px",
@@ -136,14 +139,18 @@ export default class CreateGameScene extends Phaser.Scene {
             // console.log('Creating new game:', gameName, this.numPlayers);
             self.lobbyController.createGame(gameName, self.numPlayers, "Easy");
 
-            self.scene.sleep('Create');
-            self.scene.start('Ready', {name: gameName});
+            // self.scene.sleep('Create');
+            super.fadeOut(() => {
+                self.scene.start('Ready', {name: gameName});
+            });
         })
 
         var self = this;
         var gobackbtn = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
         gobackbtn.on('pointerdown', () => {
-            this.scene.start('Lobby');
+            super.fadeOut(() => {
+                self.scene.start('Lobby');
+            });
         }, this);
     }
 

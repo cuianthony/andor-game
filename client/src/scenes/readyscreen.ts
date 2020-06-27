@@ -3,8 +3,9 @@ import { ChatWindow } from '../basicwindows/chatwindow';
 import { GameObjects } from "phaser";
 import { reducedWidth } from "../constants";
 import { BasicWindowManager } from "../utils/BasicWindowManager";
+import { TransitionScene } from "./TransitionScene";
 
-export default class ReadyScreenScene extends Phaser.Scene {
+export default class ReadyScreenScene extends TransitionScene {
     public archer: GameObjects.Image;
     public warrior: GameObjects.Image;
     public dwarf: GameObjects.Image;
@@ -27,6 +28,8 @@ export default class ReadyScreenScene extends Phaser.Scene {
     }
 
     create() {
+        super.create();
+
         const heroSize = {
             x: 160,
             y: 200
@@ -88,7 +91,9 @@ export default class ReadyScreenScene extends Phaser.Scene {
         var backButton = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
         backButton.on('pointerdown', () => {
             this.ready = false;
-            this.scene.start('Lobby');
+            super.fadeOut(() => {
+                self.scene.start('Lobby');
+            });
         }, this);
 
         var self = this;
@@ -105,7 +110,9 @@ export default class ReadyScreenScene extends Phaser.Scene {
                     } 
                     this.ready = false; // reset ready status
                     this.gameController.enterGame()
-                    this.scene.start('Game', { controller: self.gameController, heroType: self.selection.name });
+                    super.fadeOut(() => {
+                        this.scene.start('Game', { controller: self.gameController, heroType: self.selection.name });
+                    });
                 }
                 else {
                     this.tween()

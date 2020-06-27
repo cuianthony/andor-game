@@ -10,6 +10,7 @@ import { BasicWindowManager } from '../utils/BasicWindowManager';
 import { ContainerWindowManager } from '../utils/ContainerWindowManager';
 import { game } from '../api';
 import BoardOverlay from './boardoverlay';
+import { TransitionScene } from './TransitionScene';
 import {
   expandedWidth, expandedHeight, borderWidth, fullWidth, fullHeight, scaleFactor,
   reducedWidth, reducedHeight, htX, htY, htShift, mOffset, 
@@ -17,7 +18,7 @@ import {
   storyCardWidths, storyCardHeights, merchantWindowWidth, merchantWindowHeight
 } from '../constants'
 
-export default class GameScene extends Phaser.Scene {
+export default class GameScene extends TransitionScene {
   private heroes: Hero[];
   private hero: Hero;
   private ownHeroType: HeroKind;
@@ -62,6 +63,8 @@ export default class GameScene extends Phaser.Scene {
   }
 
   public create() {
+    super.create();
+
     this.heroes = Array<Hero>();
     this.tiles = Array<Tile>();
     this.wells = new Map();
@@ -1154,7 +1157,10 @@ export default class GameScene extends Phaser.Scene {
     this.gameController.receiveLeaveGame(() => {
       this.removeInputKeys();
       this.scene.remove('BoardOverlay');
-      this.scene.start('Lobby');
+
+      super.fadeOut(() => {
+        this.scene.start('Lobby');
+      });
     })
   }
 

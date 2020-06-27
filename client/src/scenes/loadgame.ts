@@ -3,8 +3,9 @@ import BBCodeText from 'phaser3-rex-plugins/plugins/bbcodetext.js';
 import { RoundRectangle } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
 import { reducedWidth, reducedHeight } from "../constants";
 import { lobby } from '../api/lobby';
+import { TransitionScene } from './TransitionScene';
 
-export default class LoadGameScene extends Phaser.Scene {
+export default class LoadGameScene extends TransitionScene {
     private lobbyController: lobby;
     
     constructor() {
@@ -18,6 +19,7 @@ export default class LoadGameScene extends Phaser.Scene {
     public create() {
         var self = this;
 
+        super.create();
         // TODO: part of ongoing fix, not working
         this.input.keyboard.resetKeys();
 
@@ -63,8 +65,10 @@ export default class LoadGameScene extends Phaser.Scene {
                 if (success) {
                     console.log('Loading game:', gameName);
     
-                    self.scene.sleep('Load');
-                    self.scene.start('Ready', {name: gameName});
+                    // self.scene.sleep('Load');
+                    super.fadeOut(() => {
+                        self.scene.start('Ready', {name: gameName});
+                    })
                 } else {
                     nameText.setText('Game not found');
                     self.tweens.add({
@@ -81,7 +85,9 @@ export default class LoadGameScene extends Phaser.Scene {
 
         var backButton = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
         backButton.on('pointerdown', () => {
-            this.scene.start('Lobby');
+            super.fadeOut(() => {
+                self.scene.start('Lobby');
+            });
         }, this);
     }
 

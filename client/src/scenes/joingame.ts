@@ -1,7 +1,8 @@
 import { lobby } from "../api/lobby";
 import { RoundRectangle } from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { TransitionScene } from "./TransitionScene";
 
-export default class JoinGameScene extends Phaser.Scene {
+export default class JoinGameScene extends TransitionScene {
     private lobbyController: lobby;
     private gameNames: string[] = [];
     private gameButtonsMap: Map<string, RoundRectangle> = new Map();
@@ -17,6 +18,8 @@ export default class JoinGameScene extends Phaser.Scene {
 
     //create the join screen
     public create() {
+        super.create();
+
         var self = this;
         this.add.image(500,300,'fantasyhome').setDisplaySize(1000,600)
         
@@ -86,18 +89,22 @@ export default class JoinGameScene extends Phaser.Scene {
             })
         }
 
-        var submitButton = this.add.image(660, 371, 'joinsubmit').setOrigin(0.5).setScale(0.3);
-        submitButton.setInteractive({useHandCursor: true}).on('pointerdown', () => {
+        var submitButton = this.add.image(660, 371, 'joinsubmit').setOrigin(0.5).setScale(0.3).setInteractive({useHandCursor: true});
+        submitButton.on('pointerdown', () => {
             if (self.gameChoice !== '') {
                 self.lobbyController.addPlayerToGame(self.gameChoice, null);
-                self.scene.start('Ready', {name: self.gameChoice})
+                super.fadeOut(() => {
+                    self.scene.start('Ready', {name: self.gameChoice})
+                });
             }
         })
 
         var backButton = this.add.sprite(80, 475, 'goback').setInteractive({useHandCursor: true}).setScale(0.5)
-        backButton.on('pointerdown', function (pointer) {
-            this.scene.start('Lobby');
-        }, this);
+        backButton.on('pointerdown', () => {
+            super.fadeOut(() => {
+                self.scene.start('Lobby');
+            });
+        });
     }
 
     public update() {

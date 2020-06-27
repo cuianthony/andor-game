@@ -8,8 +8,9 @@ import { reducedWidth, reducedHeight, mOffset } from '../constants';
 // UI plugin
 import { ScrollablePanel, RoundRectangle, FixWidthSizer } 
     from 'phaser3-rex-plugins/templates/ui/ui-components.js';
+import { TransitionScene } from './TransitionScene';
 
-export default class BoardOverlay extends Phaser.Scene {
+export default class BoardOverlay extends TransitionScene {
     private parent: Phaser.GameObjects.Zone
     private heroButtons: Map<string, Phaser.GameObjects.Image> = new Map();
     private gameController: game;
@@ -62,6 +63,7 @@ export default class BoardOverlay extends Phaser.Scene {
     }
 
     public create() {
+        super.create();
         // Set the overlay as a top bar on the game
         this.parent = this.add.zone(this.x, this.y, this.width, this.height).setOrigin(0);
         this.cameras.main.setViewport(this.parent.x, this.parent.y, this.width, this.height);
