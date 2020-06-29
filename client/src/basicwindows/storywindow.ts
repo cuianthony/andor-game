@@ -7,7 +7,6 @@ import {
 } from '../constants'
 
 export class StoryWindow extends BasicWindow {
-    // private key;
     private id;
     private okButton: Phaser.GameObjects.Image;
     private runestoneLocs;
@@ -42,7 +41,7 @@ export class StoryWindow extends BasicWindow {
         var self = this
         var bg = this.parentScene.add.image(this.posX, this.posY, 'scrollbg').setDisplaySize(this.w, this.h).setOrigin(0);
         var storyText;
-        if (this.id == -1) {
+        if (this.id == -1 || this.id == -2) {
             storyText = this.parentScene.add.text(this.posX+10, this.posY+10, gameInstructionsText, gameInstrTextStyle);
         } else {
             storyText = this.parentScene.add.text(this.posX+10, this.posY+10, storyCardTexts[this.id], storyCardStyleText);
@@ -57,7 +56,7 @@ export class StoryWindow extends BasicWindow {
         this.okButton.setInteractive({useHandCursor: true}).setDisplaySize(30, 30).setOrigin(0);
 
         // Start of game story and instructions, IDs 0, 1 and 2
-        let name = this.id == -1 ? 'story' : `story${this.id}`;
+        let name = (this.id == -1 || this.id ==-2) ? 'story' : `story${this.id}`;
         let continueCards = [-1, 0, 1, 3, 4]
         if (continueCards.includes(this.id)) {
             this.okButton.on('pointerdown', function (pointer) {

@@ -80,28 +80,21 @@ export default class BoardOverlay extends TransitionScene {
 
         //Options
         var optionsIcon = this.add.image(55, 40, 'options').setInteractive({useHandCursor: true});
-        optionsIcon.setScale(0.5)
+        optionsIcon.setScale(0.25)
         optionsIcon.on('pointerdown', function (pointer) {
-            if (BasicWindowManager.hasWindow('options')) {
-                let window = BasicWindowManager.removeWindow(`options`);
-                window.disconnectListeners();
-                window.destroyWindow();
-            } else {
-                BasicWindowManager.createWindow(this, "options", Options, 
-                    { 
-                        controller: this.gameController, 
-                        x: reducedWidth/2 - 400/2, 
-                        y: reducedHeight/2 - 200/2, 
-                        w: 400, 
-                        h: 200, 
-                    }
-                )
-            }
+            const optionsData = {
+                x: reducedWidth/2 - 400/2, 
+                y: reducedHeight/2 - 200/2, 
+                w: 400, 
+                h: 200, 
+                gameController: this.gameController
+            };
+            this.scene.add('BoardOverlay', new Options(optionsData), true);
         }, this);
 
         // end turn button
         // this.endTurnButton = this.add.image(900, 565, 'endturnicon').setScale(0.3)
-        this.endTurnButton = this.add.image(435, 540, 'endturnicon').setOrigin(0).setScale(0.3)
+        this.endTurnButton = this.add.image(585, 540, 'endturnicon').setOrigin(0).setScale(0.3)
         this.endTurnButton.on('pointerdown', function (pointer) {
             this.gameController.endTurn();
             // Todo: Tween will trigger whether or not it is your turn, not sure if we want to change that
@@ -141,24 +134,6 @@ export default class BoardOverlay extends TransitionScene {
                     }
                 )
             }
-        }, this);
-
-        // save btn
-        xPos = this.chatButton.x + this.chatButton.displayWidth + 10;
-        this.saveButton = this.add.image(xPos, 540, 'saveicon').setOrigin(0).setScale(0.3);
-        this.saveButton.on('pointerdown', () => {
-            this.gameController.save()
-        }, this);
-
-        // TODO DEBUG: remove
-        // xPos = this.chatButton.x + this.chatButton.displayWidth + 10;
-        let lobbyButton = this.add.text(xPos, 500, 'LOBBY', {
-                fontSize: "20px",
-                backgroundColor: '#f00',
-            }).setOrigin(0).setInteractive({ useHandCursor: true });
-        lobbyButton.on('pointerdown', () => {
-            this.gameController.returnToLobby();
-            // this.gameController.leaveGame();
         }, this);
 
         // TRADE
