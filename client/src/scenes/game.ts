@@ -1166,17 +1166,15 @@ export default class GameScene extends TransitionScene {
 
   // TODO: incomplete
   private removeInputKeys() {
-    console.log('shutdown keyboard input')
-    // this.input.keyboard.removeKey('w', true);
-    // this.input.keyboard.removeKey('a', true);
-    // this.input.keyboard.removeKey('s', true);
-    // this.input.keyboard.removeKey('d', true);
-    // this.input.keyboard.removeKey('q', true);
-    // this.input.keyboard.removeKey('e', true);
+    this.input.keyboard.removeKey('w', true);
+    this.input.keyboard.removeKey(this.cameraKeys['up'], true)
+    this.input.keyboard.removeKey('a', true);
+    this.input.keyboard.removeKey('s', true);
+    this.input.keyboard.removeKey('d', true);
+    this.input.keyboard.removeKey('q', true);
+    this.input.keyboard.removeKey('e', true);
     // this.input.keyboard.removeKey('shift', true);
     // this.input.keyboard.removeKey('ctrl', true);
-    // this.input.keyboard.removeAllListeners();
-    this.input.keyboard.shutdown();
   }
 
   private addHerbToScene(tileID) {
@@ -1247,7 +1245,6 @@ export default class GameScene extends TransitionScene {
 
     // Scroll updates
     if (this.cameraKeys["up"].isDown) {
-      console.log('game scene update loop catch')
       camera.scrollY -= this.cameraScrollSpeed;
     } else if (this.cameraKeys["down"].isDown) {
       camera.scrollY += this.cameraScrollSpeed;

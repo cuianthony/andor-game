@@ -15,7 +15,6 @@ export default class BoardOverlay extends TransitionScene {
     private parent: Phaser.GameObjects.Zone
     private heroButtons: Map<string, Phaser.GameObjects.Image> = new Map();
     private gameController: game;
-    private saveButton: Phaser.GameObjects.Image;
     private endTurnButton: Phaser.GameObjects.Image;
     private chatButton: Phaser.GameObjects.Image;
     private clientHeroObject: Hero;
@@ -82,6 +81,16 @@ export default class BoardOverlay extends TransitionScene {
         var optionsIcon = this.add.image(55, 40, 'options').setInteractive({useHandCursor: true});
         optionsIcon.setScale(0.25)
         optionsIcon.on('pointerdown', function (pointer) {
+            if (this.scene.get('Options')) {
+                return;
+            }
+            let gameScene = this.scene.get('Game')
+            gameScene.scene.pause();
+            gameScene.cameras.main.alpha = 0.5;
+            // gameScene.cameras.main.clearTint();;
+            this.scene.pause();
+            this.cameras.main.alpha = 0.5;
+            // this.cameras.main.clearTint();
             const optionsData = {
                 x: reducedWidth/2 - 400/2, 
                 y: reducedHeight/2 - 200/2, 
@@ -89,7 +98,7 @@ export default class BoardOverlay extends TransitionScene {
                 h: 200, 
                 gameController: this.gameController
             };
-            this.scene.add('BoardOverlay', new Options(optionsData), true);
+            this.scene.add('Options', new Options(optionsData), true);
         }, this);
 
         // end turn button
@@ -421,14 +430,12 @@ export default class BoardOverlay extends TransitionScene {
 
     public toggleInteractive(interactive: boolean) {
         if (interactive) {
-            this.saveButton.setInteractive({useHandCursor: true});
             this.endTurnButton.setInteractive({useHandCursor: true});
             this.endDayButton.setInteractive({useHandCursor: true});
             this.heroButtons.forEach(function (button) {
                 button.setInteractive({useHandCursor: true});
             })
         } else {
-            this.saveButton.setInteractive();
             this.endTurnButton.disableInteractive();
             this.endDayButton.disableInteractive();
             this.heroButtons.forEach(function (button) {

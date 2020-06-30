@@ -85,6 +85,9 @@ export default class Options extends Phaser.Scene {
         homeOff.on('pointerdown', () => {
             homeOff.visible = false;
             music.stop();
+            let gameScene = this.scene.get('Game')
+            gameScene.scene.resume();
+            gameScene.cameras.main.alpha = 1;
             this.gameController.returnToLobby();
             this.scene.remove();
         }, this)
@@ -95,6 +98,12 @@ export default class Options extends Phaser.Scene {
         let closeButton = this.add.image(this.posX+this.w-26, this.posY+26, 'close_button').setOrigin(0.5).setDisplaySize(22, 22);
         closeButton.setInteractive({useHandCursor: true})
         closeButton.on('pointerdown', () => {
+            let gameScene = this.scene.get('Game')
+            gameScene.scene.resume();
+            gameScene.cameras.main.alpha = 1;
+            let overlayScene = this.scene.get('BoardOverlay')
+            overlayScene.scene.resume();
+            overlayScene.cameras.main.alpha = 1;
             this.scene.remove();
         }, this);
     }
