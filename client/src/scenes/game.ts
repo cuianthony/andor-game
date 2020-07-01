@@ -208,7 +208,7 @@ export default class GameScene extends TransitionScene {
       right: 'd',
       zoomIn: 'q',
       zoomOut: 'e'
-    });
+    }, false);
   }
 
   private setRegions(tilesData) {
