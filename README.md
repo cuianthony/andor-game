@@ -42,7 +42,6 @@ Simply run
 ```
 npm run serve
 ```
-Currently requires server restart before loading a game.
 
 ### Game interface
 ```
